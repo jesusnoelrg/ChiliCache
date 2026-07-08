@@ -6,9 +6,10 @@ const clientesRoutes = require('./routes/clientes');*/
 import express, {type Express, type Request, type Response} from 'express';
 //import UserRoutes from './routes/usuarios.js';
 //import ClientRoutes from './routes/clientes.js';
-import path from 'path'
+import path from 'path';
+import dotenv from 'dotenv';
 
-
+dotenv.config();
 const app: Express = express();
 
 app.use(express.json());

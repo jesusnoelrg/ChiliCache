@@ -1,14 +1,38 @@
-const sqlite3 = require('sqlite3').verbose();
+//const sqlite3 = require('sqlite3').verbose();
+import Database from "better-sqlite3"; 
+import type { Database as DatabaseType } from 'better-sqlite3';
 
-const db = new sqlite3.Database('./database.db', (err) => {
-    if (err) {
-        console.error('Error al conectar a la base de datos:', err.message);
-    } else {
-        console.log('Conectado a la base de datos SQLite.');
-    }
-});
+const db: DatabaseType = new Database(
+  './database.db', 
+  {verbose: process.env.MODE === 'production' ? undefined : console.log}
+);
 
-db.serialize(() => {
+
+db.exec(`
+  PRAGMA foreign_keys = ON;
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    role TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS Productos (
+            IDProducto INTEGER PRIMARY KEY AUTOINCREMENT,
+            Nombre TEXT NOT NULL,
+            UnidadMedida TEXT NOT NULL,
+            ContenidoNeto INTEGER NOT NULL,
+            Precio REAL NOT NULL,
+            Stock INTEGER NOT NULL,
+            Imagen BLOB
+  );
+`)
+
+export default db;
+
+/*db.serialize(() => {
     db.run("PRAGMA foreign_keys = ON");
     
     
@@ -71,6 +95,6 @@ db.serialize(() => {
             FOREIGN KEY (IDProducto) REFERENCES Productos(IDProducto)
         )
     `);
-});
+});*/
 
-module.exports = db;
+//module.exports = db;
