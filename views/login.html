@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Inicio de sesión</title>
+   <!--CSS mis estilos-->
+   <link rel="stylesheet" href="./css/general.css">
+   <link rel="stylesheet" href="./css/layout.css">
+   <link rel="stylesheet" href="./css/components.css">
+   <link rel="stylesheet" href="./css/variables.css">
+   <!--Logo-->
+   <link rel="shortcut icon" href="./img/logo.png" type="image/x-icon">
+</head>
+<body>
+   <div class="container-fluid d-flex justify-content-center align-items-center h-100 login-background">
+      <div class="login-card bg-white shadow rounded-10">
+         <div class="p-5 d-flex flex-column justify-content-center align-items-center">
+            <img src="./img/logo.png" width="185px" height="150px" alt="Logo IndiaBrava">
+            <h2 class="text-center fw-bold my-4">Inicio de sesión</h2>
+            <form class="container px-3">
+               <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingUsername" placeholder="Nombre de usuario">
+                  <label for="floatingUsername" class="text-gray"><i class="bi bi-person-fill"></i> Nombre de usuario</label>
+               </div>
+               <div class="form-floating my-4">
+                  <input type="password" class="form-control" id="floatingPassword" placeholder="Contraseña">
+                  <label for="floatingPassword" class="text-gray"><i class="bi bi-lock-fill"></i> Contraseña</label>
+               </div>
+            </form>
+            <a href="inicio.html"><button type="button" class="btn-primario px-5 py-2 fs-5 rounded-10 shadow">Iniciar sesión</button></a>
+         </div>
+      </div>
+   </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+html, body {
+    height: 100%;
+}
+
+
+main {
+    min-height: calc(100vh - 65px);
+    overflow-y: auto;
+}
+
+/*Contenedor del login*/
+.login-card{
+    width: 425px;
+}
+
+/*Header principal*/
+header{
+    width: 100%;
+    height: 65px;
+}
+
+
+aside{
+    background-color: var(--tono6);
+	width: 345px;
+	transition: width 0.4s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Aside colapsado */
+aside.aside-collapse {
+    width: 80px;
+    transition: width 0.4s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+aside.aside-collapse .aside-header > img {
+    width: 60px;
+    height: 50px;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+}
+
+aside.aside-collapse .nav-section-li {
+    display: flex;
+    justify-content: center;
+}
+
+aside.aside-collapse .nav-section-li a {
+    padding: 10px 12px !important;
+}
+
+.aside-category-name,
+.aside-section-name,
+.aside-title-logo {
+    transition: opacity 0.4s ease-in-out; /* Controlar solo la opacidad */
+}
+
+
+@media only screen and (max-width: 1450px){
+    aside{
+        width: 345px;
+    }
+
+    .module-icon{
+        font-size: 30px !important;
+        padding: 7px 14px 7px 14px !important;
+    }
+}

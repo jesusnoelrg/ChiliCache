@@ -1,0 +1,32 @@
+:root{
+    /*Colores del logo*/
+    --color-primario: #9ABF21;
+    --logo-azul: #05C7F2;
+    --logo-amarillo: #F2D541;
+
+    /*Tonos del color primario*/
+    --tono1: #323B12;
+    --tono2: #54631E;
+    --tono3: #778C2A;
+    --tono4: #7CA919;
+    --tono5: #8ea82f;
+    --tono6: #5B8930;
+    --tono7: #B8D941;
+
+    /*Colores generales*/
+    --color-blanco: white;
+    --color-negro: black;
+    --color-gris: #777;
+    --color-blanco2: #eee;
+
+    /*Opacidades*/
+    --op-negro-1: rgba(0, 0, 0, 0.142);
+
+    /*Alertas*/
+    --error: rgb(252, 92, 92);
+    --info: rgb(104, 104, 255);
+    --confirmacion: #8d64ff;
+
+    /*Otros*/
+    --disable: #b8d941d1;
+}

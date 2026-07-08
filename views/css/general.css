@@ -1,0 +1,59 @@
+body{
+	height: 100vh;
+}
+
+aside{
+	height: auto;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: var(--color-blanco2);
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #ccc;
+    transition: background-color, 0.5s;
+}
+
+::-webkit-scrollbar-thumb:vertical:hover {
+    background-color: var(--color-primario);
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    width: 50px;
+    background-color: #ccc;
+    -webkit-border-radius: 3px;
+}
+
+aside > div > nav > ul > li a{
+	transition: background-color, 0.4s;
+	cursor: pointer;
+}
+
+aside > div > nav > ul > li a:hover{
+	background-color: var(--op-negro-1);
+}
+
+.nav-section-select{
+	background-color: var(--op-negro-1);
+	border-left: 5px solid var(--color-blanco);
+}
+
+.tabla-datos-scroll {
+    max-height: 252px;
+    overflow-y: auto;
+}
+
+#tablaDatos.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #343a40;
+    color: white;
+    z-index: 1;
+}

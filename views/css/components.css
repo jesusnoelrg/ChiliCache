@@ -1,0 +1,191 @@
+/*Background color
+---------------------------------------------------------------------*/
+
+.bg-primario{
+    background-color: var(--color-primario);
+}
+
+.bg-main{
+    background-color: #f1f1f1;
+}
+
+.bg-clientes{
+    background-image: radial-gradient(circle 248px at center, #16d9e3 0%, #30c7ec 47%, #46aef7 100%);
+}
+
+.bg-productos{
+    background-image: linear-gradient(to right, #ff758c 0%, #ff7eb3 100%);
+}
+
+.bg-ventas{
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-usuarios{
+    background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+}
+
+/*Botones
+---------------------------------------------------------------------*/
+
+.btn-primario{
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primario:hover{
+    background-color: var(--tono4);
+}
+
+#btnAside{
+    transition: all .3s;
+}
+
+#btnAside:hover{
+    background-color: #9abf212d;
+}
+
+/*Bordes
+---------------------------------------------------------------------*/
+
+.rounded-10{
+    border-radius: 10px;
+}
+
+.rounded-20{
+    border-radius: 20px;
+}
+
+/*Colores de texto
+---------------------------------------------------------------------*/
+
+.text-primario{
+    color: var(--color-primario);
+}
+
+.text-gray{
+    color: var(--color-gris);
+}
+
+/*Badgets
+---------------------------------------------------------------------*/
+.perfil-badge {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+}
+
+/*Paginations
+---------------------------------------------------------------------*/
+
+.pagination-element{
+    transition: background-color .3s;
+    font-size: 14px;
+    background-color: var(--color-primario);
+    color: white;
+    text-decoration: none;
+    border-radius: .3rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.pagination-element.active{
+    background-color: var(--tono4);
+}
+
+.pagination-element.disabled{
+    background-color: var(--disable);
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none !important;
+    pointer-events: none;
+}
+
+.pagination-element:hover{
+    background-color: var(--tono4);
+    color: white;
+}
+
+/*Otros
+---------------------------------------------------------------------*/
+
+.modal-header{
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+}
+
+.login-background{
+	background: rgb(184,217,65);
+    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(119,140,42,1) 100%);
+}
+
+.aside-background{
+    background: rgb(184,217,65);
+    background: -moz-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
+    background: -webkit-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
+    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8d941",endColorstr="#5b8930",GradientType=1);
+}
+
+.perfil-card{
+    background-color: rgba(184, 217, 65, 0.193);
+    border: 1px solid #D3E4A6;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.perfil-card:hover{
+    background-color: #D3E4A6;
+}
+
+.perfil-card * p{
+    font-size: 14px;
+}
+
+.module{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-blanco);
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.module:hover{
+    transform: scale(1.1);
+}
+
+.module p{
+    font-size: 28px;
+}
+
+.module-icon{
+    margin-top: 10px;
+    font-size: 40px;
+    background-color: rgba(0, 0, 0, 0.211);
+    padding: 10px 20px 10px 20px;
+    border-radius: 50px;
+}
+
+.modal-alert-header{
+    position: relative;
+}
+
+.icon-alert-box{
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: -50px;
+    text-align: center;
+    background-color: var(--color-primario);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    align-items: center;
+}
