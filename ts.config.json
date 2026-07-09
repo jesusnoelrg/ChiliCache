@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@data/*": ["data/*"],
+      "@views/*": ["views/*"]
+    },
     "target": "esnext",
     "module": "nodenext",
     "rewriteRelativeImportExtensions": true,
