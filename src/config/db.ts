@@ -18,18 +18,18 @@ db.exec(`
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     full_name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    created_at TEXT
+    role TEXT NOT NULL DEFAULT 'operator',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    unit TEXT NOT NULL,
+    unit TEXT NOT NULL DEFAULT 'ml',
     net_content INTEGER NOT NULL,
     price REAL NOT NULL,
-    stock INTEGER NOT NULL,
-    created_at TEXT
+    stock INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS clients (
@@ -39,7 +39,7 @@ db.exec(`
     address TEXT NOT NULL,
     phone TEXT CHECK (phone GLOB '*[0-9]*'),
     mail TEXT,
-    created_at TEXT
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS sales (
