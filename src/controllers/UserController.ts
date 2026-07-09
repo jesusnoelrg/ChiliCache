@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { CreateUserDTO, UpdateUserDTO, GetId } from '../types/user.types.ts'
+import type { CreateUserDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import db from '../config/db.ts';
 
@@ -22,7 +22,7 @@ export const UserController = {
       }
 
       let checkUsername = checkUsernameAvailable(username as string);
-      if(!checkUsername.result.success) return res.status(409).json(checkUsername);
+      if(!checkUsername.success) return res.status(409).json(checkUsername);
 
       const userData: any = {
         username,
@@ -122,10 +122,10 @@ export const UserController = {
         })
       }
 
-      const checkId = checkIdExists(id);
+      const checkId = checkIdUser(id);
       if(!checkId.success) return res.status(404).json(checkId);
 
-      const checkUsername = checkUsernameAvailable(username as string, id as string);
+      const checkUsername = checkUsernameAvailable(username as string, id);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
       const userData: any = {
@@ -151,10 +151,50 @@ export const UserController = {
         "message": "[ERROR 500]: Error en la base de datos."
       })
     }
+  },
+
+  deleteUser: async (req: Request<GetId>, res: Response) => {
+    try{
+      const { id } = req.params;
+      const idNumber = Number(id);
+
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      const checkId = checkIdUser(idNumber);
+      if(!checkId.success) return res.status(404).json(checkId);
+
+      //TODO: Logic to verify that the user does not delete himself
+
+      const checkRoleAdmin = db.prepare(`SELECT role FROM users WHERE id = :id`).get({id: idNumber}) as UserRole || undefined;
+
+      if(checkRoleAdmin && checkRoleAdmin.role === 'admin') {
+        return res.status(403).json({
+          "success": false,
+          "message": "¡No puedes eliminar a un Administrador!"
+        });
+      }
+
+      const result = db.prepare("DELETE FROM users WHERE id = :id").run({id: idNumber});
+
+      if(result.changes === 0){
+        return res.status(400).json({
+          "success": true,
+          "message": "No se ha podido eliminar al usuario."
+        });
+      }
+
+      res.status(200).json({
+        "success": true,
+        "message": "¡Usuario eliminado exitosamente!"
+      })
+    }catch(err: any){
+      console.error(err);
+      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+    }
   }
 };
 
-const checkIdExists = (id: string): any => {
+const checkIdUser = (id: number): Record<string, any> => {
   if(id !== undefined){
     const validate = db.prepare(`SELECT id FROM users WHERE id = :id`).get({id});
 
@@ -167,11 +207,11 @@ const checkIdExists = (id: string): any => {
   }
 
   return {
-    "succes": true
+    "success": true
   }
 }
 
-const checkUsernameAvailable = (username: string, id?: string): any => {
+const checkUsernameAvailable = (username: string, id?: number): Record<string, any> => {
   if(!username) return { "success": true };
 
   let data: any = { username };
@@ -179,7 +219,7 @@ const checkUsernameAvailable = (username: string, id?: string): any => {
 
   if(id !== undefined && id){
     query += " AND id != :id";
-    data.id = id
+    data.id = id;
   }
 
   const validate = db.prepare(query).get(data);

@@ -7,7 +7,11 @@ export interface CreateUserDTO {
 }
 
 export interface GetId {
-  id: string;
+  id: number;
+}
+
+export interface UserRole {
+  role: string;
 }
 
 export interface UpdateUserDTO {
