@@ -3,8 +3,11 @@ import { UserController } from '../controllers/userController';
 
 const router = Router();
 
-//Obtener todos los clientes
+//Obtener todos los usuarios
 router.get('/', UserController.getUsers);
+
+//Obtener un usuario
+router.get('/:id', UserController.getUserById);
 
 //Crear un nuevo usuario
 router.post('/', UserController.createUser);

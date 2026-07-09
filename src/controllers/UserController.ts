@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { CreateUserDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
+import type { CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import db from '../config/db.ts';
 
@@ -59,11 +59,9 @@ export const UserController = {
     }
   },
 
-
-  getUsers: async (req: Request, res: Response) => {
+  getUsers: async (req: Request<{}, {}, {}, GetUsersDTO>, res: Response) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
-      const offset = parseInt(req.query.offset as string) || 0;
+      const { username, full_name, role, limit, offset } = req.query;
 
       let query = `
         SELECT 
@@ -72,17 +70,33 @@ export const UserController = {
           full_name, 
           role 
         FROM users
-        LIMIT :limit
-        OFFSET :offset
+        WHERE 1 = 1
       `
 
-      const params = {
-        limit: limit,
-        offset: offset
+      const userData: any = {
+        limit: Number(limit) || 10,
+        offset: Number(offset) || 0
       };
 
+      if(username){
+        userData.username = `%${username}%`;
+        query += " AND username LIKE :username";
+      }
+
+      if(full_name){
+        userData.full_name = `%${full_name}%`;
+        query += " AND full_name LIKE :full_name";
+      }
+
+      if(role){
+        userData.role = role;
+        query += " AND role = :role";
+      }
+
+      query += " LIMIT :limit OFFSET :offset";
+
       const stmt = db.prepare(query);
-      const result = stmt.all(params);
+      const result = stmt.all(userData);
 
       if(result.length === 0){
         return res.status(200).json({
@@ -94,8 +108,8 @@ export const UserController = {
       res.json({
         "success": true,
         "meta": {
-          "limit": limit,
-          "offset": offset,
+          "limit": userData.limit,
+          "offset": userData.offset,
           "count": result.length
         },
         "data": result
@@ -107,6 +121,27 @@ export const UserController = {
         "success": false,
         "message": "[ERROR 500]: Error en la base de datos."
       })
+    }
+  },
+
+  getUserById: async (req: Request, res: Response) => {
+    try{
+      const { id } = req.params;
+
+      const idNumber = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      const result = db.prepare("SELECT username, password, full_name, role, created_at FROM users WHERE id = :id").get({id: idNumber});
+
+      if(!result) return res.status(404).json({ "success": false, "message": "Usuario no encontrado." });
+
+      res.status(200).json({ "success": true, "data": result })
+    }catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERRROR 500] Error en la base de datos."
+      });
     }
   },
 

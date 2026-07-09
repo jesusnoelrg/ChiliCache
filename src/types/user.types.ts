@@ -6,6 +6,14 @@ export interface CreateUserDTO {
   role?: string;
 }
 
+export interface GetUsersDTO {
+  username?: string;
+  full_name?: string;
+  role?: string;
+  limit?: number;
+  offset?: number;
+}
+
 export interface GetId {
   id: number;
 }
