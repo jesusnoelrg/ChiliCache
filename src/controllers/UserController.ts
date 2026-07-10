@@ -172,7 +172,7 @@ export const UserController = {
       if(full_name) userData.full_name = full_name;
       if(role) userData.role = role;
 
-      const placeholders = updateHelper(userData);
+      const placeholders = updateHelper(userData, ['id', 'created_at']);
       let query = `UPDATE users SET ${placeholders} WHERE id = :id`
       let result = db.prepare(query).run(userData);
 

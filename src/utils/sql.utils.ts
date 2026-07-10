@@ -19,6 +19,9 @@ export function generateInsertHelper (data: Record<string, any>) {
  * Return => value1 = :value1, value2 = :value2...
  *
  */
-export function updateHelper(data: Record<string, any>): string{
-  return Object.keys(data).map((x) => `${x} = :${x}`).join(', ');
+export function updateHelper(data: Record<string, any>, excludeKeys: string[] = ['id']): string{
+  return Object.keys(data)
+    .filter((x) => !excludeKeys.includes(x))
+    .map((x) => `${x} = :${x}`)
+    .join(', ');
 }
