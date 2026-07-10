@@ -18,17 +18,17 @@ db.exec(`
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     full_name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'operator',
+    role TEXT DEFAULT 'operator',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    unit TEXT NOT NULL DEFAULT 'ml',
+    unit TEXT DEFAULT 'ml',
     net_content INTEGER NOT NULL,
     price REAL NOT NULL,
-    stock INTEGER NOT NULL DEFAULT 0,
+    stock INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
