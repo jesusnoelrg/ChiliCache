@@ -1,7 +1,7 @@
 import express, {type Express, type Request, type Response} from 'express';
 import db from './config/db.ts';
-import UserRoutes from './routes/user.ts';
-import ProductRoutes from "./routes/products.ts";
+import UserRoutes from './routes/user.routes.ts';
+import ProductRoutes from "./routes/product.routes.ts";
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import dotenv from 'dotenv';
