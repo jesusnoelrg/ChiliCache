@@ -53,7 +53,7 @@ export const phoneFormat = (phone: string) => {
  * @param email 
  * @returns boolean
  */
-export const mailFormat = (email: string) => email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
+export const emailFormat = (email: string) => email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
 /**
  * Validate if it is an RFC with a valid format

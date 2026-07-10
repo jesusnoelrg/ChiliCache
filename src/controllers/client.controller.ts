@@ -1,11 +1,12 @@
 import db from "../config/db";
 import type {Request, Response} from "express";
-import { CreateClientDTO } from "../types/client.types";
+import { CreateClientDTO, GetClientsDTO, UpdateClientDTO, ClientID } from "../types/client.types";
 import {
   generateInsertHelper,
+  updateHelper,
   rfcFormat,
   phoneFormat,
-  mailFormat
+  emailFormat
 } from "../utils/sql.utils";
 
 export const ClientController = {
@@ -36,12 +37,12 @@ export const ClientController = {
 
       if(phone !== undefined){
         const validatePhone = phoneFormat(phone);
-        if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número ingresado no tiene el formato valido."});
+        if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
         clientData.phone = validatePhone;
       }
 
       if(email !== undefined){
-        if(!mailFormat(email as string)) return res.status(400).json({"success": false, "message": "E-mail inválido."});
+        if(!emailFormat(email as string)) return res.status(400).json({"success": false, "message": "E-mail inválido."});
         clientData.email = email;
       }
 
@@ -62,7 +63,111 @@ export const ClientController = {
         "message": "Error en la base de datos."
       })
     }
-  }
+  },
+
+  getClientById: async(req: Request<ClientID>, res: Response) => {
+    try{
+      const { id } = req.params;
+
+      const idNumber: number = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      if(!isClientIDExist(idNumber)) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+
+      const result = db.prepare("SELECT * FROM clients WHERE id = :id").get({id});
+      
+      return res.status(200).json({
+        "success": true,
+        "data": result
+      })
+    }catch(err: any){
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
+  getClients: async (req: Request<{}, {}, {}, GetClientsDTO>, res: Response) => {
+    try{
+      const { name, rfc, address, phone, email, limit, offset } = req.query;
+
+
+    }catch(err: any){
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
+
+
+  updateClient: async (req: Request<ClientID, {}, UpdateClientDTO>, res: Response) => {
+    try{
+      const { id } = req.params;
+      const { name, rfc, address, phone, email } = req.body;
+
+      const idNumber = Number(id);
+
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      const clientData: any = {
+        id: id
+      }
+
+      if(name !== undefined){
+        if(name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
+        if(clientNameUse(name)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
+        clientData.name = name;
+      }
+
+      if(rfc !== undefined){
+        if(!rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
+        clientData.rfc = rfc;
+      }
+
+      if(address !== undefined){
+        if(address.length < 10 || address.length > 300) return res.status(400).json({"success": false, "message": "La dirección del cliente debe tener entre 10 y 300 caracteres."});
+        clientData.address = address;
+      }
+
+      if(phone !== undefined){
+        const validatePhone = phoneFormat(phone);
+        if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
+        clientData.phone = validatePhone;
+      }
+
+      if(email !== undefined){
+        if(emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
+        clientData.email = email
+      }
+
+      if(Object.keys(clientData).length < 2) return res.status(400).json({"success": false, "message": "No se ha introducido por lo menos un valor por modificar."});
+
+      const set_clausule = updateHelper(clientData);
+      const result = db.prepare(`UPDATE clients SET ${set_clausule} WHERE id = :id`).run(clientData);
+
+      return res.status(200).json({
+        "success": true,
+        "message": `Cliente actualizado exitosamente${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+      });
+    }catch(err: any){
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  } 
+}
+
+const isClientIDExist = (id: number): boolean => {
+  if(!id) return false;
+  const result = db.prepare('SELECT id FROM clientes WHERE id = :id').get({id});
+  return result !== undefined;
 }
 
 const clientNameUse = (name: string): boolean => {
