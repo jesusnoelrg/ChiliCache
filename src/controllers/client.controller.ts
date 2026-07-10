@@ -166,7 +166,7 @@ export const ClientController = {
 
 const isClientIDExist = (id: number): boolean => {
   if(!id) return false;
-  const result = db.prepare('SELECT id FROM clientes WHERE id = :id').get({id});
+  const result = db.prepare('SELECT id FROM clients WHERE id = :id').get({id});
   return result !== undefined;
 }
 
