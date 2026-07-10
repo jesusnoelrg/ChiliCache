@@ -93,7 +93,51 @@ export const ClientController = {
     try{
       const { name, rfc, address, phone, email, limit, offset } = req.query;
 
+      const limitNumber = Number(limit || 10);
+      const offsetNumber = Number(offset || 0);
 
+      const clientData: any = {
+        limit: limitNumber,
+        offset: offsetNumber
+      }
+      
+      let query = `SELECT * FROM clients WHERE 1 = 1`;
+
+      if(name !== undefined){
+        clientData.name = `%${name}%`;
+        query += " AND name LIKE :name";
+      }
+      if(rfc !== undefined){
+        clientData.rfc = `%${rfc}%`;
+        query += " AND rfc LIKE :rfc";
+      }
+      if(address !== undefined){
+        clientData.address = `%${address}%`;
+        query += " AND address LIKE :address";
+      }
+      if(phone !== undefined){
+        clientData.phone = `%${phone}%`;
+        query += " AND phone LIKE :phone";
+      }
+      if(email !== undefined){
+        clientData.email = `%${email}%`;
+        query += " AND email LIKE :email";
+      }
+
+      query += " LIMIT :limit OFFSET :offset"
+      const result = db.prepare(query).all(clientData);
+
+      if(result.length === 0) return res.status(204).json({"success": true, "message": "No se han encontrado clientes."});
+      
+      return res.status(200).json({
+        "success": true,
+        "metadata": {
+          limit: clientData.limit,
+          offset: clientData.offset,
+          count: result.length
+        },
+        "data": result
+      });
     }catch(err: any){
       console.log("ERROR:" + err);
       return res.status(500).json({
@@ -161,7 +205,7 @@ export const ClientController = {
         "message": "Error en la base de datos."
       });
     }
-  } 
+  }
 }
 
 const isClientIDExist = (id: number): boolean => {

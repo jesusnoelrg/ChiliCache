@@ -5,8 +5,12 @@ const router = Router();
 
 router.post('/', ClientController.createClient);
 
+router.get('/:id', ClientController.getClientById);
+
+router.get('/', ClientController.getClients);
+
 router.put('/:id', ClientController.updateClient);
 
-router.get('/:id', ClientController.getClientById);
+
 
 export default router;
