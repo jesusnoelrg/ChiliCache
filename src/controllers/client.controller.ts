@@ -185,7 +185,7 @@ export const ClientController = {
       }
 
       if(email !== undefined){
-        if(emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
+        if(!emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
         clientData.email = email
       }
 
@@ -198,6 +198,28 @@ export const ClientController = {
         "success": true,
         "message": `Cliente actualizado exitosamente${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
       });
+    }catch(err: any){
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
+  deleteClient: async (req: Request<ClientID>, res: Response) => {
+    try{
+      const { id } = req.params;
+
+      const idNumber = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+      if(!isClientIDExist(idNumber)) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+
+      const result = db.prepare("DELETE FROM clients WHERE id = :id").run({idNumber});
+
+      if(result.changes === 0) return res.sendStatus(204);
+
+      return res.status(200).json({"success": true, "message": "Cliente eliminado exitosamente."});
     }catch(err: any){
       console.log("ERROR:" + err);
       return res.status(500).json({
