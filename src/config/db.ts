@@ -37,16 +37,20 @@ db.exec(`
     name TEXT NOT NULL UNIQUE,
     rfc TEXT NOT NULL,
     address TEXT NOT NULL,
-    phone TEXT CHECK (phone GLOB '*[0-9]*'),
-    mail TEXT,
+    phone TEXT CHECK (
+        phone IS NULL
+        OR length(phone) = 10 
+        AND phone NOT GLOB '*[^0-9]*'
+    ),
+    email TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS sales (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,
+    date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total REAL NOT NULL,
-    invoice BOOL NOT NULL,
+    invoice INTEGER NOT NULL CHECK (invoice IN (0, 1)),
     id_client INTEGER NOT NULL,
     id_user INTEGER NOT NULL,
     FOREIGN KEY(id_client) REFERENCES clients(id),

@@ -2,6 +2,7 @@ import express, {type Express, type Request, type Response} from 'express';
 import db from './config/db.ts';
 import UserRoutes from './routes/user.routes.ts';
 import ProductRoutes from "./routes/product.routes.ts";
+import ClientRoutes from "./routes/client.routes.ts";
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import dotenv from 'dotenv';
@@ -21,6 +22,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/users', UserRoutes);
 app.use('/products', ProductRoutes);
+app.use('/clients', ClientRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
