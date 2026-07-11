@@ -67,6 +67,9 @@ db.exec(`
     FOREIGN KEY(id_product) REFERENCES products(id)
   );
    
+  CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(id_user);
+  CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(id_client);
+  CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);
 `)
 
 export default db;
