@@ -12,7 +12,6 @@ export function generateInsertHelper (data: Record<string, any>) {
   return {columns, placeholders};
 }
 
-
 /**
  * Takes a data object and generates the SET clause.
  * 

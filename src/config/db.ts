@@ -66,6 +66,7 @@ db.exec(`
     FOREIGN KEY(id_sale) REFERENCES sales(id),
     FOREIGN KEY(id_product) REFERENCES products(id)
   );
+   
 `)
 
 export default db;
