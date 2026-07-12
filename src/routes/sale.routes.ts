@@ -9,4 +9,6 @@ router.get('/', SaleController.getSales);
 
 router.get('/:id', SaleController.getSaleById);
 
+router.patch('/:id/cancel', SaleController.cancelSaleById)
+
 export default router;

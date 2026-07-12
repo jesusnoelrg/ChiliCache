@@ -249,5 +249,102 @@ export const SaleController = {
         "message": "[ERROR 500]: Error en la base de datos."
       });
     }
+  },
+
+  cancelSaleById: async (req: Request<SaleID>, res: Response) => {
+    try{
+      const { id } = req.params;
+
+      const idNumber = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      const stmtSale = db.prepare("SELECT status FROM sales WHERE id = :id");
+      const stmtProducts = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
+      const stmtUpdateStock = db.prepare("UPDATE products SET stock = stock + :amount WHERE id = :id");
+      const stmtUpdateStatus = db.prepare("UPDATE sales SET status = 'cancelled' WHERE id = :id");
+
+      const transaction = db.transaction((idNumber) => {
+        const { status } = stmtSale.get({id: idNumber}) as {status: 'cancelled' | 'completed'} || {};
+
+        if(!status) throw new Error(`SALE_NO_EXIST:${idNumber}`);
+        if(status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${idNumber}`);
+
+        const products = stmtProducts.all({id: idNumber}) as {id_product: number, amount: number}[];
+
+        if(products.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${idNumber}`);
+
+        for(const {id_product, amount} of products){
+          const result = stmtUpdateStock.run({amount: amount, id: id_product});
+          
+          if (result.changes === 0) {
+            throw new Error(`PRODUCT_NOT_FOUND_OR_UPDATE_FAILED:${id_product}:${idNumber}`);
+          }
+        }
+
+        const statusResult = stmtUpdateStatus.run({id: idNumber});
+
+        if (statusResult.changes === 0) {
+          throw new Error(`FAILED_TO_UPDATE_STATUS:${idNumber}`);
+        }
+
+        return {"success": true}
+      });
+
+      const confirmTransaction = transaction(idNumber);
+
+      if(!confirmTransaction.success){
+        return res.status(400).json({
+          "success": false,
+          "message": "Ha ocurrido un error en la transación."
+        });
+      }
+
+      return res.status(200).json({
+        "success": true,
+        "message": "Venta cancelada exitosamente."
+      })
+    }catch(err: any){
+      if(err.message.startsWith('SALE_NO_EXIST')){
+        return res.status(404).json({
+          "success": false, 
+          "message": `La venta con el (ID: ${err.message.split(':')[1]}) no existe`
+        });
+      }
+
+      if(err.message.startsWith('SALE_ALREADY_CANCELLED')){
+        return res.status(400).json({
+          "success": false, 
+          "message": `La venta con el (ID: ${err.message.split(':')[1]}) ya se encuentra cancelada.`
+        });
+      }
+
+      if(err.message.startsWith('EMPTY_PRODUCT_LIST')){
+        return res.status(404).json({
+          "success": false, 
+          "message": `La venta con el (ID: ${err.message.split(':')[1]}) no tiene productos registrados.`
+        });
+      }
+
+      if(err.message.startsWith('FAILED_TO_UPDATE_STATUS')){
+        return res.status(400).json({
+          "success": false, 
+          "message": `Hubo un fallo al querer actualizar el estado de la venta (ID: ${err.message.split(':')[1]}).`
+        });
+      } 
+
+      if(err.message.startsWith('PRODUCT_NOT_FOUND_OR_UPDATE_FAILED')){
+        const msg = err.message.split(':');
+        return res.status(400).json({
+          "success": false, 
+          "message": `Hubo un fallo al querer actualizar el stock del producto (ID: ${msg[1]} venta (ID: ${msg[2]})).`
+        });
+      }
+
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      });
+    }
   }
 }
