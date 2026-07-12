@@ -7,4 +7,6 @@ router.post('/', SaleController.createSale);
 
 router.get('/', SaleController.getSales);
 
+router.get('/:id', SaleController.getSaleById);
+
 export default router;

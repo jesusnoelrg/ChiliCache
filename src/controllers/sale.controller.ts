@@ -1,6 +1,6 @@
 import db from "../config/db";
 import type { Request, Response } from "express";
-import { CreateSaleDTO, GetSalesDTO, ProductRow } from "../types/sale.types";
+import { CreateSaleDTO, GetSalesDTO, ProductRow, SaleID } from "../types/sale.types";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 export const SaleController = {
@@ -189,6 +189,65 @@ export const SaleController = {
         "success": false,
         "message": "[ERROR 500]: Error en la base de datos."
       })
+    }
+  },
+
+  getSaleById: async (req: Request<SaleID>, res: Response) => {
+    try{
+      const { id } = req.params;
+
+      const idNumber = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+
+      const sale = db.prepare(`
+        SELECT
+          s.id AS id_venta,
+          s.id_user,
+          id_client,
+          u.full_name AS op_name,
+          c.name AS client_name,
+          s.total,
+          s.invoice,
+          s.date
+        FROM sales AS s
+          INNER JOIN clients AS c ON c.id = s.id_client
+          INNER JOIN users AS u ON u.id = s.id_user
+        WHERE s.id = :id
+        `).get({id: idNumber});
+
+      if(!sale) return res.status(404).json({"success": false, "message": `La venta con el (ID: ${idNumber}) no existe.`});
+
+      const productResults = db.prepare(`
+        SELECT
+          sd.id_product AS id_product,
+          p.name AS product_name,
+          sd.price AS price,
+          sd.amount AS amount
+        FROM sales_detail AS sd
+          INNER JOIN products AS p ON p.id = sd.id_product
+        WHERE sd.id_sale = :id
+      `).all({id: idNumber});
+
+      if(!productResults || productResults.length === 0){
+        return res.status(404).json({
+          "success": false,
+          "message": "¡No hay productos por mostrar!"
+        });
+      }
+
+      return res.status(200).json({
+        "success": true,
+        "data": {
+          ...(sale as any),
+          "products": productResults
+        }
+      })
+    }catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      });
     }
   }
 }
