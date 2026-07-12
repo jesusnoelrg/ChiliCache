@@ -50,6 +50,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total REAL NOT NULL,
+    status TEXT DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
     invoice INTEGER NOT NULL CHECK (invoice IN (0, 1)),
     id_client INTEGER NOT NULL,
     id_user INTEGER NOT NULL,
@@ -66,6 +67,10 @@ db.exec(`
     FOREIGN KEY(id_sale) REFERENCES sales(id),
     FOREIGN KEY(id_product) REFERENCES products(id)
   );
+   
+  CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(id_user);
+  CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(id_client);
+  CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);
 `)
 
 export default db;
