@@ -1,9 +1,13 @@
 import express, {type Express, type Request, type Response} from 'express';
+import { Redis } from 'ioredis';
+
 import db from './config/db.ts';
+
 import UserRoutes from './routes/user.routes.ts';
 import ProductRoutes from "./routes/product.routes.ts";
 import ClientRoutes from "./routes/client.routes.ts";
 import SaleRoutes from "./routes/sale.routes.ts";
+
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import dotenv from 'dotenv';
@@ -11,13 +15,14 @@ import helmet from 'helmet';
 
 dotenv.config();
 const app: Express = express();
+const redis = new Redis();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-app.use(helmet());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'views')));
+app.use(helmet());
 app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {

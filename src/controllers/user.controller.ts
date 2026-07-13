@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import type { CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import { isRecordFieldPresent } from '../utils/db.utils'
+import { hashPassword } from '../utils/auth.utils.ts';
 import db from '../config/db.ts';
 
 export const UserController = {
@@ -25,10 +26,12 @@ export const UserController = {
       let checkUsername = checkUsernameAvailable(username as string);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
+      const encryptedPassword = hashPassword(password);
+
       const userData: any = {
         username,
-        password,
-        full_name
+        full_name,
+        password: encryptedPassword
       };
 
       if(role) userData.role = role;
