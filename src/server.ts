@@ -1,4 +1,5 @@
 import express, {type Express, type Request, type Response} from 'express';
+import cookieParser from 'cookie-parser';
 
 import db from './config/db.ts';
 
@@ -21,10 +22,13 @@ const __dirname = dirname(__filename);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(helmet());
+app.use(cookieParser());
 app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
+  res.send(req.cookies);
+  res.send('Signed Cookies: ' + req.signedCookies);
 });
 
 app.use('/users', UserRoutes);

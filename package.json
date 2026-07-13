@@ -26,6 +26,7 @@
     "redis": "^6.1.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
     "@types/ioredis": "^4.28.10",
