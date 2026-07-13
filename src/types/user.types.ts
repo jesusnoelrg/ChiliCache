@@ -4,7 +4,7 @@ export interface CreateUserDTO {
   username: string;
   password: string;
   full_name: string;
-  role?: string;
+  role?: Role;
 }
 
 export interface GetUsersDTO {
