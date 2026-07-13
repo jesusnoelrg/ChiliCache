@@ -1,4 +1,5 @@
 import express, {type Express, type Request, type Response} from 'express';
+import session from 'express-session';
 
 import db from './config/db.ts';
 
@@ -23,8 +24,25 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use(helmet());
 app.disable('x-powered-by');
 
+app.use(
+  session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: function (req) {
+      var match = req.url.match(/^\/([^/]+)/);
+      return {
+        path: match ? '/' + match[1] : '/',
+        httpOnly: true,
+        secure: req.secure || false,
+        maxAge: 60000,
+      };
+    },
+  })
+)
+
 app.get('/', (req: Request, res: Response) => {
-    res.send('API de ChiliCache');
+  res.send('API de ChiliCache');
 });
 
 app.use('/users', UserRoutes);
@@ -34,5 +52,5 @@ app.use('/sales', SaleRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

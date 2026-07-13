@@ -1,8 +1,11 @@
-import type { Request, Response } from 'express';
-import type { CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
+import { response, type Request, type Response } from 'express';
+import type { LoginUser, CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole, SessionUser } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import { isRecordFieldPresent } from '../utils/db.utils'
-import { hashPassword } from '../utils/auth.utils.ts';
+import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
+
+import { randomUUID } from 'crypto';
+import redisClient from '../config/redis.ts';
 import db from '../config/db.ts';
 
 export const UserController = {
@@ -237,6 +240,62 @@ export const UserController = {
         "success": true,
         "message": "¡Usuario eliminado exitosamente!"
       })
+    }catch(err: any){
+      console.error(err);
+      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+    }
+  },
+
+  loginUser: async (req: Request<{}, {}, LoginUser>, res: Response) => {
+    try{
+      const { username, password } = req.body;
+
+      if(!username || !password){
+        return res.status(400).json({
+          "success": false,
+          "message": "¡Faltan campos por llenar!"
+        })
+      }
+
+      const query = "SELECT username, password, role FROM users WHERE username = :username"
+      const user = db.prepare(query).get({username: username}) as SessionUser;
+      if(!user){
+        return res.status(404).json({
+          "success": false,
+          "message": "¡Credenciales incorrectas!"
+        });
+      }
+
+      const hashedPassword = user.password;
+      if(!hashedPassword) {
+        return res.status(404).json({
+          "success": false,
+          "message": "¡Credenciales incorrectas!"
+        });
+      }
+
+      const uuid = crypto.randomUUID();
+
+      const sessionData: any = {
+        uuid: uuid,
+        username: user.username,
+        role: user.role
+      }
+
+      await redisClient.set(`session:${uuid}`, JSON.stringify(sessionData),
+        {EX: 7200}
+      );
+
+      res.cookie('sid', uuid, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 7200 * 1000
+      })
+
+      return res.status(200).json({
+        success: true,
+        message: "¡Inicio de sesión exitoso!"
+      });
     }catch(err: any){
       console.error(err);
       return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
