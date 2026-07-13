@@ -1,0 +1,13 @@
+
+services:
+  redis:
+    image: redis:7.4.9-alpine
+    container_name: chilicache_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
