@@ -1,6 +1,6 @@
 import db from "../config/db";
 import type {Request, Response} from "express";
-import { CreateClientDTO, GetClientsDTO, UpdateClientDTO, ClientID } from "../types/client.types";
+import { CreateClientDTO, GetClientsDTO, UpdateClientDTO } from "../types/client.types";
 import {
   generateInsertHelper,
   updateHelper,
@@ -67,7 +67,7 @@ export const ClientController = {
     }
   },
 
-  getClientById: async(req: Request<ClientID>, res: Response) => {
+  getClientById: async(req: Request, res: Response) => {
     try{
       const { id } = req.params;
 
@@ -150,7 +150,7 @@ export const ClientController = {
     }
   },
 
-  updateClient: async (req: Request<ClientID, {}, UpdateClientDTO>, res: Response) => {
+  updateClient: async (req: Request<any, {}, UpdateClientDTO>, res: Response) => {
     try{
       const { id } = req.params;
       const { name, rfc, address, phone, email } = req.body;
@@ -209,7 +209,7 @@ export const ClientController = {
     }
   },
 
-  deleteClient: async (req: Request<ClientID>, res: Response) => {
+  deleteClient: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
 

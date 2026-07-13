@@ -1,5 +1,11 @@
 import { response, type Request, type Response } from 'express';
-import type { LoginUser, CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole, SessionUser } from '../types/user.types.ts'
+import type { 
+  LoginUser, 
+  CreateUserDTO, 
+  GetUsersDTO, 
+  UpdateUserDTO, 
+  UserRole, 
+  SessionUser } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import { isRecordFieldPresent } from '../utils/db.utils'
 import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
@@ -152,7 +158,7 @@ export const UserController = {
     }
   },
 
-  updateUser: async (req: Request<GetId, {}, UpdateUserDTO>, res: Response) => {
+  updateUser: async (req: Request<any, {}, UpdateUserDTO>, res: Response) => {
     try {
       const { id } = req.params;
       const {username, password, full_name, role} = req.body;
@@ -202,7 +208,7 @@ export const UserController = {
     }
   },
 
-  deleteUser: async (req: Request<GetId>, res: Response) => {
+  deleteUser: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
       const idNumber = Number(id);

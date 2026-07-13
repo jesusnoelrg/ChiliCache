@@ -1,6 +1,6 @@
 import db from "../config/db";
 import type { Request, Response } from "express";
-import { CreateSaleDTO, GetSalesDTO, ProductRow, SaleID } from "../types/sale.types";
+import { CreateSaleDTO, GetSalesDTO, ProductRow } from "../types/sale.types";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 export const SaleController = {
@@ -19,6 +19,8 @@ export const SaleController = {
       const idClientNumber = Number(id_client);
 
       if(isNaN(idClientNumber)) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
+
+
 
       const invoiceNumber = Number(invoice);
       if(isNaN(invoiceNumber)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
@@ -199,7 +201,7 @@ export const SaleController = {
     }
   },
 
-  getSaleById: async (req: Request<SaleID>, res: Response) => {
+  getSaleById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
 
@@ -258,7 +260,7 @@ export const SaleController = {
     }
   },
 
-  cancelSaleById: async (req: Request<SaleID>, res: Response) => {
+  cancelSaleById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
 

@@ -1,16 +1,17 @@
 import Router from "express";
 import { ClientController } from "../controllers/client.controller";
+import { isAuthenticated } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post('/', ClientController.createClient);
+router.post('/', isAuthenticated, ClientController.createClient);
 
-router.get('/:id', ClientController.getClientById);
+router.get('/:id', isAuthenticated, ClientController.getClientById);
 
-router.get('/', ClientController.getClients);
+router.get('/', isAuthenticated, ClientController.getClients);
 
-router.put('/:id', ClientController.updateClient);
+router.put('/:id', isAuthenticated, ClientController.updateClient);
 
-router.delete('/:id', ClientController.deleteClient);
+router.delete('/:id', isAuthenticated, ClientController.deleteClient);
 
 export default router;
