@@ -27,8 +27,6 @@ app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
-  res.send(req.cookies);
-  res.send('Signed Cookies: ' + req.signedCookies);
 });
 
 app.use('/users', UserRoutes);

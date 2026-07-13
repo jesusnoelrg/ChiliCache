@@ -6,12 +6,19 @@ import { isRecordFieldPresent } from "../utils/db.utils";
 export const SaleController = {
   createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
     try{
-      const { id_client, id_user, invoice, products } = req.body;
+      const { id_client, invoice, products } = req.body;
+      const idUserNumber = req.user?.id;
+
+      if(!idUserNumber){
+        return res.status(404).json({
+          "success": false,
+          "message": "Usuario no identificado en la sesión."
+        })
+      }
 
       const idClientNumber = Number(id_client);
-      const idUserNumber = Number(id_user);
 
-      if(isNaN(idClientNumber) || isNaN(idUserNumber)) return res.status(400).json({"success": false, "message": "ID inválidos."});
+      if(isNaN(idClientNumber)) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
 
       const invoiceNumber = Number(invoice);
       if(isNaN(invoiceNumber)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});

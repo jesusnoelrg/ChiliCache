@@ -3,6 +3,7 @@ import type { LoginUser, CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserR
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
 import { isRecordFieldPresent } from '../utils/db.utils'
 import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
+import { isAuthenticated, logout } from '../middlewares/auth.middleware.ts'
 
 import { randomUUID } from 'crypto';
 import redisClient from '../config/redis.ts';
@@ -268,6 +269,15 @@ export const UserController = {
 
       const hashedPassword = user.password;
       if(!hashedPassword) {
+        return res.status(404).json({
+          "success": false,
+          "message": "¡Credenciales incorrectas!"
+        });
+      }
+
+      const verifyPsw = verifyPassword(password, hashedPassword);
+
+      if(!verifyPsw){
         return res.status(404).json({
           "success": false,
           "message": "¡Credenciales incorrectas!"

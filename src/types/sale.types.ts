@@ -4,7 +4,6 @@ export interface SaleID {
 
 export interface CreateSaleDTO {
   id_client: number;
-  id_user: number;
   invoice: number;
   products: SaleDetailItemDTO[]
 }
