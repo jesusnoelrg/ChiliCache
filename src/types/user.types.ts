@@ -1,3 +1,4 @@
+export type Role = 'seller' | 'admin';
 
 export interface CreateUserDTO {
   username: string;
@@ -9,7 +10,7 @@ export interface CreateUserDTO {
 export interface GetUsersDTO {
   username?: string;
   full_name?: string;
-  role?: string;
+  role?: Role;
   limit?: number;
   offset?: number;
 }
@@ -19,14 +20,14 @@ export interface GetId {
 }
 
 export interface UserRole {
-  role: string;
+  role: Role;
 }
 
 export interface UpdateUserDTO {
   username?: string;
   password?: string;
   full_name?: string;
-  role?: string;
+  role?: Role;
 }
 
 export interface User {
@@ -34,5 +35,5 @@ export interface User {
   username: string;
   password: string;
   full_name: string;
-  role: string;
+  role: Role;
 }   

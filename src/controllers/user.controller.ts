@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { CreateUserDTO, GetUsersDTO, UpdateUserDTO, GetId, UserRole } from '../types/user.types.ts'
 import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
+import { isRecordFieldPresent } from '../utils/db.utils'
 import db from '../config/db.ts';
 
 export const UserController = {
@@ -74,8 +75,8 @@ export const UserController = {
       `
 
       const userData: any = {
-        limit: Number(limit) || 10,
-        offset: Number(offset) || 0
+        limit: Number(limit || 10),
+        offset: Number(offset || 0)
       };
 
       if(username){
@@ -95,8 +96,7 @@ export const UserController = {
 
       query += " LIMIT :limit OFFSET :offset";
 
-      const stmt = db.prepare(query);
-      const result = stmt.all(userData);
+      const result = db.prepare(query).all(userData);
 
       if(result.length === 0){
         return res.status(200).json({
@@ -150,21 +150,28 @@ export const UserController = {
       const { id } = req.params;
       const {username, password, full_name, role} = req.body;
 
-      if(isNaN(Number(id))){
+      const idNumber = Number(id);
+
+      if(isNaN(idNumber)){
         return res.status(400).json({
           "success": false,
           "message": "ID inválido."
         })
       }
 
-      const checkId = checkIdUser(id);
-      if(!checkId.success) return res.status(404).json(checkId);
+      const checkId = isRecordFieldPresent({table: "users", column: "id", value: idNumber});
+      if(!checkId) {
+        return res.status(404).json({
+          "success": false,
+          "message": `¡El usuario con el (ID: ${idNumber}) no existe!`
+        });
+      }
 
-      const checkUsername = checkUsernameAvailable(username as string, id);
+      const checkUsername = checkUsernameAvailable(username as string, idNumber);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
       const userData: any = {
-        id: Number(id)
+        id: idNumber
       }
 
       if(username) userData.username = username;
@@ -195,8 +202,13 @@ export const UserController = {
 
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const checkId = checkIdUser(idNumber);
-      if(!checkId.success) return res.status(404).json(checkId);
+      const checkId = isRecordFieldPresent({table: "users", column: "id", value: idNumber});
+      if(!checkId) {
+        return res.status(404).json({
+          "success": false,
+          "message": `¡El usuario con el (ID: ${idNumber}) no existe!`
+        });
+      }
 
       //TODO: Logic to verify that the user does not delete himself
 
@@ -228,23 +240,6 @@ export const UserController = {
     }
   }
 };
-
-const checkIdUser = (id: number): Record<string, any> => {
-  if(id !== undefined){
-    const validate = db.prepare(`SELECT id FROM users WHERE id = :id`).get({id});
-
-    if(!validate){
-      return {
-        "success": false,
-        "message": `¡El usuario con el (ID: ${id}) no existe!`
-      };
-    }
-  }
-
-  return {
-    "success": true
-  }
-}
 
 const checkUsernameAvailable = (username: string, id?: number): Record<string, any> => {
   if(!username) return { "success": true };

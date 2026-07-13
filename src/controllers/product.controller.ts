@@ -1,5 +1,6 @@
 import type {Request, Response} from 'express';
 import { generateInsertHelper, updateHelper } from "../utils/sql.utils";
+import { isRecordFieldPresent } from "../utils/db.utils";
 
 import {
   CreateProductDTO,
@@ -36,7 +37,9 @@ export const ProductController = {
       if(isNaN(contentNumber) || 
         isNaN(priceNumber)) return res.status(400).json({ "success": false, "message": "Has ingresado datos tipo cadena en datos númericos."});
       if(priceNumber < 0 || contentNumber < 0) return res.status(400).json({"success": false, "message": "No se aceptan números negativos."})
-      if(isProductNameUse(name)) return res.status(409).json({"success": false, "message": "¡El nombre del producto ya esta en uso!"});
+      
+      const isProductNameUse = isRecordFieldPresent({table: "products", column: "name", value: name});
+      if(isProductNameUse) return res.status(409).json({"success": false, "message": "¡El nombre del producto ya esta en uso!"});
 
       const productData: any = {
         name: name,
@@ -162,7 +165,8 @@ export const ProductController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      if(!isProductIDExists(idNumber)) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
+      const isProductIDExists = isRecordFieldPresent({table: "products", column: "id", value: idNumber});
+      if(!isProductIDExists) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
       const productData: any = { id: idNumber }
 
@@ -206,7 +210,8 @@ export const ProductController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      if(!isProductIDExists(idNumber)) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
+      const isProductIDExists = isRecordFieldPresent({table: "products", column: "id", value: idNumber});
+      if(!isProductIDExists) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
       const result = db.prepare("DELETE FROM products WHERE id = :id").run({id: idNumber});
 
@@ -224,21 +229,4 @@ export const ProductController = {
       })
     }
   }
-}
-
-const isProductIDExists = (id: number): boolean => {
-  if(!id) return false;
-  const validate = db.prepare("SELECT id FROM products WHERE id = :id").get({id});
-  if(!validate) return false;
-
-  return true;
-}
-
-const isProductNameUse = (name: string): boolean => {
-  if(name){
-    const validate = db.prepare(`SELECT name FROM products WHERE name = :name`).get({name});
-    if(validate) return true;
-  }
-
-  return false;
 }

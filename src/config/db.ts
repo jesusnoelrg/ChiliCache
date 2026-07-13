@@ -18,7 +18,7 @@ db.exec(`
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     full_name TEXT NOT NULL,
-    role TEXT DEFAULT 'operator',
+    role TEXT DEFAULT 'seller' CHECK (role IN 'seller', 'admin'),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 

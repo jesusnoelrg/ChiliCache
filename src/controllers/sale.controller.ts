@@ -132,7 +132,7 @@ export const SaleController = {
       let query = `
         SELECT
           s.id,
-          u.full_name AS operator_name,
+          u.full_name AS seller_name,
           c.name AS client_name,
           s.total,
           s.date

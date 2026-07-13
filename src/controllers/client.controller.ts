@@ -8,6 +8,7 @@ import {
   phoneFormat,
   emailFormat
 } from "../utils/sql.utils";
+import { isRecordFieldPresent } from "../utils/db.utils";
 
 export const ClientController = {
   createClient: async(req: Request<{}, {}, CreateClientDTO>, res: Response) => {
@@ -26,7 +27,8 @@ export const ClientController = {
         });
       }
 
-      if(clientNameUse(name)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
+      const checkNameUse = isRecordFieldPresent({table: 'clients', column: 'name', value: name})
+      if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
       if(!rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
 
       const clientData: any = {
@@ -72,7 +74,8 @@ export const ClientController = {
       const idNumber: number = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      if(!isClientIDExist(idNumber)) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+      const checkClientId = isRecordFieldPresent({table: "clients", column: "id", value: idNumber});
+      if(!checkClientId) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
 
       const result = db.prepare("SELECT * FROM clients WHERE id = :id").get({id});
       
@@ -147,8 +150,6 @@ export const ClientController = {
     }
   },
 
-
-
   updateClient: async (req: Request<ClientID, {}, UpdateClientDTO>, res: Response) => {
     try{
       const { id } = req.params;
@@ -164,7 +165,8 @@ export const ClientController = {
 
       if(name !== undefined){
         if(name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
-        if(clientNameUse(name)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
+        const checkNameUse = isRecordFieldPresent({table: "clients", column: "name", value: name})
+        if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
         clientData.name = name;
       }
 
@@ -213,7 +215,9 @@ export const ClientController = {
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
-      if(!isClientIDExist(idNumber)) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+
+      const checkClientId = isRecordFieldPresent({table: 'clients', column: 'id', value: idNumber});
+      if(!checkClientId) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
 
       const result = db.prepare("DELETE FROM clients WHERE id = :id").run({idNumber});
 
@@ -229,15 +233,3 @@ export const ClientController = {
     }
   }
 }
-
-const isClientIDExist = (id: number): boolean => {
-  if(!id) return false;
-  const result = db.prepare('SELECT id FROM clients WHERE id = :id').get({id});
-  return result !== undefined;
-}
-
-const clientNameUse = (name: string): boolean => {
-  if (!name) return false;
-  const result = db.prepare('SELECT name FROM clients WHERE name = :name').get({ name });
-  return result !== undefined;
-};
