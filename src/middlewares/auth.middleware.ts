@@ -29,7 +29,7 @@ export const isAuthenticatedView = async (req: Request, res: Response, next: Nex
   const sessionId = req.cookies['sid'];
 
   if (!sessionId) {
-    return res.redirect('/view/login');
+    return res.redirect('/login');
   }
 
   try {
@@ -59,6 +59,5 @@ export const logout = async (req: Request, res: Response) => {
   await redisClient.del(`session:${sessionId}`);
   res.clearCookie('sid');
   
-  res.redirect('/login.html');
   return res.json({"success": true, "message": "Sesión cerrada."});
 }

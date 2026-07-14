@@ -24,7 +24,17 @@ const __dirname = dirname(__filename);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.static(path.join(__dirname, '../views')));
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+      styleSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'", "http://localhost:3000", "https://cdn.jsdelivr.net"],
+    },
+  },
+}));
 app.use(cookieParser());
 app.disable('x-powered-by');
 
@@ -32,12 +42,12 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
 });
 
-app.use('/auth', AuthRoutes);
-app.use('/view', ViewRoutes);
-app.use('/users', UserRoutes);
-app.use('/products', ProductRoutes);
-app.use('/clients', ClientRoutes);
-app.use('/sales', SaleRoutes);
+app.use('/api/auth', AuthRoutes);
+app.use('/', ViewRoutes);
+app.use('/api/users', UserRoutes);
+app.use('/api/products', ProductRoutes);
+app.use('/api/clients', ClientRoutes);
+app.use('/api/sales', SaleRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

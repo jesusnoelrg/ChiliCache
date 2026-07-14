@@ -15,7 +15,7 @@ form.addEventListener('submit', async (e) => {
   console.log('antes try')
 
   try {
-    const response = await fetch('http://localhost:3000/auth/login', {
+    const response = await fetch('http://localhost:3000/api/auth/login', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -30,7 +30,7 @@ form.addEventListener('submit', async (e) => {
     const data = await response.json();
     console.log('Login exitoso:', data);
 
-    window.location.replace('/view/home');
+    window.location.replace('/home');
     
     return data;
   } catch (error) {

@@ -31,16 +31,16 @@
           <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Inicio" data-bs-placement="right"
               class="nav-section-select d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
                 class="bi bi-house-door-fill"></i> <span class="aside-section-name">Inicio</span></a></li>
-          <li class="nav-section-li px-3 py-1"><a href="/view/clients" data-bs-toggle="tooltip" title="Clientes"
+          <li class="nav-section-li px-3 py-1"><a href="/clients" data-bs-toggle="tooltip" title="Clientes"
               data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
                 class="bi bi-people-fill"></i> <span class="aside-section-name">Clientes</span></a></li>
-          <li class="nav-section-li px-3 py-1"><a href="/view/products" data-bs-toggle="tooltip" title="Productos"
+          <li class="nav-section-li px-3 py-1"><a href="/products" data-bs-toggle="tooltip" title="Productos"
               data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
                 class="bi bi-box-seam-fill"></i> <span class="aside-section-name">Productos</span></a></li>
-          <li class="nav-section-li px-3 py-1"><a href="/view/sales" data-bs-toggle="tooltip" title="Ventas"
+          <li class="nav-section-li px-3 py-1"><a href="/sales" data-bs-toggle="tooltip" title="Ventas"
               data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
                 class="bi bi-cart-check-fill"></i> <span class="aside-section-name">Ventas</span></a></li>
-          <li class="nav-section-li px-3 py-1"><a href="/view/users" data-bs-toggle="tooltip" title="Usuarios"
+          <li class="nav-section-li px-3 py-1"><a href="/users" data-bs-toggle="tooltip" title="Usuarios"
               data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
                 class="bi bi-person-workspace"></i> <span class="aside-section-name">Usuarios</span></a></li>
         </ul>
@@ -73,6 +73,7 @@
             <p class="text-gray m-0">chilicache@example.com</p>
           </div>
         </div>
+        <button id="btnLogout" class="btn btn-danger ms-5">Cerrar sesión</button>
       </div>
     </header>
     <section>
@@ -83,25 +84,25 @@
           listados y funcionalidades del sistema.</p>
       </div>
       <div class="list-modules d-flex flex-wrap justify-content-center justify-content-xxl-evenly">
-        <a href="/view/clients"
+        <a href="/clients"
           class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-clientes p-2 m-3 text-white text-decoration-none">
           <i class="module-icon bi bi-people-fill"></i>
           <p class="m-0">Clientes</p>
           <p class="fw-bold" id="cantidadClientes">0</p>
         </a>
-        <a href="/view/products"
+        <a href="/products"
           class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-productos p-2 m-3 text-white text-decoration-none">
           <i class="module-icon bi bi-box-seam-fill"></i>
           <p class="m-0">Productos</p>
           <p class="fw-bold">0</p>
         </a>
-        <a href="/view/sales"
+        <a href="/sales"
           class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-ventas p-2 m-3 text-white text-decoration-none">
           <i class="module-icon bi bi-cart-check-fill"></i>
           <p class=" m-0">Ventas</p>
           <p class="fw-bold">0</p>
         </a>
-        <a href="/view/users"
+        <a href="/users"
           class="col-12 col-sm-6 col-lg-4 col-xl-2 p-2 m-3 text-white text-decoration-none module rounded-10 shadow bg-usuarios">
           <i class="module-icon bi bi-person-workspace"></i>
           <p class="m-0">Usuarios</p>
@@ -115,9 +116,7 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
 
-  <script src="/js/index.js"></script>
-  <script src="/js/controller/inicioControl.js"></script>
-  <script src="/js/utils.js"></script>
+  <script src="/js/utils/auth-global.js"></script>
 </body>
 
 </html>
