@@ -8,6 +8,7 @@ import ProductRoutes from "./routes/product.routes.ts";
 import ClientRoutes from "./routes/client.routes.ts";
 import SaleRoutes from "./routes/sale.routes.ts";
 import AuthRoutes from "./routes/auth.routes.ts";
+import ViewRoutes from "./routes/views.routes.ts";
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -21,7 +22,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../views')));
 app.use(helmet());
 app.use(cookieParser());
 app.disable('x-powered-by');
@@ -31,6 +33,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/auth', AuthRoutes);
+app.use('/view', ViewRoutes);
 app.use('/users', UserRoutes);
 app.use('/products', ProductRoutes);
 app.use('/clients', ClientRoutes);

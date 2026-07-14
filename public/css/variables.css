@@ -1,17 +1,20 @@
 :root{
     /*Colores del logo*/
-    --color-primario: #9ABF21;
+    --color-primario: #bf2121;
     --logo-azul: #05C7F2;
     --logo-amarillo: #F2D541;
 
+    --text-error: rgb(235, 81, 81);
+    --bg-error: rgba(245, 160, 160, 0.37);
+
     /*Tonos del color primario*/
-    --tono1: #323B12;
-    --tono2: #54631E;
-    --tono3: #778C2A;
-    --tono4: #7CA919;
-    --tono5: #8ea82f;
-    --tono6: #5B8930;
-    --tono7: #B8D941;
+    --tono1: #3b1212;
+    --tono2: #631e1e;
+    --tono3: #8c2a2a;
+    --tono4: #a91919;
+    --tono5: #a82f2f;
+    --tono6: #893030;
+    --tono7: #d94141;
 
     /*Colores generales*/
     --color-blanco: white;
@@ -28,5 +31,5 @@
     --confirmacion: #8d64ff;
 
     /*Otros*/
-    --disable: #b8d941d1;
+    --disable: #d94141d1;
 }

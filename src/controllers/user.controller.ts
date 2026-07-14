@@ -255,10 +255,10 @@ export const UserController = {
     try{
       const { username, password } = req.body;
 
-      if(!username || !password){
+      if(!username || !password || typeof username !== 'string' || typeof password !== 'string'){
         return res.status(400).json({
           "success": false,
-          "message": "¡Faltan campos por llenar!"
+          "message": "¡Campo inválidos o vacíos!"
         })
       }
 

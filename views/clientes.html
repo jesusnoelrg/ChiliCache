@@ -1,220 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>ChiliCache | Clientes</title>
-   <!--CSS mis estilos-->
-   <link rel="stylesheet" href="./css/general.css">
-   <link rel="stylesheet" href="./css/layout.css">
-   <link rel="stylesheet" href="./css/components.css">
-   <link rel="stylesheet" href="./css/variables.css">
-   <!--Logo-->
-   <link rel="shortcut icon" href="./img/logo.png" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChiliCache | Clientes</title>
+  <!--Bootstra-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!--CSS my styles -->
+  <link rel="stylesheet" href="/css/general.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/variables.css">
+  <!--Logo-->
+  <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon">
 </head>
+
 <body class="d-flex">
-    <aside id="mainAside" class="aside-background">
-        <div class="d-flex flex-column">
-            <div class="aside-header d-flex justify-content-center align-items-center mt-3">
-                <img src="./img/logo.png" alt="user" width="70px" height="60px">
-                <h5 class="aside-title-logo ps-3 text-white">ChiliCache</h5>
-            </div>
-            <nav class="mt-3">
-                <hr class="text-white">
-                <p class="aside-category-name text-white fw-bold ps-2">Menú</p>
-                <ul class="list-unstyled w-100">
-                    <li class="nav-section-li px-3 py-1"><a href="inicio.html" data-bs-toggle="tooltip" title="Inicio" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-house-door-fill"></i> <span class="aside-section-name">Inicio</span></a></li>
-                    <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Clientes" data-bs-placement="right" class="nav-section-select d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-people-fill"></i> <span class="aside-section-name">Clientes</span></a></li>
-                    <li class="nav-section-li px-3 py-1"><a href="productos.html" data-bs-toggle="tooltip" title="Productos" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-box-seam-fill"></i> <span class="aside-section-name">Productos</span></a></li>
-                    <li class="nav-section-li px-3 py-1"><a href="ventas.html" data-bs-toggle="tooltip" title="Ventas" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-cart-check-fill"></i> <span class="aside-section-name">Ventas</span></a></li>
-                    <li class="nav-section-li px-3 py-1"><a href="usuarios.html" data-bs-toggle="tooltip" title="Usuarios" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-person-workspace"></i> <span class="aside-section-name">Usuarios</span></a></li>
-                </ul>
-                <hr class="text-white">
-                <p class="aside-category-name text-white fw-bold ms-2">Configuración</p>
-                <ul class="list-unstyled w-100">
-                    <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Mi cuenta" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-person-gear"></i> <span class="aside-section-name">Mi cuenta</span></a></li>
-                    <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Datos de la empresa" data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i class="bi bi-building-fill-gear"></i> <span class="aside-section-name">Datos de la empresa</span></a></li>
-                </ul>
-            </nav>
-        </div>
-    </aside>
+  <aside id="mainAside" class="aside-background">
+    <div class="d-flex flex-column">
+      <div class="aside-header d-flex justify-content-center align-items-center mt-3">
+        <img src="/img/logo.png" alt="user" width="70px" height="60px">
+        <h5 class="aside-title-logo ps-3 text-white">ChiliCache</h5>
+      </div>
+      <nav class="mt-3">
+        <hr class="text-white">
+        <p class="aside-category-name text-white fw-bold ps-2">Menú</p>
+        <ul class="list-unstyled w-100">
+          <li class="nav-section-li px-3 py-1"><a href="/view/home" data-bs-toggle="tooltip" title="Inicio"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-house-door-fill"></i> <span class="aside-section-name">Inicio</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Clientes" data-bs-placement="right"
+              class="nav-section-select d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-people-fill"></i> <span class="aside-section-name">Clientes</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/view/products" data-bs-toggle="tooltip" title="Productos"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-box-seam-fill"></i> <span class="aside-section-name">Productos</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/view/sales" data-bs-toggle="tooltip" title="Ventas"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-cart-check-fill"></i> <span class="aside-section-name">Ventas</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/view/users" data-bs-toggle="tooltip" title="Usuarios"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-person-workspace"></i> <span class="aside-section-name">Usuarios</span></a></li>
+        </ul>
+        <hr class="text-white">
+        <p class="aside-category-name text-white fw-bold ms-2">Configuración</p>
+        <ul class="list-unstyled w-100">
+          <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Mi cuenta" data-bs-placement="right"
+              class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-person-gear"></i> <span class="aside-section-name">Mi cuenta</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Datos de la empresa"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-building-fill-gear"></i> <span class="aside-section-name">Datos de la empresa</span></a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
 
 
-    <main class="bg-main container-fluid p-0">
-         <header class="d-flex justify-content-between align-items-center shadow">
-             <div class="d-flex align-items-center">
-                <button type="button" id="btnAside" class="ms-2 px-2 border-0 rounded-10"><i class="bi bi-list fs-3 fw-bold text-primario"></i></button>
-             </div>
-             <div class="d-flex align-items-center me-3">
-                <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
-                    <img src="./img/admin.png" class="p-1 rounded-20" width="35px" height="35px">
-                    <div class="d-flex flex-column justify-content-start ms-2">
-                        <p class="fw-bold text-dark m-0"><span class="badge perfil-badge rounded-pill bg-danger">Dueño</span> Usuario 1</p>
-                        <p class="text-gray m-0">chilicache@example.com</p>
-                    </div>
-                </div>
-             </div>
-         </header>
-         <section>
-            <div class="m-4 bg-white px-5 py-3 rounded-10 shadow-sm">
-                <h1 class="fs-3 fw-bold">Panel de clientes</h1>
-                <p class="fs-6">En el panel de clientes, podrá registrar nuevos clientes en el sistema, actualizar la información de clientes existentes, consultar el listado de clientes registrados y buscar clientes específicos.</p>
-            </div>
-            <div class="m-4 p-5 bg-white rounded-10 shadow-sm">
-                <form class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <button type="button" class="btn-primario px-3 py-2 rounded-10 shadow" onclick="abrirModalNuevoCliente()"><i class="bi bi-person-plus-fill"></i> Agregar cliente</button>
-                    </div>
-                    <div class="d-flex">
-                        <div class="me-3">
-                           <h6>Buscar cliente por: </h6>
-                           <div class="form-check form-check-inline">
-                              <input class="form-check-input" type="radio" name="flexRadioDefault" id="buscarClienteID">
-                              <label class="form-check-label" for="buscarClienteID">
-                                ID
-                              </label>
-                           </div>
-                           <div class="form-check form-check-inline">
-                              <input class="form-check-input" type="radio" name="flexRadioDefault" id="buscarClienteNombre" checked>
-                              <label class="form-check-label" for="buscarClienteNombre">
-                                Nombre
-                              </label>
-                           </div>
-                        </div>
-                        <div class="form-floating me-3">
-                           <input type="text" class="form-control" id="floatingBuscar" placeholder="Ingresar ID">
-                           <label for="floatingBuscar">Cliente</label>
-                        </div>
-                        <button type="button" class="btn btn-secondary px-4 fs-5" onclick="buscarCliente();"><i class="bi bi-search"></i></button>
-                        <button type="button" class="btn btn-dark ms-2 px-4 fs-5" onclick="cargarDatos(configClientes);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Recargar tabla de los clientes"><i class="bi bi-list-ul"></i></button>
-                     </div>
-                </form>
-                <div class="table-responsive tabla-datos-scroll">
-                    <table id="tablaDatos" class="table table-hover table-striped table-borderless">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col">ID</th>           
-                                <th scope="col">Empresa</th>
-                                <th scope="col">RFC</th>
-                                <th scope="col">Dirección</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Telefono</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!--Clientes-->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-         </section>
-    </main>
-
-
-
-    <div class="modal fade" id="modalNuevoCliente" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header header-title">
-              <h5 class="modal-title text-white fw-bold fs-3">NUEVO CLIENTE</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body bg-main">
-                <form id="formNuevoCliente" class="needs-validation p-4 pb-3" novalidate>
-                    <div>
-                        <div class="row">
-                            <div class="col-8">
-                                <div class="form-floating mb-2">
-                                    <input type="text" class="form-control" id="floatingEmpresa" placeholder="Empresa" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="25" required>
-                                    <label for="floatingEmpresa" class="text-gray"><i class="bi bi-building-fill-check"></i> Empresa</label>
-                                    <div class="invalid-feedback">Ingrese el nombre de la empresa.</div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-floating mb-2">
-                                    <input type="text" class="form-control" id="floatingRFC" placeholder="RFC" pattern="^[A-Z0-9]{10,13}$" maxlength="13" required>
-                                    <label for="floatingRFC" class="text-gray"><i class="bi bi-file-earmark-fill"></i> RFC</label>
-                                    <div class="invalid-feedback">El RFC debe contener entre 10 y 13 caracteres alfanuméricos.</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-floating mb-2">
-                            <textarea type="text" class="form-control" id="floatingDireccion" placeholder="Dirección" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="80" required></textarea>
-                            <label for="floatingDireccion" class="text-gray"><i class="bi bi-geo-alt-fill"></i> Dirección</label>
-                            <div class="invalid-feedback">Ingrese una dirección.</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="form-floating mb-2">
-                                    <input type="text" class="form-control" id="floatingTelefono" placeholder="Telefono" pattern="^(\d{2,3}\s?)?\d{2,3}\s?\d{4}$" maxlength="12" required>
-                                    <label for="floatingTelefono" class="text-gray"><i class="bi bi-telephone-fill"></i> Telefono</label>
-                                    <div class="invalid-feedback">Ingrese un número de telefono válido.</div>
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div class="form-floating mb-2">
-                                    <input type="email" class="form-control" id="floatingCorreo" placeholder="Correo electrónico" maxlength="35" required>
-                                    <label for="floatingCorreo" class="text-gray"><i class="bi bi-envelope-at-fill"></i> Correo electrónico</label>
-                                    <div class="invalid-feedback">Ingrese un correo válido.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center my-3">
-                        <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10"><i class="bi bi-person-fill-add"></i> Guardar</button>
-                        <button type="button" onclick="limpiarForm({ entidad: 'Cliente' });" class="btn btn-secondary px-4 me-4 py-2 rounded-10"><i class="bi bi-eraser"></i> Limpiar</button>
-                    </div>
-                </form>
-            </div>
+  <main class="bg-main container-fluid p-0">
+    <header class="d-flex justify-content-between align-items-center shadow">
+      <div class="d-flex align-items-center">
+        <button type="button" id="btnAside" class="ms-2 px-2 border-0 rounded-10"><i
+            class="bi bi-list fs-3 fw-bold text-primario"></i></button>
+      </div>
+      <div class="d-flex align-items-center me-3">
+        <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
+          <img src="./img/admin.png" class="p-1 rounded-20" width="35px" height="35px">
+          <div class="d-flex flex-column justify-content-start ms-2">
+            <p class="fw-bold text-dark m-0"><span class="badge perfil-badge rounded-pill bg-danger">Dueño</span>
+              Usuario 1</p>
+            <p class="text-gray m-0">chilicache@example.com</p>
           </div>
         </div>
       </div>
-
-      <div class="modal fade" tabindex="-1" id="modalConfirmacion" aria-hidden="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-alert-header">
-                    <div class="icon-alert-box d-flex justify-content-center align-items-center" style="background-color: var(--confirmacion);">
-                        <i class="bi bi-question text-white fs-1"></i>
-                    </div>
-                    <h4 class="modal-title w-100 text-center mt-5">Confirmación</h4>
-                </div>
-                <div class="modal-body">
-                    <p id="mensajeConfirmacion" class="text-center fs-6">¿Estás seguro de hacer esto?</p>
-                    <div class="d-flex justify-content-center py-2">
-                        <button type="button" class="btn-primario rounded me-4 px-4 py-2" id="btnConfirmacion">Sí</button>
-                        <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">No</button>
-                    </div>
-                </div>
+    </header>
+    <section>
+      <div class="m-4 bg-white px-5 py-3 rounded-10 shadow-sm">
+        <h1 class="fs-3 fw-bold">Panel de clientes</h1>
+        <p class="fs-6">En el panel de clientes, podrá registrar nuevos clientes en el sistema, actualizar la
+          información de clientes existentes, consultar el listado de clientes registrados y buscar clientes
+          específicos.</p>
+      </div>
+      <div class="m-4 p-5 bg-white rounded-10 shadow-sm">
+        <form class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <button type="button" class="btn-primario px-3 py-2 rounded-10 shadow" onclick="abrirModalNuevoCliente()"><i
+                class="bi bi-person-plus-fill"></i> Agregar cliente</button>
+          </div>
+          <div class="d-flex">
+            <div class="me-3">
+              <h6>Buscar cliente por: </h6>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="buscarClienteID">
+                <label class="form-check-label" for="buscarClienteID">
+                  ID
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="buscarClienteNombre" checked>
+                <label class="form-check-label" for="buscarClienteNombre">
+                  Nombre
+                </label>
+              </div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" tabindex="-1" id="modalAlerta" aria-hidden="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class=" modal-alert-header">
-                    <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
-                        <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
-                    </div>
-                    <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
-                </div>
-                <div class="modal-body p-4">
-                    <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
-                    <div class="d-flex justify-content-center pt-2">
-                        <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta" data-bs-dismiss="modal">Aceptar</button>
-                    </div>
-                </div>
+            <div class="form-floating me-3">
+              <input type="text" class="form-control" id="floatingBuscar" placeholder="Ingresar ID">
+              <label for="floatingBuscar">Cliente</label>
             </div>
+            <button type="button" class="btn btn-secondary px-4 fs-5" onclick="buscarCliente();"><i
+                class="bi bi-search"></i></button>
+            <button type="button" class="btn btn-dark ms-2 px-4 fs-5" onclick="cargarDatos(configClientes);"
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Recargar tabla de los clientes"><i
+                class="bi bi-list-ul"></i></button>
+          </div>
+        </form>
+        <div class="table-responsive tabla-datos-scroll">
+          <table id="tablaDatos" class="table table-hover table-striped table-borderless">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">RFC</th>
+                <th scope="col">Dirección</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!--Clientes-->
+            </tbody>
+          </table>
         </div>
+      </div>
+    </section>
+  </main>
+
+
+
+  <div class="modal fade" id="modalNuevoCliente" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header header-title">
+          <h5 class="modal-title text-white fw-bold fs-3">NUEVO CLIENTE</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-main">
+          <form id="formNuevoCliente" class="needs-validation p-4 pb-3" novalidate>
+            <div>
+              <div class="row">
+                <div class="col-8">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="floatingEmpresa" placeholder="Empresa"
+                      pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="25" required>
+                    <label for="floatingEmpresa" class="text-gray"><i class="bi bi-building-fill-check"></i>
+                      Empresa</label>
+                    <div class="invalid-feedback">Ingrese el nombre de la empresa.</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="floatingRFC" placeholder="RFC"
+                      pattern="^[A-Z0-9]{10,13}$" maxlength="13" required>
+                    <label for="floatingRFC" class="text-gray"><i class="bi bi-file-earmark-fill"></i> RFC</label>
+                    <div class="invalid-feedback">El RFC debe contener entre 10 y 13 caracteres alfanuméricos.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-floating mb-2">
+                <textarea type="text" class="form-control" id="floatingDireccion" placeholder="Dirección"
+                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="80" required></textarea>
+                <label for="floatingDireccion" class="text-gray"><i class="bi bi-geo-alt-fill"></i> Dirección</label>
+                <div class="invalid-feedback">Ingrese una dirección.</div>
+              </div>
+              <div class="row">
+                <div class="col-5">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="floatingTelefono" placeholder="Telefono"
+                      pattern="^(\d{2,3}\s?)?\d{2,3}\s?\d{4}$" maxlength="12" required>
+                    <label for="floatingTelefono" class="text-gray"><i class="bi bi-telephone-fill"></i>
+                      Telefono</label>
+                    <div class="invalid-feedback">Ingrese un número de telefono válido.</div>
+                  </div>
+                </div>
+                <div class="col-7">
+                  <div class="form-floating mb-2">
+                    <input type="email" class="form-control" id="floatingCorreo" placeholder="Correo electrónico"
+                      maxlength="35" required>
+                    <label for="floatingCorreo" class="text-gray"><i class="bi bi-envelope-at-fill"></i> Correo
+                      electrónico</label>
+                    <div class="invalid-feedback">Ingrese un correo válido.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center my-3">
+              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10"><i class="bi bi-person-fill-add"></i>
+                Guardar</button>
+              <button type="button" onclick="limpiarForm({ entidad: 'Cliente' });"
+                class="btn btn-secondary px-4 me-4 py-2 rounded-10"><i class="bi bi-eraser"></i> Limpiar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-</div>
-   <!--JS-->
-   <script src="./js/index.js"></script>
-   <script src="./js/forms.js"></script>
-   <script src="./js/paginacion.js"></script>
-   <script src="./js/utils.js"></script>
-   <script src="./js/controller/clientesControl.js"></script>
+  </div>
+
+  <div class="modal fade" tabindex="-1" id="modalConfirmacion" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center"
+            style="background-color: var(--confirmacion);">
+            <i class="bi bi-question text-white fs-1"></i>
+          </div>
+          <h4 class="modal-title w-100 text-center mt-5">Confirmación</h4>
+        </div>
+        <div class="modal-body">
+          <p id="mensajeConfirmacion" class="text-center fs-6">¿Estás seguro de hacer esto?</p>
+          <div class="d-flex justify-content-center py-2">
+            <button type="button" class="btn-primario rounded me-4 px-4 py-2" id="btnConfirmacion">Sí</button>
+            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" tabindex="-1" id="modalAlerta" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class=" modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
+            <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
+          </div>
+          <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
+        </div>
+        <div class="modal-body p-4">
+          <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
+          <div class="d-flex justify-content-center pt-2">
+            <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta"
+              data-bs-dismiss="modal">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!--JS-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <script src="./js/index.js"></script>
+  <script src="./js/forms.js"></script>
+  <script src="./js/paginacion.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/controller/clientesControl.js"></script>
 </body>
+
 </html>

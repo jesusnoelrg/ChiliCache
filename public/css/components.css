@@ -25,6 +25,19 @@
     background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
 }
 
+/*Textos
+---------------------------------------------------------------------*/
+
+.form-message-error{
+    display: none;
+    color: var(--text-error);
+    background-color: var(--bg-error);
+    border: red solid 1px;
+    border-radius: 5px;
+    font-size: 13.5px;
+    padding:  5px 0px 5px 0px;
+}
+
 /*Botones
 ---------------------------------------------------------------------*/
 
@@ -117,15 +130,15 @@
 }
 
 .login-background{
-	background: rgb(184,217,65);
-    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(119,140,42,1) 100%);
+	background: rgb(217, 83, 65);
+    background: radial-gradient(circle, rgb(217, 65, 65) 0%, rgb(140, 42, 42) 100%);
 }
 
 .aside-background{
-    background: rgb(184,217,65);
-    background: -moz-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
-    background: -webkit-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
-    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
+    background: rgb(217, 65, 65);
+    background: -moz-radial-gradient(circle, rgb(217, 65, 65) 0%, rgrgb(137, 48, 48)00%);
+    background: -webkit-radial-gradient(circle, rgb(217, 83, 65) 0%, rgb(137, 48, 48) 100%);
+    background: radial-gradient(circle, rgb(217, 65, 65) 0%, rgb(137, 48, 48) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8d941",endColorstr="#5b8930",GradientType=1);
 }
 
@@ -189,3 +202,4 @@
     padding: 15px;
     align-items: center;
 }
+
