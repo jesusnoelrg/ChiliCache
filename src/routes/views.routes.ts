@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { isAuthenticated } from '../middlewares/auth.middleware'
+import { isAuthenticatedView } from '../middlewares/auth.middleware'
 import path from 'path';
 
 const router = Router();
@@ -11,10 +11,10 @@ const pathView = (view: string) => {
 }
 
 router.get('/login', pathView('../../views/login.html'));
-router.get('/home', isAuthenticated, pathView('../../views/inicio.html'));
-router.get('/users', isAuthenticated, pathView('../../views/usuarios.html'));
-router.get('/products', isAuthenticated, pathView('../../views/productos.html'));
-router.get('/clients', isAuthenticated, pathView('../../views/clientes.html'));
-router.get('/sales', isAuthenticated, pathView('../../views/ventas.html'));
+router.get('/home', isAuthenticatedView, pathView('../../views/inicio.html'));
+router.get('/users', isAuthenticatedView, pathView('../../views/usuarios.html'));
+router.get('/products', isAuthenticatedView, pathView('../../views/productos.html'));
+router.get('/clients', isAuthenticatedView, pathView('../../views/clientes.html'));
+router.get('/sales', isAuthenticatedView, pathView('../../views/ventas.html'));
 
 export default router;
