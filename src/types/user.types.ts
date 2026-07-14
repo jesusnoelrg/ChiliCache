@@ -1,5 +1,17 @@
 export type Role = 'seller' | 'admin';
 
+export interface LoginUser {
+  username: string;
+  password: string;
+}
+
+export interface SessionUser {
+  uuid: string;
+  username: string;
+  password?: string; 
+  role: Role
+}
+
 export interface CreateUserDTO {
   username: string;
   password: string;
@@ -14,11 +26,6 @@ export interface GetUsersDTO {
   limit?: number;
   offset?: number;
 }
-
-export interface GetId {
-  id: number;
-}
-
 export interface UserRole {
   role: Role;
 }

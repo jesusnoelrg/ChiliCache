@@ -1,16 +1,18 @@
 import Router from "express";
 import { ProductController } from "../controllers/product.controller";
+import { isAuthenticated  } from "../middlewares/auth.middleware";
+import { authorize } from '../middlewares/role.middleware';
 
 const router = Router();
 
-router.post('/', ProductController.createProduct);
+router.post('/', authorize(['seller', 'admin']), isAuthenticated, ProductController.createProduct);
 
-router.get('/:id', ProductController.getProductById);
+router.get('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.getProductById);
 
-router.get('/', ProductController.getProducts);
+router.get('/', authorize(['seller', 'admin']), isAuthenticated, ProductController.getProducts);
 
-router.put('/:id', ProductController.updateProduct);
+router.put('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.updateProduct);
 
-router.delete('/:id', ProductController.deleteProduct);
+router.delete('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.deleteProduct);
 
 export default router;

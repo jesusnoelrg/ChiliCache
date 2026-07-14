@@ -1,7 +1,3 @@
-export interface ClientID {
-  id: string;
-}
-
 export interface CreateClientDTO {
   name: string;
   rfc: string;

@@ -17,13 +17,21 @@
     "better-sqlite3": "^12.11.1",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "helmet": "^8.3.0"
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "ioredis": "^5.11.1",
+    "redis": "^6.1.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/ioredis": "^4.28.10",
     "@types/node": "^26.1.0",
+    "@types/redis": "^4.0.10",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3"

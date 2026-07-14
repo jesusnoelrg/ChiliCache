@@ -1,7 +1,3 @@
-export interface ProductID {
-  id: string;
-};
-
 export interface CreateProductDTO {
   name: string;
   unit?: string;

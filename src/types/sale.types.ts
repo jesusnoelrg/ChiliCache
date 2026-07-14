@@ -1,10 +1,5 @@
-export interface SaleID {
-  id: number;
-}
-
 export interface CreateSaleDTO {
   id_client: number;
-  id_user: number;
   invoice: number;
   products: SaleDetailItemDTO[]
 }
