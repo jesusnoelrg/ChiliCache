@@ -7,6 +7,7 @@ import UserRoutes from './routes/user.routes.ts';
 import ProductRoutes from "./routes/product.routes.ts";
 import ClientRoutes from "./routes/client.routes.ts";
 import SaleRoutes from "./routes/sale.routes.ts";
+import AuthRoutes from "./routes/auth.routes.ts";
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -29,6 +30,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
 });
 
+app.use('/auth', AuthRoutes);
 app.use('/users', UserRoutes);
 app.use('/products', ProductRoutes);
 app.use('/clients', ClientRoutes);

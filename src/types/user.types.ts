@@ -26,11 +26,6 @@ export interface GetUsersDTO {
   limit?: number;
   offset?: number;
 }
-
-export interface GetId {
-  id: number;
-}
-
 export interface UserRole {
   role: Role;
 }

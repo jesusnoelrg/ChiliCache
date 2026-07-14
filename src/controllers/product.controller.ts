@@ -5,8 +5,7 @@ import { isRecordFieldPresent } from "../utils/db.utils";
 import {
   CreateProductDTO,
   UpdateProductDTO,
-  GetProductsDTO,
-  ProductID
+  GetProductsDTO
 } from "../types/product.types";
 
 import db from '../config/db';
@@ -82,7 +81,7 @@ export const ProductController = {
     }
   },
 
-  getProductById: async (req: Request<ProductID>, res: Response) => {
+  getProductById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
 
@@ -157,7 +156,7 @@ export const ProductController = {
     }
   },
 
-  updateProduct: async(req: Request<ProductID, {}, UpdateProductDTO>, res: Response) => {
+  updateProduct: async(req: Request<any, {}, UpdateProductDTO>, res: Response) => {
     try{
       const { id } = req.params;
       const { name, unit, net_content, price } = req.body;
@@ -203,7 +202,7 @@ export const ProductController = {
     }
   },
 
-  deleteProduct: async(req: Request<ProductID>, res: Response) => {
+  deleteProduct: async(req: Request, res: Response) => {
     try{
       const { id } = req.params;
 

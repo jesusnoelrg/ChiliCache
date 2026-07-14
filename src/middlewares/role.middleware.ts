@@ -1,7 +1,7 @@
 import type {Request, Response, NextFunction} from 'express';
 import { Role } from '../types/user.types';
 
-export const autorize = (allowedRoles: Role[]) => {
+export const authorize = (allowedRoles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction ) => {
     const user = req.user;
 

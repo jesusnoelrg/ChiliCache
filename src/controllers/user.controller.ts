@@ -36,15 +36,13 @@ export const UserController = {
       let checkUsername = checkUsernameAvailable(username as string);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
-      const encryptedPassword = hashPassword(password);
-
+      const encryptedPassword = await hashPassword(password);
       const userData: any = {
         username,
         full_name,
-        password: encryptedPassword
+        password: encryptedPassword,
+        role: role || 'seller'
       };
-
-      if(role) userData.role = role;
 
       const {columns, placeholders} = generateInsertHelper(userData);
 
@@ -54,13 +52,13 @@ export const UserController = {
         VALUES
         (${placeholders});
       `
-
-      db.prepare(query).run(userData);
+      const result = db.prepare(query).run(userData);
+      delete userData.password;
 
       res.status(201).json({
         "success": true,
         "message": "¡Usuario creado con éxito!",
-        "data": userData
+        "data": {id: result.lastInsertRowid, ...userData}
       });
 
     }catch(err: any){
@@ -267,7 +265,7 @@ export const UserController = {
       const query = "SELECT username, password, role FROM users WHERE username = :username"
       const user = db.prepare(query).get({username: username}) as SessionUser;
       if(!user){
-        return res.status(404).json({
+        return res.status(401).json({
           "success": false,
           "message": "¡Credenciales incorrectas!"
         });
@@ -281,7 +279,7 @@ export const UserController = {
         });
       }
 
-      const verifyPsw = verifyPassword(password, hashedPassword);
+      const verifyPsw = await verifyPassword(password, hashedPassword);
 
       if(!verifyPsw){
         return res.status(404).json({

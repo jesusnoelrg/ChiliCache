@@ -28,11 +28,13 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
 export const logout = async (req: Request, res: Response) => {
   const sessionId = req.cookies['sid'];
 
-  if (sessionId) {
-    await redisClient.del(`session:${sessionId}`);
+  if (!sessionId) {
+    return res.json({"success": true, "message": "No hay sesión que cerrar."})
   }
 
+  await redisClient.del(`session:${sessionId}`);
   res.clearCookie('sid');
   
-  return res.json({"message": "Sesión cerrada."});
+  res.redirect('/login.html');
+  return res.json({"success": true, "message": "Sesión cerrada."});
 }
