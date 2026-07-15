@@ -5,7 +5,7 @@ const ROUTE = '/api/users';
 const modalCreateUser = new bootstrap.Modal(document.getElementById('modalCreateUser'));
 const modalEditUser = new bootstrap.Modal(document.getElementById('modalEditUser'));
 const formCreateUser = document.getElementById('formCreateUser');
-const formEditUser = document.getElementById('formEditUser');
+const formEditUser = document.querySelector('#formEditUser');
 
 formCreateUser.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -47,12 +47,75 @@ formCreateUser.addEventListener('submit', async (e) => {
   }
 });
 
+const openEditModal = async (userId) => {
+  try{
+    const response = await fetch(`${URL_API}${ROUTE}/${userId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
 
+    const result = await response.json();
+
+    if(!result.success){
+      showAlert(result.message, 'error');
+      throw new Error(result.message);
+      return;
+    }
+
+    document.getElementById('title-modal-user-edit').innerHTML = `EDITAR USUARIO (ID: ${userId})`;
+    formEditUser.setAttribute('data-user-id', userId);
+    document.getElementById('editUsername').value = result.data.username;
+    document.getElementById('editFullname').value = result.data.full_name;
+    document.getElementById('editRole').value = result.data.role;
+
+    modalEditUser.show();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+formEditUser.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    username: document.getElementById('editUsername').value.trim(),
+    full_name: document.getElementById('editFullname').value.trim(),
+    role: document.getElementById('editRole').value
+  };
+
+  const userId = formEditUser.getAttribute('data-user-id');
+
+  try {
+    const response = await fetch(`${URL_API}${ROUTE}/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      modalEditUser.hide();
+
+      showAlert(result.message, 'error', () => {modalEditUser.show()})
+      throw new Error(result.message);
+      return;
+    }
+
+    showAlert(result.message, 'success');
+    modalEditUser.hide();
+    formEditUser.reset();
+    await fetchUsers();
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 const btnCleanCreate = document.getElementById('btnCleanCreate');
 btnCleanCreate.addEventListener('click', () => formCreateUser.reset());
 
-document.getElementById('btnCleanCreate')
+document.getElementById('btnCleanEdit')
   .addEventListener('click', () => formEditUser.reset());
 
 /*
@@ -141,8 +204,6 @@ const deleteUserById = async (id, element) => {
       setTimeout(() => row.remove(), 500);
     }
 
-    
-
     showAlert(result.message, 'success');
     console.log('Usuario eliminado exitosamente.');
   } catch (err) {
@@ -151,14 +212,17 @@ const deleteUserById = async (id, element) => {
 }
 
 document.addEventListener('click', (e) => {
-  const button = e.target.closest('[data-user-id]');
+  const button = e.target.closest('button[data-user-id]');
+  if(!button) return;
 
-  if(button && button.hasAttribute('data-user-id')){
-    const userId = button.getAttribute('data-user-id');
+  const userId = button.getAttribute('data-user-id');
 
-    e.preventDefault();
+  e.preventDefault();
 
+  if(button.classList.contains('btn-danger')){
     showConfirm(`¿Estás seguro de eliminar al usuario (ID: ${userId})?`, () => deleteUserById(userId, button));
+  } else if(button.classList.contains('btn-primary')){
+    openEditModal(userId);
   }
 })
 

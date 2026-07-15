@@ -16,7 +16,7 @@
   <!--Logo-->
   <link rel="shortcut icon" href="./img/logo.png" type="image/x-icon">
 </head>
-<body">
+<body>
   <div class="d-flex h-100">
     <aside id="mainAside" class="aside-background">
       <div class="d-flex flex-column">
@@ -195,10 +195,71 @@
             </div>
             <div class="d-flex justify-content-center my-4">
               <button type="submit" class="btn btn-dark px-4 py-2 me-3 rounded-10">
-                <i class="bi bi-person-fill-add"></i> Guardar
+                <i class="bi bi-person-fill-add"></i> Crear usuario
               </button>
               <button 
                 id="btnCleanCreate"
+                type="button" 
+                class="btn btn-secondary px-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
+            </div> 
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEditUser" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        
+        <div class="modal-header header-title">
+          <h5 id="title-modal-user-edit" class="modal-title text-white fw-bold fs-3">EDITAR USUARIO</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body bg-main">
+          <form id="formEditUser" data-user-id="" class="needs-validation" novalidate>
+            <div class="px-5 py-2 d-flex justify-content-center flex-column align-items-center">
+              
+  
+              <div class="form-floating mb-3 w-100">
+                <input type="text" class="form-control" id="editFullname" placeholder="Nombre completo"
+                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" maxlength="35">
+                <label for="editFullname" class="text-gray">
+                  <i class="bi bi-bookmark-fill"></i> Nombre completo
+                </label>
+                <div class="invalid-feedback">Ingrese un nombre válido.</div>
+              </div>
+
+              <div class="d-flex flex-row col-12">
+                <div class="form-floating mb-3 col">
+                  <input type="text" class="form-control" id="editUsername" placeholder="Nombre de Usuario"
+                    pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="20">
+                  <label for="editUsername" class="text-gray">
+                    <i class="bi bi-person-fill"></i> Nombre de usuario
+                  </label>
+                  <div class="invalid-feedback">Ingrese un nombre de usuario válido.</div>
+                </div>
+
+                <div class="form-floating ms-3 col">
+                  <select class="form-select" id="editRole" aria-label="Seleccionar rol">
+                    <option selected value="seller">Vendedor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <label for="editRole" class="text-gray">
+                    <i class="bi bi-person-lines-fill"></i> Elige un rol
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center my-4">
+              <button type="submit" class="btn btn-dark px-4 py-2 me-3 rounded-10">
+                <i class="bi bi-person-fill-add"></i> Actualizar usuario
+              </button>
+              <button 
+                id="btnCleanEdit"
                 type="button" 
                 class="btn btn-secondary px-4 py-2 rounded-10">
                 <i class="bi bi-eraser"></i> Limpiar
