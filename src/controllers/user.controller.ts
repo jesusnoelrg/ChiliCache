@@ -159,7 +159,7 @@ export const UserController = {
   updateUser: async (req: Request<any, {}, UpdateUserDTO>, res: Response) => {
     try {
       const { id } = req.params;
-      const {username, password, full_name, role} = req.body;
+      const {username, password, old_password, full_name, role} = req.body;
 
       const idNumber = Number(id);
 
@@ -178,6 +178,14 @@ export const UserController = {
         });
       }
 
+      const currentUser = req.user;
+      if(currentUser?.role !== 'admin' && currentUser?.id !== idNumber){
+        return res.status(403).json({
+          "success": false,
+          "message": "¡No tienes permisos para editar a otros usuarios!"
+        });
+      }
+
       const checkUsername = checkUsernameAvailable(username as string, idNumber);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
@@ -186,7 +194,29 @@ export const UserController = {
       }
 
       if(username) userData.username = username;
-      if(password) userData.password = password;
+      if(password) {
+        if(currentUser?.role === 'seller'){
+          if(!old_password){
+            return res.status(400).json({
+              "success": false,
+              "message": "Por favor, proporciona tu antigua contraseña."
+            });
+          }
+
+          const hashOldPsw = db.prepare('SELECT password FROM users WHERE id = :id').get({id}) as string;
+          const resultPsw = await verifyPassword(old_password, hashOldPsw)
+
+          if(!resultPsw){
+            return res.status(400).json({
+              "success": false,
+              "message": "¡La contraseña que has ingresado no coincide con la antigua!"
+            });
+          }
+        }
+
+        const encryptedPassword = await hashPassword(password);
+        userData.password = encryptedPassword;
+      };
       if(full_name) userData.full_name = full_name;
       if(role) userData.role = role;
 

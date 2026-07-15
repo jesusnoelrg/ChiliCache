@@ -33,6 +33,7 @@ export interface UserRole {
 export interface UpdateUserDTO {
   username?: string;
   password?: string;
+  old_password?: string;
   full_name?: string;
   role?: Role;
 }

@@ -233,6 +233,15 @@
                 <div class="invalid-feedback">Ingrese un nombre válido.</div>
               </div>
 
+              <div class="form-floating mb-3 w-100">
+                <input type="password" class="form-control" id="createPassword" placeholder="Contraseña"
+                  pattern=".{4,12}" maxlength="12">
+                <label for="createPassword" class="text-gray">
+                  <i class="bi bi-key-fill"></i> Contraseña
+                </label>
+                <div class="invalid-feedback">La contraseña debe tener entre 4 y 12 caracteres.</div>
+              </div>
+
               <div class="d-flex flex-row col-12">
                 <div class="form-floating mb-3 col">
                   <input type="text" class="form-control" id="editUsername" placeholder="Nombre de Usuario"
