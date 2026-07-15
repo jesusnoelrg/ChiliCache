@@ -1,20 +1,5 @@
-function recargarTooltips(){
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.forEach((tooltipTriggerEl) => {
-    const tooltipInstance = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
-    if (tooltipInstance) {
-        tooltipInstance.dispose();
-    }
-    const newTooltipInstance = new bootstrap.Tooltip(tooltipTriggerEl);
-    if (tooltipTriggerEl.closest("#mainAside") && !mainAside.classList.contains('aside-collapse')) {
-        newTooltipInstance.disable();
-    }
-  });
-}
-
 const d = document;
 
-//Botón para colapsar el aside principal
 const btnAside = d.querySelector("#btnAside");
 const mainAside = d.querySelector("#mainAside");
 const sectionName = d.querySelectorAll(".aside-section-name");
