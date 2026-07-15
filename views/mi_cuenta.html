@@ -67,11 +67,14 @@
           <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
             <img src="./img/admin.png" class="p-1 rounded-20" width="35px" height="35px">
             <div class="d-flex flex-column justify-content-start ms-2">
-              <p class="fw-bold text-dark m-0"><span class="badge perfil-badge rounded-pill bg-danger">Dueño</span>
-                Usuario 1</p>
-              <p class="text-gray m-0">ChiliCache@gmail.com</p>
+              <div class="d-flex flex-row">
+                <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
+                <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+              </div>
+              <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
             </div>
           </div>
+          <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>
         </div>
       </header>
       <section class="p-4">
@@ -81,8 +84,8 @@
             <div class="bg-white p-4 rounded-10 shadow-sm h-100">
               <div class="text-center mb-4">
                 <img src="./img/admin.png" class="rounded-circle border p-2 mb-3" width="100px" height="100px" alt="Avatar">
-                <h3 class="fs-4 fw-bold mb-1">Usuario 1</h3>
-                <span class="badge bg-danger rounded-pill">Dueño</span>
+                <h3 id="accountUsername" class="fs-4 fw-bold mb-1">Usuario 1</h3>
+                <span id="accountRole" class="badge bg-danger rounded-pill">Dueño</span>
               </div>
               
               <hr class="text-muted">
@@ -94,7 +97,7 @@
                   </div>
                   <div>
                     <p class="text-muted small mb-0">Nombre de usuario (Username)</p>
-                    <p class="fw-bold mb-0">Usuario 1</p>
+                    <p id="accountUsername" class="fw-bold mb-0">Usuario 1</p>
                   </div>
                 </div>
 
@@ -104,17 +107,7 @@
                   </div>
                   <div>
                     <p class="text-muted small mb-0">Nombre completo</p>
-                    <p class="fw-bold mb-0">Administrador ChiliCache</p>
-                  </div>
-                </div>
-
-                <div class="mb-3 d-flex align-items-center">
-                  <div class="bg-light p-2 rounded-10 me-3">
-                    <i class="bi bi-envelope text-danger fs-4"></i>
-                  </div>
-                  <div>
-                    <p class="text-muted small mb-0">Correo electrónico</p>
-                    <p class="fw-bold mb-0">ChiliCache@gmail.com</p>
+                    <p id="accountFullname" class="fw-bold mb-0">Administrador ChiliCache</p>
                   </div>
                 </div>
               </div>
@@ -180,5 +173,7 @@
       </section>
     </main>
   </div>
+  <script src="/js/global-layout.js"></script>
+  <script src="/js/mi-cuenta.js"></script>
 </body>
 </html>
