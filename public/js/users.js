@@ -80,6 +80,7 @@ formEditUser.addEventListener('submit', async (e) => {
   const payload = {
     username: document.getElementById('editUsername').value.trim(),
     full_name: document.getElementById('editFullname').value.trim(),
+    password: document.getElementById('editPassword').value,
     role: document.getElementById('editRole').value
   };
 
@@ -122,29 +123,113 @@ document.getElementById('btnCleanEdit')
  -------------------------------------------------------------------------
  */
 
+const filters = {
+  'username': 'Nombre de usuario',
+  'full_name': 'Nombre completo',
+  'role': 'Rol'
+}
+
+const getCurrentFilter = () => {
+  const filter = document.querySelector('input[name=userFilters]:checked');
+
+  if(!filter) console.error('No hay un filtro seleccionado.');
+
+  document.getElementById('lblSearch').innerHTML = filters[filter.value];
+
+  const blockSearch = document.getElementById('blockSearch');
+  const selectRole = document.getElementById('selectRole');
+  const lblRole = document.getElementById('lblRoles');
+
+  if (filter.value === 'role') {
+    blockSearch.classList.add('d-none'); 
+    lblRole.classList.remove('d-none');
+    selectRole.classList.remove('d-none');
+  } else {
+    blockSearch.classList.remove('d-none');
+    selectRole.classList.add('d-none');
+    lblRole.classList.add('d-none');
+  }
+
+  return filter.value;
+}
+
+const radios = document.querySelectorAll('input[name=userFilters]');
+
+radios.forEach(radio => {
+  radio.addEventListener('change', getCurrentFilter);
+});
+
+document.getElementById('btnSearch').addEventListener('click', (e) => {
+  e.preventDefault();
+  fetchUsers();
+});
+
+document.getElementById('inputSearch').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    fetchUsers();
+  }
+});
+
+document.getElementById('inputLimit').addEventListener('change', () => {
+  fetchUsers();
+})
+
+document.getElementById('selectRole').addEventListener('change', () => {
+  fetchUsers();
+})
+
+/*
+ -------------------------------------------------------------------------
+ */
+
+
 const fetchUsers = async () => {
   try {
-    const response = await fetch(`${URL_API}${ROUTE}/`, {
+
+    const currentFilter = getCurrentFilter();
+    const limitValue = document.getElementById('inputLimit').value || 10;
+
+    const queryParams = new URLSearchParams({
+      limit: limitValue
+    });
+
+    let searchValue = '';
+
+    if(currentFilter === 'role'){
+      searchValue = document.getElementById('selectRole').value;
+
+      if(searchValue === 'all') searchValue = '';
+    } else {
+      searchValue = document.getElementById('inputSearch').value.trim();
+    }
+
+    if (searchValue && searchValue !== ''){
+      queryParams.append(currentFilter, searchValue);
+    }
+
+    const response = await fetch(`${URL_API}${ROUTE}?${queryParams.toString()}`, {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
       credentials: 'include'
     });
 
     if(!response.ok){
-      if(response.status === 403){
-        alert('No tienes permisos para ver esta sección.');
-        window.location.replace('/inicio');
-        return;
-      }
-
-      throw new Error('Error al obtener a los usuarios.')
+      throw new Error(`Error HTTP: ${response.status}`);
+      return;
     }
 
     const result = await response.json();
 
+    if(!result.success){
+      showAlert(result.message, 'error');
+      throw new Error('Error al obtener a los usuarios.');
+      return;
+    }
+
     renderUsersTable(result.data);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
   }
 }
 
@@ -152,8 +237,8 @@ const renderUsersTable = (users) => {
   const tableBody = document.getElementById('usersTableBody');
   tableBody.innerHTML = '';
 
-  if(users.length === 0){
-    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No hay usuarios registrados.</td></tr>`;
+  if(!users || !Array.isArray(users) || users.length === 0){
+    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No se han encontrado usuarios.</td></tr>`;
     return;
   }
 
@@ -165,7 +250,7 @@ const renderUsersTable = (users) => {
         <th scope='row'>${user.id}</th>
         <td>${user.username}</td>
         <td>${user.full_name}</td>
-        <td>${user.role}</td>
+        <td>${user.role === 'seller' ? 'Vendedor' : 'Admin'}</td>
         <td>
           <button class="btn btn-primary" data-user-id="${user.id}">
             <i class="bi bi-gear-fill"></i>
@@ -201,7 +286,10 @@ const deleteUserById = async (id, element) => {
     if(row){
       row.style.transition = 'opacity 0.5s';
       row.style.opacity = '0';
-      setTimeout(() => row.remove(), 500);
+      setTimeout(() => {
+        row.remove()
+        fetchUsers();
+      }, 500);
     }
 
     showAlert(result.message, 'success');
