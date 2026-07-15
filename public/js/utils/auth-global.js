@@ -37,12 +37,17 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(errorData.message || 'Error en el inicio de sesión.');
       }
 
-      const data = await response.json();
-      console.log('Login exitoso:', data);
+      const result = await response.json();
 
+      if(!result.success){
+        showAlert(result.message, 'error');
+        return;
+      }
+
+      sessionStorage.setItem('user-profile', JSON.stringify(result.user));
       window.location.replace('/home');
       
-      return data;
+      return result;
     } catch (error) {
       console.error('Falló el login:', error);
       if (errorMsg) {

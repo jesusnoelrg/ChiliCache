@@ -7,7 +7,9 @@ export interface LoginUser {
 
 export interface SessionUser {
   uuid: string;
+  id: string;
   username: string;
+  full_name: string;
   password?: string; 
   role: Role
 }

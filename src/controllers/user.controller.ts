@@ -300,7 +300,7 @@ export const UserController = {
         })
       }
 
-      const query = "SELECT username, password, role FROM users WHERE username = :username"
+      const query = "SELECT id, username, password, role, full_name FROM users WHERE username = :username"
       const user = db.prepare(query).get({username: username}) as SessionUser;
       if(!user){
         return res.status(401).json({
@@ -345,8 +345,14 @@ export const UserController = {
       })
 
       return res.status(200).json({
-        success: true,
-        message: "¡Inicio de sesión exitoso!"
+        "success": true,
+        "message": "¡Inicio de sesión exitoso!",
+        "user": {
+          "id": user.id,
+          "username": user.username,
+          "full_name": user.full_name,
+          "role": user.role
+        }
       });
     }catch(err: any){
       console.error(err);

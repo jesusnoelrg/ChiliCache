@@ -16,5 +16,6 @@ router.get('/users', isAuthenticatedView, pathView('../../views/usuarios.html'))
 router.get('/products', isAuthenticatedView, pathView('../../views/productos.html'));
 router.get('/clients', isAuthenticatedView, pathView('../../views/clientes.html'));
 router.get('/sales', isAuthenticatedView, pathView('../../views/ventas.html'));
+router.get('/my_account', isAuthenticatedView, pathView('../../views/mi_cuenta.html'));
 
 export default router;
