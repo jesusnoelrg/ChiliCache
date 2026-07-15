@@ -247,6 +247,14 @@ export const UserController = {
       })
     }catch(err: any){
       console.error(err);
+
+      if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+        return res.status(409).json({
+          success: false,
+          message: "No se puede eliminar el usuario porque tiene historial de ventas o registros asociados en el sistema."
+        });
+      }
+
       return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
     }
   },

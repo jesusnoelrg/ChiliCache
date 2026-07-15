@@ -26,6 +26,7 @@
     --op-negro-1: rgba(0, 0, 0, 0.142);
 
     /*Alertas*/
+    --success: rgb(87, 202, 87);
     --error: rgb(252, 92, 92);
     --info: rgb(104, 104, 255);
     --confirmacion: #8d64ff;
