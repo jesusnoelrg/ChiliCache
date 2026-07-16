@@ -165,7 +165,7 @@ export const ClientController = {
 
       if(name !== undefined){
         if(name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
-        const checkNameUse = isRecordFieldPresent({table: "clients", column: "name", value: name})
+        const checkNameUse = checkNameAvailable(name, id);
         if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
         clientData.name = name;
       }
@@ -184,11 +184,15 @@ export const ClientController = {
         const validatePhone = phoneFormat(phone);
         if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
         clientData.phone = validatePhone;
+      } else {
+        clientData.phone = null;
       }
-
+      
       if(email !== undefined){
         if(!emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
         clientData.email = email
+      } else {
+        clientData.email = null;
       }
 
       if(Object.keys(clientData).length < 2) return res.status(400).json({"success": false, "message": "No se ha introducido por lo menos un valor por modificar."});
@@ -232,4 +236,24 @@ export const ClientController = {
       });
     }
   }
+}
+
+const checkNameAvailable = (name: string, id?: number): boolean => {
+  if(!name) return false;
+
+  let data: any = { name };
+  let query = `SELECT name FROM clients WHERE name = :name`;
+
+  if(id !== undefined && id){
+    query += " AND id != :id";
+    data.id = Number(id);
+  }
+
+  const validate = db.prepare(query).get(data);
+
+  if(validate){
+    return true;
+  }
+
+  return false;
 }

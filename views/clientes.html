@@ -90,7 +90,9 @@
       <div class="m-4 p-5 bg-white rounded-10 shadow-sm">
         <form class="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <button type="button" class="btn-primario px-3 py-2 rounded-10 shadow" onclick="abrirModalNuevoCliente()"><i
+            <button
+              data-bs-toggle="modal" data-bs-target="#modalCreateClient"
+              type="button" class="btn-primario px-3 py-2 rounded-10 shadow" ><i
                 class="bi bi-person-plus-fill"></i> Agregar cliente</button>
           </div>
           <div class="d-flex">
@@ -183,67 +185,157 @@
     CREATE CLIENT FORM
   ======================================================== -->
 
-  <div class="modal fade" id="modalNuevoCliente" tabindex="-1">
+  <div class="modal fade" id="modalCreateClient" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header header-title">
-          <h5 class="modal-title text-white fw-bold fs-3">NUEVO CLIENTE</h5>
+          <h5 id="titleCreateClient" class="modal-title text-white fw-bold fs-3">CREAR CLIENTE</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body bg-main">
-          <form id="formNuevoCliente" class="needs-validation p-4 pb-3" novalidate>
+          <form id="formCreateClient" class="needs-validation p-4 pb-3" novalidate>
             <div>
               <div class="row">
                 <div class="col-8">
                   <div class="form-floating mb-2">
-                    <input type="text" class="form-control" id="floatingEmpresa" placeholder="Empresa"
-                      pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="25" required>
-                    <label for="floatingEmpresa" class="text-gray"><i class="bi bi-building-fill-check"></i>
-                      Empresa</label>
+                    <input type="text" class="form-control" id="createClientName" placeholder="Nombre" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="60">
+                    <label for="createClientName" class="text-gray">
+                      <i class="bi bi-building-fill-check"></i> Nombre
+                    </label>
                     <div class="invalid-feedback">Ingrese el nombre de la empresa.</div>
                   </div>
                 </div>
                 <div class="col-4">
                   <div class="form-floating mb-2">
-                    <input type="text" class="form-control" id="floatingRFC" placeholder="RFC"
-                      pattern="^[A-Z0-9]{10,13}$" maxlength="13" required>
-                    <label for="floatingRFC" class="text-gray"><i class="bi bi-file-earmark-fill"></i> RFC</label>
+                    <input type="text" class="form-control" id="createClientRfc" placeholder="RFC" pattern="^[A-Z0-9]{10,13}$" maxlength="13">
+                    <label for="createClientRfc" class="text-gray">
+                      <i class="bi bi-file-earmark-fill"></i> RFC
+                    </label>
                     <div class="invalid-feedback">El RFC debe contener entre 10 y 13 caracteres alfanuméricos.</div>
                   </div>
                 </div>
               </div>
+              
               <div class="form-floating mb-2">
-                <textarea type="text" class="form-control" id="floatingDireccion" placeholder="Dirección"
-                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="80" required></textarea>
-                <label for="floatingDireccion" class="text-gray"><i class="bi bi-geo-alt-fill"></i> Dirección</label>
+                <textarea class="form-control" id="createClientAddress" placeholder="Dirección" maxlength="80"></textarea>
+                <label for="createClientAddress" class="text-gray">
+                  <i class="bi bi-geo-alt-fill"></i> Dirección
+                </label>
                 <div class="invalid-feedback">Ingrese una dirección.</div>
               </div>
+
               <div class="row">
                 <div class="col-5">
                   <div class="form-floating mb-2">
-                    <input type="text" class="form-control" id="floatingTelefono" placeholder="Telefono"
-                      pattern="^(\d{2,3}\s?)?\d{2,3}\s?\d{4}$" maxlength="12" required>
-                    <label for="floatingTelefono" class="text-gray"><i class="bi bi-telephone-fill"></i>
-                      Telefono</label>
+                    <input type="text" class="form-control" id="createClientPhone" placeholder="Telefono" pattern="^(\d{2,3}\s?)?\d{2,3}\s?\d{4}$" maxlength="12">
+                    <label for="createClientPhone" class="text-gray">
+                      <i class="bi bi-telephone-fill"></i> Telefono
+                    </label>
                     <div class="invalid-feedback">Ingrese un número de telefono válido.</div>
                   </div>
                 </div>
                 <div class="col-7">
                   <div class="form-floating mb-2">
-                    <input type="email" class="form-control" id="floatingCorreo" placeholder="Correo electrónico"
-                      maxlength="35" required>
-                    <label for="floatingCorreo" class="text-gray"><i class="bi bi-envelope-at-fill"></i> Correo
-                      electrónico</label>
+                    <input type="email" class="form-control" id="createClientEmail" placeholder="Correo electrónico" maxlength="35">
+                    <label for="createClientEmail" class="text-gray">
+                      <i class="bi bi-envelope-at-fill"></i> Correo electrónico
+                    </label>
                     <div class="invalid-feedback">Ingrese un correo válido.</div>
                   </div>
                 </div>
               </div>
             </div>
+            
             <div class="d-flex justify-content-center my-3">
-              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10"><i class="bi bi-person-fill-add"></i>
-                Guardar</button>
-              <button type="button" onclick="limpiarForm({ entidad: 'Cliente' });"
-                class="btn btn-secondary px-4 me-4 py-2 rounded-10"><i class="bi bi-eraser"></i> Limpiar</button>
+              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10">
+                <i class="bi bi-person-fill-add"></i> Guardar
+              </button>
+              
+              <button type="reset" class="btn btn-secondary px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+    EDIT CLIENT FORM
+  ======================================================== -->
+
+  <div class="modal fade" id="modalEditClient" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header header-title">
+          <h5 id="titleEditClient" class="modal-title text-white fw-bold fs-3">EDIT CLIENTE</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-main">
+          <form id="formEditClient" class="needs-validation p-4 pb-3" novalidate>
+            <div>
+              <div class="row">
+                <div class="col-8">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="editClientName" placeholder="Nombre" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$" maxlength="60">
+                    <label for="editClientName" class="text-gray">
+                      <i class="bi bi-building-fill-check"></i> Nombre
+                    </label>
+                    <div class="invalid-feedback">Ingrese el nombre de la empresa.</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="editClientRfc" placeholder="RFC" pattern="^[A-Z0-9]{10,13}$" maxlength="13">
+                    <label for="editClientRfc" class="text-gray">
+                      <i class="bi bi-file-earmark-fill"></i> RFC
+                    </label>
+                    <div class="invalid-feedback">El RFC debe contener entre 10 y 13 caracteres alfanuméricos.</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-floating mb-2">
+                <textarea class="form-control" id="editClientAddress" placeholder="Dirección" maxlength="80"></textarea>
+                <label for="editClientAddress" class="text-gray">
+                  <i class="bi bi-geo-alt-fill"></i> Dirección
+                </label>
+                <div class="invalid-feedback">Ingrese una dirección.</div>
+              </div>
+
+              <div class="row">
+                <div class="col-5">
+                  <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="editClientPhone" placeholder="Telefono" pattern="^(\d{2,3}\s?)?\d{2,3}\s?\d{4}$" maxlength="12">
+                    <label for="editClientPhone" class="text-gray">
+                      <i class="bi bi-telephone-fill"></i> Telefono
+                    </label>
+                    <div class="invalid-feedback">Ingrese un número de telefono válido.</div>
+                  </div>
+                </div>
+                <div class="col-7">
+                  <div class="form-floating mb-2">
+                    <input type="email" class="form-control" id="editClientEmail" placeholder="Correo electrónico" maxlength="35">
+                    <label for="editClientEmail" class="text-gray">
+                      <i class="bi bi-envelope-at-fill"></i> Correo electrónico
+                    </label>
+                    <div class="invalid-feedback">Ingrese un correo válido.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-center my-3">
+              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10">
+                <i class="bi bi-person-fill-add"></i> Guardar
+              </button>
+              <button id="btnResetEdit" type="button" class="btn btn-danger px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Restablecer
+              </button>
+              <button type="reset" class="btn btn-secondary px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
             </div>
           </form>
         </div>
