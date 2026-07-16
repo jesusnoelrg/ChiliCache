@@ -280,7 +280,6 @@ const deleteUserById = async (id, element) => {
       throw new Error('Hubo un error al eliminar al usuario');
     }
 
-
     const row = element.closest('tr');
 
     if(row){

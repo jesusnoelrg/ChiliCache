@@ -19,9 +19,10 @@ document.addEventListener('click', (e) => {
 
   if(clientId){
     if(button.classList.contains('btn-danger')){
-      showConfirm(`¿Estás seguro de eliminar al cliente (ID: ${clientId})?`, deleteClientById(clientId, button));
+      showConfirm(`¿Estás seguro de eliminar al cliente (ID: ${clientId})?`, () => deleteClientById(clientId, button));
     } else {
       setFormEdit(clientId);
+      
       openEditModal();
     }
   }  
@@ -92,6 +93,7 @@ const setFormEdit = async (clientId) => {
 
     const client = await response.json();
 
+    formEditClient.setAttribute('data-client-id', clientId)
     document.getElementById('titleEditClient').innerHTML = `EDITAR CLIENTE (ID: ${client.data.id})`
     document.getElementById('editClientName').value = client.data.name || '';
     document.getElementById('editClientRfc').value = client.data.rfc || '';
@@ -109,7 +111,8 @@ const openEditModal = () => {
 };
 
 document.getElementById('btnResetEdit').addEventListener('click', () => {
-  setFormEdit();
+  const clientId = formEditClient.getAttribute('data-client-id');
+  if (clientId) setFormEdit(clientId);
 })
 
 formEditClient.addEventListener('submit', async (e) => {
@@ -135,7 +138,7 @@ formEditClient.addEventListener('submit', async (e) => {
 
     if (!response.ok){
       modalEditClient.hide();
-      let errorMsg = `Error en el servidor (${response.code})`;
+      let errorMsg = `Error en el servidor (${response.status})`;
 
       try {
         const errorResult = await response.json();
@@ -171,7 +174,7 @@ const deleteClientById = async (clientId, element) => {
     });
 
     if (!response.ok){
-      let errorMsg = `Error en el servidor (${response.code})`;
+      let errorMsg = `Error en el servidor (${response.status})`;
 
       try {
         const errorResult = await response.json();

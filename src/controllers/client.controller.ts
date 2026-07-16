@@ -223,7 +223,7 @@ export const ClientController = {
       const checkClientId = isRecordFieldPresent({table: 'clients', column: 'id', value: idNumber});
       if(!checkClientId) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
 
-      const result = db.prepare("DELETE FROM clients WHERE id = :id").run({idNumber});
+      const result = db.prepare("DELETE FROM clients WHERE id = :id").run({id: idNumber});
 
       if(result.changes === 0) return res.sendStatus(204);
 
