@@ -5,14 +5,14 @@ import { authorize } from '../middlewares/role.middleware';
 
 const router = Router();
 
-router.post('/', authorize(['seller', 'admin']), isAuthenticated, ClientController.createClient);
+router.post('/', isAuthenticated, authorize(['seller', 'admin']), ClientController.createClient);
 
-router.get('/:id', authorize(['seller', 'admin']), isAuthenticated, ClientController.getClientById);
+router.get('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.getClientById);
 
-router.get('/', authorize(['seller', 'admin']), isAuthenticated, ClientController.getClients);
+router.get('/', isAuthenticated, authorize(['seller', 'admin']), ClientController.getClients);
 
-router.put('/:id', authorize(['seller', 'admin']), isAuthenticated, ClientController.updateClient);
+router.put('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.updateClient);
 
-router.delete('/:id', authorize(['seller', 'admin']), isAuthenticated, ClientController.deleteClient);
+router.delete('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.deleteClient);
 
 export default router;
