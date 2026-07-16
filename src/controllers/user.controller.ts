@@ -179,6 +179,7 @@ export const UserController = {
       }
 
       const currentUser = req.user;
+      console.log(currentUser?.id);
       if(currentUser?.role !== 'admin' && currentUser?.id !== idNumber){
         return res.status(403).json({
           "success": false,
@@ -203,8 +204,17 @@ export const UserController = {
             });
           }
 
-          const hashOldPsw = db.prepare('SELECT password FROM users WHERE id = :id').get({id}) as string;
-          const resultPsw = await verifyPassword(old_password, hashOldPsw)
+          
+          const hashOldPsw = db.prepare('SELECT password FROM users WHERE id = :id').get({id: id}) as any;
+          
+          if(!hashOldPsw){
+            return res.status(404).json({
+              "success": false,
+              "message": "El usuario solicitado no existe o fue dado de baja."
+            });
+          }
+
+          const resultPsw = await verifyPassword(old_password, hashOldPsw.password as string)
 
           if(!resultPsw){
             return res.status(400).json({
@@ -224,9 +234,17 @@ export const UserController = {
       let query = `UPDATE users SET ${placeholders} WHERE id = :id`
       let result = db.prepare(query).run(userData);
 
+      let successMsg = "";
+
+      if(password && old_password){
+        successMsg = "¡Has cambiado tu contraseña exitosamente!";
+      } else {
+        successMsg = `Actualización exitosa${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+      }
+
       return res.status(200).json({
         "success": true,
-        "message": `Actualización exitosa${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+        "message": successMsg
       })
     }catch(err: any){
       res.status(500).json({
@@ -330,6 +348,7 @@ export const UserController = {
 
       const sessionData: any = {
         uuid: uuid,
+        id: user.id,
         username: user.username,
         role: user.role
       }

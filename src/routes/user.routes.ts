@@ -15,7 +15,7 @@ router.get('/:id', isAuthenticated, authorize(['seller', 'admin']), UserControll
 router.post('/', UserController.createUser);
 
 //Actualizar un usuario
-router.put('/:id', isAuthenticated, authorize(['admin']), UserController.updateUser);
+router.put('/:id', isAuthenticated, authorize(['admin', 'seller']), UserController.updateUser);
 
 //Eliminar un usuario
 router.delete('/:id', isAuthenticated, authorize(['admin']), UserController.deleteUser)

@@ -84,7 +84,7 @@
             <div class="bg-white p-4 rounded-10 shadow-sm h-100">
               <div class="text-center mb-4">
                 <img src="./img/admin.png" class="rounded-circle border p-2 mb-3" width="100px" height="100px" alt="Avatar">
-                <h3 id="accountUsername" class="fs-4 fw-bold mb-1">Usuario 1</h3>
+                <h3 class="fs-4 fw-bold mb-1 accountUsername">Usuario 1</h3>
                 <span id="accountRole" class="badge bg-danger rounded-pill">Dueño</span>
               </div>
               
@@ -97,7 +97,7 @@
                   </div>
                   <div>
                     <p class="text-muted small mb-0">Nombre de usuario (Username)</p>
-                    <p id="accountUsername" class="fw-bold mb-0">Usuario 1</p>
+                    <p class="fw-bold mb-0 accountUsername">Usuario 1</p>
                   </div>
                 </div>
 
@@ -120,23 +120,23 @@
               <h2 class="fs-4 fw-bold mb-1">Editar mis datos</h2>
               <p class="text-muted small mb-4">Actualiza la información de tu cuenta aquí.</p>
               
-              <form action="/update-profile" method="POST">
+              <form id="formEditMe">
                 <div class="row">
                   <!-- Username -->
                   <div class="col-md-6 mb-3">
-                    <label for="username" class="form-label fw-bold text-dark small">Nombre de usuario</label>
+                    <label for="changeUsername" class="form-label fw-bold text-dark small">Nombre de usuario</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
-                      <input type="text" class="form-control border-start-0" id="username" name="username" value="Usuario 1" required>
+                      <input type="text" class="form-control border-start-0" id="changeUsername" name="username" value="Usuario 1">
                     </div>
                   </div>
 
                   <!-- Full Name -->
                   <div class="col-md-6 mb-3">
-                    <label for="full_name" class="form-label fw-bold text-dark small">Nombre completo</label>
+                    <label for="changeFullname" class="form-label fw-bold text-dark small">Nombre completo</label>
                     <div class="input-group">
                       <span class="input-group-text bg-light border-end-0"><i class="bi bi-card-text text-muted"></i></span>
-                      <input type="text" class="form-control border-start-0" id="full_name" name="full_name" value="Administrador ChiliCache" required>
+                      <input type="text" class="form-control border-start-0" id="changeFullname" name="full_name" value="Administrador ChiliCache">
                     </div>
                   </div>
                 </div>
@@ -146,24 +146,24 @@
                 <h3 class="fs-5 fw-bold mb-3"><i class="bi bi-shield-lock me-2 text-danger"></i>Cambiar contraseña</h3>
                 
                 <div class="mb-3">
-                  <label for="old_password" class="form-label fw-bold text-dark small">Contraseña actual</label>
+                  <label for="changeCurrentPassword" class="form-label fw-bold text-dark small">Contraseña actual</label>
                   <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-key text-muted"></i></span>
-                    <input type="password" class="form-control border-start-0" id="old_password" name="old_password" placeholder="••••••••">
+                    <input type="password" class="form-control border-start-0" id="changeCurrentPassword" name="old_password" placeholder="••••••••">
                   </div>
                   <div class="form-text">Necesaria para confirmar los cambios de seguridad.</div>
                 </div>
 
                 <div class="mb-4">
-                  <label for="new_password" class="form-label fw-bold text-dark small">Nueva contraseña</label>
+                  <label for="changeNewPassword" class="form-label fw-bold text-dark small">Nueva contraseña</label>
                   <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
-                    <input type="password" class="form-control border-start-0" id="new_password" name="new_password" placeholder="Mínimo 8 caracteres">
+                    <input type="password" class="form-control border-start-0" id="changeNewPassword" name="new_password" placeholder="Mínimo 8 caracteres">
                   </div>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                  <button type="reset" class="btn btn-light px-4 rounded-10">Descartar</button>
+                  <button id="resetForm" type="button" class="btn btn-secondary px-4 rounded-10">Descartar</button>
                   <button type="submit" class="btn btn-danger px-4 rounded-10">Guardar cambios</button>
                 </div>
               </form>
@@ -173,7 +173,31 @@
       </section>
     </main>
   </div>
+
+  <div class="modal fade" tabindex="-1" id="modalAlerta" aria-hidden="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class=" modal-alert-header">
+            <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
+              <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
+            </div>
+            <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
+          </div>
+          <div class="modal-body p-4">
+            <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
+            <div class="d-flex justify-content-center pt-2">
+              <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta"
+                data-bs-dismiss="modal">Aceptar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="/js/global-layout.js"></script>
+  <script src="/js/utils/showAlerts.js"></script>
   <script src="/js/mi-cuenta.js"></script>
 </body>
 </html>

@@ -12,8 +12,6 @@ form.addEventListener('submit', async (e) => {
   const username = document.getElementById('floatingUsername').value;
   const password = document.getElementById('floatingPassword').value;
 
-  console.log('antes try')
-
   try {
     const response = await fetch('http://localhost:3000/api/auth/login', {
       method: "POST",
@@ -28,7 +26,6 @@ form.addEventListener('submit', async (e) => {
     }
 
     const data = await response.json();
-    console.log('Login exitoso:', data);
 
     window.location.replace('/home');
     
