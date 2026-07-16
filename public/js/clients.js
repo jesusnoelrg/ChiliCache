@@ -1,10 +1,70 @@
-const URL_API = 'http://localhost:3000/api/clients';
+const CLIENT_URL = 'http://localhost:3000/api/clients';
 
+/*
+  ----------------------------------------------------------------
+  SEARCH CLIENTS
+*/
 
+const filtersName = {
+  'name': 'Nombre',
+  'rfc': 'RFC',
+  'address': 'Dirección',
+  'phone': 'Teléfono',
+  'email': 'E-Mail', 
+}
+
+const inputSearch = document.getElementById('inputSearch');
+const lblSearch = document.getElementById('lblSearch');
+
+const updateFilter = () => {
+  const radioChecked = document.querySelector("input[name='clientFilters']:checked");
+
+  if(radioChecked) {
+    lblSearch.innerHTML = filtersName[radioChecked.value]
+    return radioChecked.value;
+  }
+  
+  lblSearch.innerHTML = 'Buscar';
+  return 'name'
+};
+
+const radios = document.querySelectorAll("input[name='clientFilters']");
+radios.forEach(radio => {
+  radio.addEventListener('change', () => updateFilter());
+});
+
+document.getElementById('btnSearch').addEventListener('click', (e) => {
+  e.preventDefault();
+  fetchClients();
+});
+
+document.getElementById('inputLimit').addEventListener('change', () => fetchClients());
+inputSearch.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    fetchClients();
+  }
+})
+/*
+  ----------------------------------------------------------------
+  FETCH CLIENTS
+*/
 
 const fetchClients = async () => {
+  const limitValue = document.getElementById('inputLimit').value || 10;
+
+  const queryParams = new URLSearchParams({
+    limit: limitValue
+  });
+
+  const currentFilter = updateFilter();
+
+  if(inputSearch && inputSearch.value !== '') {
+    queryParams.append(currentFilter, inputSearch.value)
+  }
+
   try {
-    const response = await fetch(`${URL_API}/`, {
+    const response = await fetch(`${CLIENT_URL}?${queryParams.toString()}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json'},
       credentials: 'include'
@@ -72,4 +132,5 @@ const renderTableClients = (clients) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchClients();
+  updateFilter();
 })
