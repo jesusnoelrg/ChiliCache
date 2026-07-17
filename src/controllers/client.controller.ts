@@ -150,6 +150,28 @@ export const ClientController = {
     }
   },
 
+  searchClients: async (req: Request<{}, {}, {}, {name: string}>, res: Response) => {
+    try {
+      const { name } = req.query;
+
+      console.log(name)
+      if(!name || name === undefined || name.trim() === ''){
+        return res.status(200).json([])
+      }
+      
+      const query = `SELECT id, name FROM clients WHERE name LIKE :name`
+      const result = db.prepare(query).all({name: `%${name.trim()}%`});
+
+      return res.status(200).json(result);
+    } catch(err: any) {
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
   updateClient: async (req: Request<any, {}, UpdateClientDTO>, res: Response) => {
     try{
       const { id } = req.params;

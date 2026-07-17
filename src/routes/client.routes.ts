@@ -7,11 +7,13 @@ const router = Router();
 
 router.post('/', isAuthenticated, authorize(['seller', 'admin']), ClientController.createClient);
 
-router.get('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.getClientById);
+router.get('/id/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.getClientById);
 
 router.get('/', isAuthenticated, authorize(['seller', 'admin']), ClientController.getClients);
 
 router.put('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.updateClient);
+
+router.get('/search', isAuthenticated, authorize(['seller', 'admin']), ClientController.searchClients);
 
 router.delete('/:id', isAuthenticated, authorize(['seller', 'admin']), ClientController.deleteClient);
 
