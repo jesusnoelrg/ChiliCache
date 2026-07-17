@@ -95,19 +95,35 @@
               data-bs-target="#formReport"><i class="bi bi-file-earmark-pdf-fill"></i> Generar Reporte</button>
           </div>
           <div class="d-flex">
+            <div id="invoiceSearch" class="d-none me-3">
+              <p class="mb-0 fw-bold">¿Cuenta con facturación?</p>
+              <div class="d-flex ">
+                <div class="form-check me-3">
+                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1" checked>
+                  <label class="form-check-label" for="radioDefault1">
+                    Todos
+                  </label>
+                </div>
+                <div class="form-check me-3">
+                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
+                  <label class="form-check-label" for="radioDefault2">
+                    Sí
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
+                  <label class="form-check-label" for="radioDefault2">
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div class="form-floating d-block" id="normalSearch">
               <input type="text" class="form-control" id="inputSearch" placeholder="">
               <label id="lblSearch" for="inputSearch"></label>
             </div>
-            <div id="unitSearch" class="form-floating d-none">
-              <select class="form-select" id="unitSelect" aria-label="Floating label select unit">
-                <option value="ml" selected>Mililitros (ml)</option>
-                <option value="L">Litros (L)</option>
-                <option value="g">Gramos (g)</option>
-                <option value="kg">Kilogramos (kg)</option>
-              </select>
-              <label for="unitSelect">Unidad de medida</label>
-            </div>
+
             <div id="rangeSearch" class="d-none ms-3">
               <div class="form-floating me-3" id="minRange">
                 <input type="number" class="form-control" id="inputMin" placeholder="">
@@ -130,45 +146,45 @@
               <ul class="dropdown-menu p-3" style="width: 250px;">
                 <li>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioName" value="name" checked>
-                    <label class="form-check-label" for="radioName">
-                      Nombre
+                    <input class="form-check-input" type="radio" name="saleFilters" id="radioClient" value="client_name" checked>
+                    <label class="form-check-label" for="radioClient">
+                      Cliente
                     </label>
                   </div>
                 </li>
                 <li>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioUnit" value="unit">
-                    <label class="form-check-label" for="radioUnit">
-                      Unit
+                    <input class="form-check-input" type="radio" name="saleFilters" id="radioSeller" value="seller_name">
+                    <label class="form-check-label" for="radioSeller">
+                      Vendedor
                     </label>
                   </div>
                 </li>
                 <li>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioContent" value="net_content">
-                    <label class="form-check-label" for="radioContent">
-                      Cont. Neto
+                    <input class="form-check-input" type="radio" name="saleFilters" id="radioTotal" value="total">
+                    <label class="form-check-label" for="radioTotal">
+                      Total
                     </label>
                   </div>
                 </li>
                 <li>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioPrice" value="price">
-                    <label class="form-check-label" for="radioPrice">
-                      Price
-                    </label>
-                  </div>
-                </li>
-                <li>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioStock" value="stock">
-                    <label class="form-check-label" for="radioStock">
-                      Stock
+                    <input class="form-check-input" type="radio" name="saleFilters" id="radioDate" value="date">
+                    <label class="form-check-label" for="radioDate">
+                      Fecha
                     </label>
                   </div>
                 </li>
                 <li><hr class="dropdown-divider"></li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkInvoice">
+                    <label class="form-check-label" for="checkInvoice">
+                      Facturación
+                    </label>
+                  </div>
+                </li>
                 <li>
                   Límite: 
                   <input type="number" class="form-control" id="inputLimit" placeholder="10">

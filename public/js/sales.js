@@ -2,10 +2,100 @@ const SALES_URL = 'http://localhost:3000/api/sales';
 
 /*
   ----------------------------------------------------------------
-  FETCH SALES
+  SEARCH SALES
 */
 
+const filters = {
+  'client_name': 'Nombre del cliente',
+  'seller_name': 'Nombre del vendedor',
+  'invoice': 'Factura',
+  'total': 'Total',
+  'date': 'Fecha'
+}
+
+const filtersText = ['client_name', 'seller_name'];
+const filtersRange = ['total', 'date'];
+
+const onTypeSearch = {
+  normal: () => {
+    rangeSearch.classList.add('d-none');
+    rangeSearch.classList.remove('d-flex');
+
+    normalSearch.classList.add('d-block');
+    normalSearch.classList.remove('d-none');
+  },
+
+  range: () => {
+    rangeSearch.classList.add('d-flex');
+    rangeSearch.classList.remove('d-none');
+
+    normalSearch.classList.add('d-none');
+    normalSearch.classList.remove('d-block');
+  },
+}
+
+const lblSearch = document.getElementById('lblSearch');
+const inputSearch = document.getElementById('inputSearch');
+const normalSearch = document.getElementById('normalSearch');
+
+const rangeSearch = document.getElementById('rangeSearch');
+const lblMin = document.getElementById('lblMin');
+const lblMax = document.getElementById('lblMax');
+const inputMin = document.getElementById('inputMin');
+const inputMax = document.getElementById('inputMax');
+
+const invoiceSearch = document.getElementById('invoiceSearch');
+
+const updateFilter = () => {
+  const checked = document.querySelector('input[name=saleFilters]:checked').value;
+
+  if(!checked) return;
+
+  const filterDisplay = filters[checked]
+
+  if(filtersRange.includes(checked)) {
+    let textMin = '';
+    let textMax = '';
+
+    if(checked === 'date') {
+      textMin = 'Fecha inicial';
+      textMax = 'Fecha final';
+    } else {
+      textMin = `${filterDisplay} Min.`;
+      textMax = `${filterDisplay} Max.`;
+    }
+
+    lblMin.innerHTML = textMin;
+    lblMax.innerHTML = textMax;
+    onTypeSearch.range();
+  } else if (filtersText.includes(checked)) {
+    lblSearch.innerHTML = filterDisplay;
+    onTypeSearch.normal();
+  }
+
+  return filterDisplay;
+}
+
+document.getElementById('checkInvoice').addEventListener('change', () => {
+  const check = document.getElementById('checkInvoice').checked;
+
+  if(check) {
+    invoiceSearch.classList.add('d-block');
+    invoiceSearch.classList.remove('d-none');
+  } else {
+    invoiceSearch.classList.remove('d-block');
+    invoiceSearch.classList.add('d-none');
+  }
+})
+
+document.querySelectorAll('input[name=saleFilters]').forEach(radio => {
+  radio.addEventListener('change', () => updateFilter())
+})
+
+
 const fetchSales = async () => {
+  const currentFilter = updateFilter();
+
   try {
     const res = await fetch(SALES_URL, {
       method: 'GET',
