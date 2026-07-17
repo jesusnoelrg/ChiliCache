@@ -10,11 +10,11 @@ const filters = {
   'seller_name': 'Nombre del vendedor',
   'invoice': 'Factura',
   'total': 'Total',
-  'date': 'Fecha'
+  'timestamp': 'Fecha'
 }
 
 const filtersText = ['client_name', 'seller_name'];
-const filtersRange = ['total', 'date'];
+const filtersRange = ['total', 'timestamp'];
 
 const onTypeSearch = {
   normal: () => {
@@ -57,7 +57,7 @@ const updateFilter = () => {
     let textMin = '';
     let textMax = '';
 
-    if(checked === 'date') {
+    if(checked === 'timestamp') {
       textMin = 'Fecha inicial';
       textMax = 'Fecha final';
     } else {
@@ -73,7 +73,7 @@ const updateFilter = () => {
     onTypeSearch.normal();
   }
 
-  return filterDisplay;
+  return checked;
 }
 
 document.getElementById('checkInvoice').addEventListener('change', () => {
@@ -94,10 +94,39 @@ document.querySelectorAll('input[name=saleFilters]').forEach(radio => {
 
 
 const fetchSales = async () => {
+  const limit = document.getElementById('inputLimit').value || 10;
+
+  const queryParams = new URLSearchParams({
+    limit: limit
+  })
+
   const currentFilter = updateFilter();
+  const displayFilter = filters[currentFilter];
+
+  if(filtersRange.includes(currentFilter)) {
+    if(currentFilter === 'timestamp'){
+
+    } else {
+      let min = Number(inputMin.value || 0);
+      let max = Number(inputMax.value || 2147483646);
+
+      if(min < 0) min = 0;
+      if(max > 2147483647) {
+        showAlert(`${displayFilter} máximo excede el límite permitido por el sistema.`, 'info');
+        return;
+      }
+      if(min > max) {
+        showAlert(`${displayFilter} minimo no puede superar al contenido máximo.`, 'info');
+        return;
+      }
+
+      queryParams.append(`min_${currentFilter}`, min.toString());
+      queryParams.append(`max_${currentFilter}`, max.toString());
+    }
+  }
 
   try {
-    const res = await fetch(SALES_URL, {
+    const res = await fetch(`${SALES_URL}?${queryParams.toString()}`, {
       method: 'GET',
       credentials: 'include'
     });
