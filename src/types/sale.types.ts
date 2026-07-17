@@ -22,6 +22,9 @@ export interface GetSalesDTO {
   client_name?: string;
   start_timestamp?: string;
   end_timestamp?: string;
+  min_total?: number;
+  max_total?: number;
+  invoice: number;
   limit?: number;
   offset?: number;
 }

@@ -133,7 +133,16 @@ export const SaleController = {
 
   getSales: async (req: Request<{}, {}, {}, GetSalesDTO>, res: Response) => {
     try{
-      const { user_username, user_full_name, client_name, start_timestamp, end_timestamp, limit, offset } = req.query;
+      const { 
+        user_username,
+        user_full_name,
+        client_name,
+        start_timestamp, end_timestamp,
+        min_total, max_total,
+        invoice,
+        limit,
+        offset 
+      } = req.query;
 
       const limitNumber = Number(limit || 10);
       const offsetNumber = Number(offset || 0);
@@ -144,6 +153,7 @@ export const SaleController = {
           u.full_name AS seller_name,
           c.name AS client_name,
           s.total,
+          s.invoice,
           s.date
         FROM sales AS s
           INNER JOIN users AS u ON u.id = s.id_user
@@ -175,6 +185,50 @@ export const SaleController = {
       if(end_timestamp){
         queryData.end_timestamp = `${end_timestamp} 23:59:59`;
         query += " AND s.date <= :end_timestamp";
+      }
+      if(invoice){
+        const invoiceNumber = Number(invoice);
+        if(invoiceNumber === 0 || invoiceNumber === 1) {
+          return res.status(400).json({
+            "success": false,
+            "message": '¡Debe especificar con el formato correcto para obtener la factura!'
+          });
+        }
+
+        queryData.invoice = invoiceNumber;
+        query += ' AND invoice = :invoice'
+      }
+
+      if(min_total || max_total) {
+        let min = Number(min_total || 0);
+        const max = Number(max_total || 2147483646);
+        
+        if (isNaN(min) || isNaN(max)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número en los campos de total.'
+          });
+        }
+
+        if(min < 0) min = 0;
+
+        if(max > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El total máximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        if(min > max) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El total minimo no puede superar al total máximo.'
+          });
+        }
+
+        queryData.min_total = min;
+        queryData.max_total = max;
+        query += 'AND (stock >= :min_total AND stock <= :max_total)'
       }
       
       query += " LIMIT :limit OFFSET :offset";
