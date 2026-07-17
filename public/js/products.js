@@ -12,7 +12,7 @@ document.addEventListener('click', (e) => {
 
   if(productId) {
     if(button.classList.contains('btn-danger')) {
-      deleteProductById(productId, button);
+      showConfirm(`¿Estás seguro de eliminar el producto (ID: ${productId})`, () => deleteProductById(productId, button));
     } else {
       setFormEdit(productId);
       openEditModal();
@@ -182,7 +182,7 @@ document.getElementById('btnResetEdit').addEventListener('click', () => {
 */
 const deleteProductById = async (productId, element) => {
   try {
-    const response = await fetch(`${PRODUCT_URL_URL}/${productId}`, {
+    const response = await fetch(`${PRODUCT_URL}/${productId}`, {
       method: 'DELETE',
       credentials: 'include'
     });
