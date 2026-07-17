@@ -107,7 +107,15 @@ export const ProductController = {
 
   getProducts: async (req: Request<{}, {}, {}, GetProductsDTO>, res: Response) => {
     try{
-      const { name, unit, limit, offset } = req.query;
+      const { 
+        name,
+        unit, 
+        minStock, maxStock, 
+        minContent, maxContent,
+        minPrice, maxPrice,
+        limit, 
+        offset 
+      } = req.query;
 
       let query = `SELECT * FROM products WHERE 1 = 1`;
 
@@ -130,6 +138,107 @@ export const ProductController = {
       if(unit !== undefined){
         productData.unit = unit;
         query += " AND unit = :unit";
+      }
+
+      if(minStock !== undefined || maxStock !== undefined) {
+        let minStockNumber = Number(minStock || 0);
+        const maxStockNumber = Number(maxStock || 2147483646);
+
+        if (isNaN(minStockNumber) || isNaN(maxStockNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número en los campos de stock.'
+          });
+        }
+
+        if(minStockNumber < 0) minStockNumber = 0;
+
+        if(minStockNumber > maxStockNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock minimo no puede superar al stock máximo.'
+          });
+        }
+
+        if(maxStockNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock máximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        productData.minStock = minStockNumber;
+        productData.maxStock = maxStockNumber;
+        query += ' AND (stock >= :minStock AND stock <= :maxStock)'
+      }
+
+      if(minContent !== undefined || maxContent !== undefined) {
+        let minContentNumber = Number(minContent || 1);
+        const maxContentNumber = Number(maxContent || 2147483646);
+
+        if (isNaN(minContentNumber) || isNaN(maxContentNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número en los campos de contenido neto.'
+          });
+        }
+
+        if(minContentNumber < 0) minContentNumber = 0;
+
+        if(minContentNumber > maxContentNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto minimo no puede superar al contenido máximo.'
+          });
+        }
+
+        if(maxContentNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido máximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        if(unit === undefined) {
+          productData.unit = 'ml';
+          query += ' AND (unit = :unit)';
+        }
+
+        productData.minContent = minContentNumber;
+        productData.maxContent = maxContentNumber;
+        query += ' AND (net_content >= :minContent AND net_content <= :maxContent)';
+      }
+
+      if(minPrice !== undefined || maxPrice !== undefined) {
+        let minPriceNumber = Number(minPrice || 0);
+        const maxPriceNumber = Number(maxPrice || 999999999);
+
+        if (isNaN(minPriceNumber) || isNaN(maxPriceNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número en los campos de precio.'
+          });
+        }
+
+        if(minPriceNumber < 0) minPriceNumber = 0;
+
+        if(minPriceNumber > maxPriceNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio minimo no puede superar al precio máximo.'
+          });
+        }
+
+        if(maxPriceNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio máximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        productData.minPrice = minPriceNumber;
+        productData.maxPrice = maxPriceNumber;
+        query += ' AND (price >= :minPrice AND price <= :maxPrice)'
       }
 
       query += " LIMIT :limit OFFSET :offset";

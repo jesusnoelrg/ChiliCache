@@ -7,7 +7,8 @@
   <title>ChiliCache | Productos</title>
   <!--Bootstrap-->
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <!--CSS mis estilos-->
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <!--CSS my styles-->
   <link rel="stylesheet" href="/css/general.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -83,34 +84,77 @@
           de productos existentes, consultar el listado de productos disponibles y buscar productos específicos.</p>
       </div>
       <div class="m-5 p-5 bg-white rounded-10 shadow-sm">
-        <form class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <button type="button" class="btn-primario px-3 py-2 rounded-10 shadow" data-bs-toggle="modal"
-              data-bs-target="#formNuevoProducto"><i class="bi bi-person-plus-fill"></i> Agregar producto</button>
+            <button
+              data-bs-toggle="modal" data-bs-target="#modalCreateProduct"
+              type="button" class="btn-primario px-3 py-2 rounded-10 shadow" ><i
+                class="bi bi-person-plus-fill"></i> Crear producto</button>
           </div>
           <div class="d-flex">
-            <div class="me-3">
-              <h6>Buscar producto por: </h6>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                <label class="form-check-label" for="flexRadioDefault1">
-                  ID
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                <label class="form-check-label" for="flexRadioDefault2">
-                  Nombre
-                </label>
-              </div>
+            <div class="form-floating" id="blockSearch">
+              <input type="text" class="form-control" id="inputSearch" placeholder="Ingresar ID">
+              <label id="lblSearch" for="inputSearch"></label>
             </div>
-            <div class="form-floating me-3">
-              <input type="email" class="form-control" id="floatingInput" placeholder="Ingresar ID">
-              <label for="floatingInput">Producto</label>
+
+            <button id="btnSearch" type="button" class="btn btn-secondary px-4 fs-5 ms-3">
+              <i class="bi bi-search"></i>
+            </button>
+
+            <div class="dropdown">
+              <button type="button" class="btn btn-dark ms-2 px-4 fs-7 h-100 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Filtros
+              </button>
+              <ul class="dropdown-menu p-3" style="width: 250px;">
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioName" value="name" checked>
+                    <label class="form-check-label" for="radioName">
+                      Nombre
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioUnit" value="unit">
+                    <label class="form-check-label" for="radioUnit">
+                      Unit
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioContent" value="content">
+                    <label class="form-check-label" for="radioContent">
+                      Cont. Neto
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioPrice" value="price">
+                    <label class="form-check-label" for="radioPrice">
+                      Price
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioStock" value="stock">
+                    <label class="form-check-label" for="radioStock">
+                      Stock
+                    </label>
+                  </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  Límite: 
+                  <input type="number" class="form-control" id="inputLimit" placeholder="10">
+                </li>
+              </ul>
             </div>
-            <button class="btn btn-secondary px-4 fs-5"><i class="bi bi-search"></i></button>
           </div>
-        </form>
+        </div>
         <table class="table table-hover table-striped table-borderless">
           <thead class="table-dark">
             <tr>
@@ -120,42 +164,11 @@
               <th scope="col">Cont. Neto</th>
               <th scope="col">Unidad de Medida</th>
               <th scope="col">Stock</th>
-              <th scope="col">Imagén</th>
               <th scope="col">Acciones</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <th scope="row">PR1</th>
-              <td>Salsa Chile de Árbol</td>
-              <td>$20.50</td>
-              <td>355</td>
-              <td>ml</td>
-              <td>100</td>
-              <td><img src="./img/salsa_chile_de_arbol.png" class="img-fluid" width="50px" height="50px" alt="Producto">
-              </td>
-              <td>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                  title="Actualizar la información del producto."><i class="bi bi-gear-fill"></i></button>
-                <button class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                  title="Eliminar producto del sistema."><i class="bi bi-trash3-fill"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">PR2</th>
-              <td>Salsa de Chiltepin</td>
-              <td>$25.00</td>
-              <td>355</td>
-              <td>ml</td>
-              <td>50</td>
-              <td><img src="./img/salsa_chiltepin.png" class="img-fluid" width="50px" height="50px" alt="Producto"></td>
-              <td>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                  title="Actualizar la información del producto."><i class="bi bi-gear-fill"></i></button>
-                <button class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                  title="Eliminar producto del sistema."><i class="bi bi-trash3-fill"></i></button>
-              </td>
-            </tr>
+          <tbody id="productList">
+            <!--Products list-->
           </tbody>
         </table>
       </div>
@@ -163,122 +176,247 @@
   </main>
 
 
-
-  <div class="modal fade" id="formNuevoProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!--
+  ========================================================
+        CREATE PRODUCT FORM
+  ========================================================
+  -->
+  <div class="modal fade" id="modalCreateProduct" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
+        <!-- Title -->
         <div class="modal-header header-title">
           <h5 class="modal-title text-white fw-bold fs-3">NUEVO PRODUCTO</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body bg-main">
           <form class="p-4 pb-3">
-            <div>
-              <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="floatingProducto" placeholder="Nombre del producto">
-                <label for="floatingProducto" class="text-gray"><i class="bi bi-box-fill"></i> Nombre del
-                  producto</label>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <div class="form-floating mb-2">
-                    <input type="number" class="form-control" id="floatingPrecio" placeholder="Precio">
-                    <label for="floatingPrecio" class="text-gray"><i class="bi bi-cash"></i> Precio unitario</label>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="form-floating mb-2">
-                    <input type="number" class="form-control" id="floatingNeto" placeholder="Contenido neto">
-                    <label for="floatingNeto" class="text-gray"><i class="bi bi-collection-fill"></i> Contenido
-                      neto</label>
-                  </div>
+            <!-- Product name -->
+            <div class="form-floating mb-2">
+              <input type="text" class="form-control" id="createName" placeholder="Nombre del producto">
+              <label for="createName" class="text-gray">
+                <i class="bi bi-box-fill"></i> Nombre del producto
+              </label>
+            </div>
+
+            <!-- Price and Net content -->
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="createPrice" placeholder="Precio">
+                  <label for="createPrice" class="text-gray">
+                    <i class="bi bi-cash"></i> Precio unitario
+                  </label>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-6">
-                  <div class="form-floating">
-                    <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                      <option selected>Mililitros (ml)</option>
-                      <option value="1">Litros (L)</option>
-                      <option value="2">Gramos (g)</option>
-                    </select>
-                    <label for="floatingSelect" class="text-gray"><i class="bi bi-list"></i> Unidad de medida</label>
-                  </div>
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="createNetContent" placeholder="Contenido neto">
+                  <label for="createNetContent" class="text-gray">
+                    <i class="bi bi-collection-fill"></i> Contenido neto
+                  </label>
                 </div>
-                <div class="col-6">
-                  <div class="form-floating mb-2">
-                    <input type="number" class="form-control" id="floatingStock" placeholder="Stock">
-                    <label for="floatingStock" class="text-gray"><i class="bi bi-boxes"></i> Stock</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <label for="imagenProducto" class="fw-bold">Imagen del producto</label>
-                <input type="file" class="form-control" id="imagenProducto" accept="image/*">
               </div>
             </div>
-          </form>
 
-          <!--<div class="px-5 py-2 d-flex justify-content-center">
-                    <form class="col-10 mx-4 p-4 bg-white rounded-10 shadow">
-                        <h4 class="text-main fw-bold mb-4">Información del producto</h4>
-                        <div>
-                            <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="floatingProducto" placeholder="Nombre del producto">
-                                <label for="floatingProducto" class="text-gray"><i class="bi bi-box-fill"></i> Nombre del producto</label>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control" id="floatingPrecio" placeholder="Precio">
-                                        <label for="floatingPrecio" class="text-gray"><i class="bi bi-cash"></i> Precio unitario</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control" id="floatingNeto" placeholder="Contenido neto">
-                                        <label for="floatingNeto" class="text-gray"><i class="bi bi-collection-fill"></i> Contenido neto</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                                          <option selected>Mililitros (ml)</option>
-                                          <option value="1">Litros (L)</option>
-                                          <option value="2">Gramos (g)</option>
-                                        </select>
-                                        <label for="floatingSelect" class="text-gray"><i class="bi bi-list"></i> Unidad de medida</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control" id="floatingStock" placeholder="Stock">
-                                        <label for="floatingStock" class="text-gray"><i class="bi bi-boxes"></i> Stock</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 my-3">
-                                <label for="imagenProducto" class="fw-bold">Imagen del producto</label>
-                                <input type="file" class="form-control" id="imagenProducto" accept="image/*">
-                            </div>
-                        </div>
-                    </form>
-                </div>-->
-          <div class="d-flex justify-content-center my-3">
-            <button type="button" class="btn btn-dark px-4 py-2 me-4 rounded-10"><i class="bi bi-person-fill-add"></i>
-              Guardar</button>
-            <button type="button" class="btn btn-secondary px-4 me-4 py-2 rounded-10"><i class="bi bi-eraser"></i>
-              Limpiar</button>
-          </div>
+            <!-- Unit of measurement and Stock -->
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <select class="form-select" id="createUnit" aria-label="Unidad de medida">
+                    <option value="ml" selected>Mililitros (ml)</option>
+                    <option value="L">Litros (L)</option>
+                    <option value="g">Gramos (g)</option>
+                  </select>
+                  <label for="createUnit" class="text-gray">
+                    <i class="bi bi-list"></i> Unidad de medida
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="createStock" placeholder="Stock">
+                  <label for="createStock" class="text-gray">
+                    <i class="bi bi-boxes"></i> Stock
+                  </label>
+                </div>
+              </div>
+            </div>
+            <!-- Buttons -->
+            <div class="d-flex justify-content-center my-3">
+              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10">
+                <i class="bi bi-person-fill-add"></i> Guardar
+              </button>
+              <button type="reset" class="btn btn-secondary px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+
+  <!--
+  ========================================================
+        EDIT PRODUCT FORM
+  ========================================================
+  -->
+  <div class="modal fade" id="modalCreateProduct" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <!-- Title -->
+        <div class="modal-header header-title">
+          <h5 class="modal-title text-white fw-bold fs-3">EDITAR PRODUCTO</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body bg-main">
+          <form class="p-4 pb-3">
+            <!-- Product name -->
+            <div class="form-floating mb-2">
+              <input type="text" class="form-control" id="editName" placeholder="Nombre del producto">
+              <label for="editName" class="text-gray">
+                <i class="bi bi-box-fill"></i> Nombre del producto
+              </label>
+            </div>
+
+            <!-- Price and Net content -->
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="editPrice" placeholder="Precio">
+                  <label for="editPrice" class="text-gray">
+                    <i class="bi bi-cash"></i> Precio unitario
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="editNetContent" placeholder="Contenido neto">
+                  <label for="editNetContent" class="text-gray">
+                    <i class="bi bi-collection-fill"></i> Contenido neto
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unit of measurement and Stock -->
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <select class="form-select" id="editUnit" aria-label="Unidad de medida">
+                    <option value="ml" selected>Mililitros (ml)</option>
+                    <option value="L">Litros (L)</option>
+                    <option value="g">Gramos (g)</option>
+                  </select>
+                  <label for="editUnit" class="text-gray">
+                    <i class="bi bi-list"></i> Unidad de medida
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating mb-2">
+                  <input type="number" class="form-control" id="editStock" placeholder="Stock">
+                  <label for="editStock" class="text-gray">
+                    <i class="bi bi-boxes"></i> Stock
+                  </label>
+                </div>
+              </div>
+            </div>
+            <!-- Buttons -->
+            <div class="d-flex justify-content-center my-3">
+              <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10">
+                <i class="bi bi-person-fill-add"></i> Guardar
+              </button>
+              <button type="reset" class="btn btn-secondary px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+    CONFIRM MODAL
+  ======================================================== -->
+  <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Header -->
+        <div class="modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center" style="background-color: var(--confirmacion);">
+            <i class="bi bi-question text-white fs-1"></i>
+          </div>
+          <h4 class="modal-title w-100 text-center mt-5">Confirmación</h4>
+        </div>
+        
+        <!-- Body -->
+        <div class="modal-body">
+          <p id="mensajeConfirmacion" class="text-center fs-6">¿Estás seguro de hacer esto?</p>
+          
+          <!-- Buttons -->
+          <div class="d-flex justify-content-center py-2">
+            <button type="button" class="btn btn-success rounded me-4 px-4 py-2" id="btnConfirmacion">
+              Sí
+            </button>
+            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">
+              No
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!--
+  ========================================================
+        ALERT MODAL
+  ========================================================
+  -->
+  <div class="modal fade" id="modalAlerta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Header -->
+        <div class="modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
+            <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
+          </div>
+          <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
+        </div>
+        
+        <!-- Body -->
+        <div class="modal-body p-4">
+          <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
+          
+          <!-- Buttons -->
+          <div class="d-flex justify-content-center pt-2">
+            <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta" data-bs-dismiss="modal">
+              Aceptar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!--JS-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="./js/index.js"></script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+
+  <script src="/js/utils/tooltip.js"></script>
+  <script src="/js/utils/showAlerts.js"></script>
+  <script src="/js/utils/validationForm.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/utils/auth-global.js"></script>
+  <script src="/js/global-layout.js"></script>
 </body>
 
 </html>

@@ -15,7 +15,13 @@ export interface UpdateProductDTO {
 
 export interface GetProductsDTO {
   name?: string;
-  unit?: string;
+  unit?: 'g' | 'kg' | 'ml' | 'L';
+  minStock?: number;
+  maxStock?: number;
+  minContent?: number;
+  maxContent?: number;
+  minPrice?: number;
+  maxPrice?: number;
   limit?: number;
   offset?: number;
 }
