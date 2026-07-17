@@ -1,4 +1,48 @@
-const SALES_URL = 'http://localhost:3000/api/sales';
+const API = 'http://localhost:3000/api'
+const SALES_URL = `${API}/sales`;
+const CLIENTS_URL = `${API}/clients`;
+
+/*
+  ----------------------------------------------------------------
+  CREATE SALES
+*/
+
+const btnSearchClient = document.getElementById('btnSearchClient');
+const inputSearchClient = document.getElementById('inputSearchClient');
+
+
+
+btnSearchClient.addEventListener('click', async () => {
+
+});
+
+let debounceTime;
+
+const renderListClients = (name) => {
+  clearTimeout(debounceTime);
+
+  debounceTime = setTimeout(async () => {
+    const queryParams = new URLSearchParams({
+      name: name,
+      limit: 10
+    });
+
+    try {
+      const res = await fetch(`${CLIENTS_URL}?${queryParams.toString()}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+
+    } catch (err) {
+      console.error(err);
+    }
+  }, 500)
+}
+
+inputSearchClient.addEventListener('input', () => {
+
+})
 
 /*
   ----------------------------------------------------------------

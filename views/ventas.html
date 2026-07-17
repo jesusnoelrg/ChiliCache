@@ -217,26 +217,31 @@
   </main>
 
 
-
+  <!-- ========================================================
+    CREATE SALE MODAL
+  ======================================================== -->
   <div class="modal fade" id="formCreateSale" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content">
         <div class="modal-body p-0">
           <div class="row g-0">
             
-            <!-- Panel Lateral: Datos de la Venta -->
+            <!-- Side panel: Sale data -->
             <div class="col-4 p-4 background-datos-venta">
               <h4 class="text-main mb-4 fw-bold">NUEVA VENTA</h4>
               <hr>
               
-              <!-- Cliente -->
+              <!-- Client -->
               <div class="mb-3">
-                <label class="form-label fw-bold">Buscar cliente por ID</label>
-                <div class="input-group">
-                  <input type="text" class="form-control" value="CL001" placeholder="ID Cliente">
-                  <button type="button" class="btn btn-secondary">
-                    <i class="bi bi-search"></i>
-                  </button>
+                <label class="form-label fw-bold">Buscar cliente:</label>
+                <div class="autocomplete-container">
+                  <div class="input-group">
+                    <input id="inputSearchClient" type="text" class="form-control" value="" placeholder="Nombre del cliente">
+                    <button id="btnSearchClient" type="button" class="btn btn-secondary">
+                      <i class="bi bi-search"></i>
+                    </button>
+                  </div>
+                  <ul id="listClients"></ul>
                 </div>
                 <div class="mt-2">
                   <small><b>Cliente: </b> Alejandro Ramírez Torres</small>
@@ -244,7 +249,7 @@
               </div>
               <hr>
               
-              <!-- Fecha y Pago -->
+              <!-- Date and pay -->
               <div class="mb-3">
                 <label class="form-label fw-bold">Fecha de la venta</label>
                 <input type="date" class="form-control" value="2024-09-22">
@@ -261,7 +266,7 @@
               </div>
               <hr>
               
-              <!-- Totales -->
+              <!-- Totals -->
               <div class="my-4">
                 <h5 class="fw-bold d-flex justify-content-between">
                   Cambio: <span class="badge bg-success"><i class="bi bi-cash"></i> $57.50</span>
@@ -276,7 +281,7 @@
               </button>
             </div>
 
-            <!-- Panel Principal: Gestión de Productos -->
+            <!-- Main side: Product management -->
             <div class="col-8 p-4">
               <form class="row g-2 mb-4 align-items-end">
                 <div class="col">
@@ -313,26 +318,20 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- Fila de ejemplo -->
-                    <tr>
-                      <td>Salsa Chile de Árbol</td>
-                      <td>$20.50</td>
-                      <td><input type="number" value="15" class="form-control form-control-sm"></td>
-                      <td class="text-center">
-                        <button class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-arrow-clockwise"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3-fill"></i></button>
-                      </td>
-                    </tr>
+                    <!-- Product list-->
                   </tbody>
                 </table>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- ========================================================
+    GENERATE REPORT MODAL
+  ======================================================== -->
   <div class="modal fade" id="formReport" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

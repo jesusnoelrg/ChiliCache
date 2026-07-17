@@ -203,3 +203,31 @@
     align-items: center;
 }
 
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+}
+
+#listClients {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    max-width: 200px;
+    max-height: 250px;
+    overflow-y: auto;
+    list-style: none;
+    background-color: rgb(250, 250, 250);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.26) 0px 0px 12px;
+    margin: 0;
+    padding: 0;
+    z-index: 99;
+}
+
+#listClients > li {
+    padding: 10px 0px 5px 10px;
+}
+
+#listClients > li:hover{
+    background-color: rgb(235, 235, 235);
+}
+
