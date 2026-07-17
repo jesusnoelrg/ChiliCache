@@ -307,6 +307,7 @@ const renderTableClients = (clients) => {
 
   if(!clients || !Array.isArray(clients) || clients.length === 0){
     table.innerHTML = `<tr><td colspan="5" class="text-center">No se han encontrado clientes.</td></tr>`;
+    return;
   }
 
   let data = '';

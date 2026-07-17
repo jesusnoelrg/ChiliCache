@@ -64,18 +64,21 @@
     <header class="d-flex justify-content-between align-items-center shadow">
       <div class="d-flex align-items-center">
         <button type="button" id="btnAside" class="ms-2 px-2 border-0 rounded-10"><i
-            class="bi bi-list fs-3 fw-bold text-primario"></i></button>
+          lass="bi bi-list fs-3 fw-bold text-primario"></i></button>
       </div>
       <div class="d-flex align-items-center me-3">
         <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
           <img src="./img/admin.png" class="p-1 rounded-20" width="35px" height="35px">
           <div class="d-flex flex-column justify-content-start ms-2">
-            <p class="fw-bold text-dark m-0"><span class="badge perfil-badge rounded-pill bg-danger">Dueño</span>
-              Usuario 1</p>
-            <p class="text-gray m-0">ChiliCache@gmail.com</p>
+            <div class="d-flex flex-row">
+              <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
+              <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+            </div>
+            <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
           </div>
         </div>
-      </div>
+        <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>
+       </div>
     </header>
     <section>
       <div class="m-5 bg-white px-5 py-3 rounded-10 shadow-sm">
@@ -92,9 +95,28 @@
                 class="bi bi-person-plus-fill"></i> Crear producto</button>
           </div>
           <div class="d-flex">
-            <div class="form-floating" id="blockSearch">
-              <input type="text" class="form-control" id="inputSearch" placeholder="Ingresar ID">
+            <div class="form-floating d-block" id="normalSearch">
+              <input type="text" class="form-control" id="inputSearch" placeholder="">
               <label id="lblSearch" for="inputSearch"></label>
+            </div>
+            <div id="unitSearch" class="form-floating d-none">
+              <select class="form-select" id="unitSelect" aria-label="Floating label select unit">
+                <option value="ml" selected>Mililitros (ml)</option>
+                <option value="L">Litros (L)</option>
+                <option value="g">Gramos (g)</option>
+                <option value="kg">Kilogramos (kg)</option>
+              </select>
+              <label for="unitSelect">Unidad de medida</label>
+            </div>
+            <div id="rangeSearch" class="d-none ms-3">
+              <div class="form-floating me-3" id="minRange">
+                <input type="number" class="form-control" id="inputMin" placeholder="">
+                <label id="lblMin" for="inputMin"></label>
+              </div>
+              <div class="form-floating" id="maxRange">
+                <input type="number" class="form-control" id="inputMax" placeholder="">
+                <label id="lblMax" for="inputMax"></label>
+              </div>
             </div>
 
             <button id="btnSearch" type="button" class="btn btn-secondary px-4 fs-5 ms-3">
@@ -124,7 +146,7 @@
                 </li>
                 <li>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="productFilters" id="radioContent" value="content">
+                    <input class="form-check-input" type="radio" name="productFilters" id="radioContent" value="net_content">
                     <label class="form-check-label" for="radioContent">
                       Cont. Neto
                     </label>
@@ -162,7 +184,6 @@
               <th scope="col">Nombre</th>
               <th scope="col">Precio</th>
               <th scope="col">Cont. Neto</th>
-              <th scope="col">Unidad de Medida</th>
               <th scope="col">Stock</th>
               <th scope="col">Acciones</th>
             </tr>
@@ -191,7 +212,7 @@
         </div>
 
         <div class="modal-body bg-main">
-          <form class="p-4 pb-3">
+          <form id="formCreateProduct" class="p-4 pb-3">
             <!-- Product name -->
             <div class="form-floating mb-2">
               <input type="text" class="form-control" id="createName" placeholder="Nombre del producto">
@@ -228,6 +249,7 @@
                     <option value="ml" selected>Mililitros (ml)</option>
                     <option value="L">Litros (L)</option>
                     <option value="g">Gramos (g)</option>
+                    <option value="kg">Kilogramos (kg)</option>
                   </select>
                   <label for="createUnit" class="text-gray">
                     <i class="bi bi-list"></i> Unidad de medida
@@ -263,17 +285,17 @@
         EDIT PRODUCT FORM
   ========================================================
   -->
-  <div class="modal fade" id="modalCreateProduct" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="modalEditProduct" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <!-- Title -->
         <div class="modal-header header-title">
-          <h5 class="modal-title text-white fw-bold fs-3">EDITAR PRODUCTO</h5>
+          <h5 id="titleModalEdit" class="modal-title text-white fw-bold fs-3">EDITAR PRODUCTO</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body bg-main">
-          <form class="p-4 pb-3">
+          <form id="formEditProduct" class="p-4 pb-3">
             <!-- Product name -->
             <div class="form-floating mb-2">
               <input type="text" class="form-control" id="editName" placeholder="Nombre del producto">
@@ -310,17 +332,10 @@
                     <option value="ml" selected>Mililitros (ml)</option>
                     <option value="L">Litros (L)</option>
                     <option value="g">Gramos (g)</option>
+                    <option value="kg">Kilogramos (kg)</option>
                   </select>
                   <label for="editUnit" class="text-gray">
                     <i class="bi bi-list"></i> Unidad de medida
-                  </label>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="form-floating mb-2">
-                  <input type="number" class="form-control" id="editStock" placeholder="Stock">
-                  <label for="editStock" class="text-gray">
-                    <i class="bi bi-boxes"></i> Stock
                   </label>
                 </div>
               </div>
@@ -329,6 +344,9 @@
             <div class="d-flex justify-content-center my-3">
               <button type="submit" class="btn btn-dark px-4 py-2 me-4 rounded-10">
                 <i class="bi bi-person-fill-add"></i> Guardar
+              </button>
+              <button id="btnResetEdit" type="button" class="btn btn-danger px-4 me-4 py-2 rounded-10">
+                <i class="bi bi-eraser"></i> Restablecer
               </button>
               <button type="reset" class="btn btn-secondary px-4 me-4 py-2 rounded-10">
                 <i class="bi bi-eraser"></i> Limpiar

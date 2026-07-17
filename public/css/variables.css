@@ -31,6 +31,11 @@
     --info: rgb(104, 104, 255);
     --confirmacion: #8d64ff;
 
+    /*Stock Color */
+    --stock-green: rgb(27, 134, 0);
+    --stock-yellow: rgb(129, 129, 0);
+    --stock-red: rgb(128, 1, 1);
+
     /*Otros*/
     --disable: #d94141d1;
 }

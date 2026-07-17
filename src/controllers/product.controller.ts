@@ -35,8 +35,9 @@ export const ProductController = {
 
       if(isNaN(contentNumber) || 
         isNaN(priceNumber)) return res.status(400).json({ "success": false, "message": "Has ingresado datos tipo cadena en datos númericos."});
-      if(priceNumber < 0 || contentNumber < 0) return res.status(400).json({"success": false, "message": "No se aceptan números negativos."})
-      
+      if(priceNumber <= 0) return res.status(400).json({"success": false, "message": "El precio NO debe ser menor o igual a 0."})
+      if(contentNumber <= 1)  return res.status(400).json({"success": false, "message": "El contenido neto NO puede ser inferior a 1."})
+
       const isProductNameUse = isRecordFieldPresent({table: "products", column: "name", value: name});
       if(isProductNameUse) return res.status(409).json({"success": false, "message": "¡El nombre del producto ya esta en uso!"});
 
@@ -278,16 +279,29 @@ export const ProductController = {
 
       const productData: any = { id: idNumber }
 
-      if(name !== undefined) productData.name = name;
+      if(name !== undefined && name !== '') productData.name = name;
       if(unit !== undefined) productData.unit = unit;
       if(net_content !== undefined){
         const contentNumber = Number(net_content);
         if(isNaN(contentNumber)) return res.status(400).json({"success": false, "message": "El valor del contenido neto debe ser un número."});
+        if(contentNumber <= 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto NO puede ser menor o igual a 0.'
+          });
+        }
+        
         productData.net_content = contentNumber;
       }
       if(price !== undefined){
         const priceNumber = Number(price);
         if(isNaN(priceNumber)) return res.status(400).json({"success": false, "message": "El precio del producto debe ser un número."});
+        if(priceNumber <= 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio NO puede ser menor o igual a 0.'
+          });
+        }
         productData.price = priceNumber;
       }
 
