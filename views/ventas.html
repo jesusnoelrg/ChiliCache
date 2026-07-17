@@ -99,20 +99,20 @@
               <p class="mb-0 fw-bold">¿Cuenta con facturación?</p>
               <div class="d-flex ">
                 <div class="form-check me-3">
-                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1" checked>
-                  <label class="form-check-label" for="radioDefault1">
+                  <input class="form-check-input" type="radio" name="radioInvoice" id="radInvoiceAll" value="all" checked>
+                  <label class="form-check-label" for="radioInvoice">
                     Todos
                   </label>
                 </div>
                 <div class="form-check me-3">
-                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
-                  <label class="form-check-label" for="radioDefault2">
+                  <input class="form-check-input" type="radio" name="radioInvoice" value="1">
+                  <label class="form-check-label" for="radioInvoice">
                     Sí
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
-                  <label class="form-check-label" for="radioDefault2">
+                  <input class="form-check-input" type="radio" name="radioInvoice" value="0">
+                  <label class="form-check-label" for="radioInvoice">
                     No
                   </label>
                 </div>
@@ -369,6 +369,76 @@
       </div>
     </div>
   </div>
+
+
+  <!-- ========================================================
+    CONFIRM MODAL
+  ======================================================== -->
+  <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Header -->
+        <div class="modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center" style="background-color: var(--confirmacion);">
+            <i class="bi bi-question text-white fs-1"></i>
+          </div>
+          <h4 class="modal-title w-100 text-center mt-5">Confirmación</h4>
+        </div>
+        
+        <!-- Body -->
+        <div class="modal-body">
+          <p id="mensajeConfirmacion" class="text-center fs-6">¿Estás seguro de hacer esto?</p>
+          
+          <!-- Buttons -->
+          <div class="d-flex justify-content-center py-2">
+            <button type="button" class="btn btn-success rounded me-4 px-4 py-2" id="btnConfirmacion">
+              Sí
+            </button>
+            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">
+              No
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!--
+  ========================================================
+        ALERT MODAL
+  ========================================================
+  -->
+  <div class="modal fade" id="modalAlerta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Header -->
+        <div class="modal-alert-header">
+          <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
+            <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
+          </div>
+          <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
+        </div>
+        
+        <!-- Body -->
+        <div class="modal-body p-4">
+          <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
+          
+          <!-- Buttons -->
+          <div class="d-flex justify-content-center pt-2">
+            <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta" data-bs-dismiss="modal">
+              Aceptar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!--JS-->
   <script src="/js/bootstrap.bundle.min.js"></script>
 

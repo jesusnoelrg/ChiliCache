@@ -45,6 +45,8 @@ const inputMin = document.getElementById('inputMin');
 const inputMax = document.getElementById('inputMax');
 
 const invoiceSearch = document.getElementById('invoiceSearch');
+const checkInvoice = document.getElementById('checkInvoice');
+const btnSearch = document.getElementById('btnSearch')
 
 const updateFilter = () => {
   const checked = document.querySelector('input[name=saleFilters]:checked').value;
@@ -60,11 +62,16 @@ const updateFilter = () => {
     if(checked === 'timestamp') {
       textMin = 'Fecha inicial';
       textMax = 'Fecha final';
+      inputMin.type = 'date';
+      inputMax.type = 'date';
     } else {
       textMin = `${filterDisplay} Min.`;
       textMax = `${filterDisplay} Max.`;
+      inputMin.type = 'number';
+      inputMax.type = 'number';
     }
 
+    
     lblMin.innerHTML = textMin;
     lblMax.innerHTML = textMax;
     onTypeSearch.range();
@@ -77,20 +84,52 @@ const updateFilter = () => {
 }
 
 document.getElementById('checkInvoice').addEventListener('change', () => {
-  const check = document.getElementById('checkInvoice').checked;
 
-  if(check) {
+  if(checkInvoice.checked) {
     invoiceSearch.classList.add('d-block');
     invoiceSearch.classList.remove('d-none');
   } else {
     invoiceSearch.classList.remove('d-block');
     invoiceSearch.classList.add('d-none');
   }
+
+  fetchSales();
 })
 
 document.querySelectorAll('input[name=saleFilters]').forEach(radio => {
   radio.addEventListener('change', () => updateFilter())
 })
+
+document.querySelectorAll('input[name=radioInvoice]').forEach(radio => {
+  radio.addEventListener('change', () => fetchSales())
+})
+
+
+btnSearch.addEventListener('click', (e) => {
+  e.preventDefault();
+  fetchSales();
+})
+
+inputSearch.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    fetchSales();
+  }
+});
+
+inputMin.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    fetchSales();
+  }
+});
+
+inputMax.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    fetchSales();
+  }
+});
 
 
 const fetchSales = async () => {
@@ -105,7 +144,21 @@ const fetchSales = async () => {
 
   if(filtersRange.includes(currentFilter)) {
     if(currentFilter === 'timestamp'){
+      let startDate = new Date(inputMin.value || '2000-01-01');
+      let endDate = new Date(inputMax.value || '2100-01-01');
 
+      if(isNaN(startDate.getTime()) || isNaN(endDate.getTime())){
+        showAlert('Las dos fechas deben ser validas.', 'info');
+        return;
+      }
+
+      if (startDate > endDate) {
+        showAlert('La fecha inicial no puede superar a la fecha final', 'info');
+        return;
+      }
+
+      queryParams.append(`start_timestamp`, inputMin.value);
+      queryParams.append(`end_timestamp`, inputMax.value);
     } else {
       let min = Number(inputMin.value || 0);
       let max = Number(inputMax.value || 2147483646);
@@ -122,6 +175,19 @@ const fetchSales = async () => {
 
       queryParams.append(`min_${currentFilter}`, min.toString());
       queryParams.append(`max_${currentFilter}`, max.toString());
+    }
+  } else {
+    if(inputSearch || inputSearch !== '') {
+      queryParams.append(`${currentFilter}`, inputSearch.value.trim());
+    }
+  }
+
+  if(checkInvoice.checked) {
+    
+    const checkedInvoice = document.querySelector('input[name=radioInvoice]:checked');
+
+    if(checkedInvoice.value === '0' || checkedInvoice.value === '1') {
+      queryParams.append('invoice', checkedInvoice.value);
     }
   }
 

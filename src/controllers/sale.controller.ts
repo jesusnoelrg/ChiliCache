@@ -134,8 +134,7 @@ export const SaleController = {
   getSales: async (req: Request<{}, {}, {}, GetSalesDTO>, res: Response) => {
     try{
       const { 
-        user_username,
-        user_full_name,
+        seller_name,
         client_name,
         start_timestamp, end_timestamp,
         min_total, max_total,
@@ -166,13 +165,9 @@ export const SaleController = {
         offset: offsetNumber
       };
 
-      if(user_username){
-        queryData.user_username = `%${user_username}%`;
-        query += " AND u.username LIKE :user_username"
-      }
-      if(user_full_name){
-        queryData.full_name = `%${user_full_name}%`;
-        query += " AND u.full_name LIKE :user_full_name"
+      if(seller_name){
+        queryData.seller_name = `%${seller_name}%`;
+        query += " AND u.username LIKE :seller_name"
       }
       if(client_name){
         queryData.client_name = `%${client_name}%`;
@@ -188,7 +183,7 @@ export const SaleController = {
       }
       if(invoice){
         const invoiceNumber = Number(invoice);
-        if(invoiceNumber === 0 || invoiceNumber === 1) {
+        if(invoiceNumber !== 0 && invoiceNumber !== 1) {
           return res.status(400).json({
             "success": false,
             "message": '¡Debe especificar con el formato correcto para obtener la factura!'
@@ -228,7 +223,7 @@ export const SaleController = {
 
         queryData.min_total = min;
         queryData.max_total = max;
-        query += 'AND (stock >= :min_total AND stock <= :max_total)'
+        query += 'AND (total >= :min_total AND total <= :max_total)'
       }
       
       query += " LIMIT :limit OFFSET :offset";

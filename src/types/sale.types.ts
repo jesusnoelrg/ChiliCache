@@ -17,8 +17,7 @@ export interface ProductRow {
 }
 
 export interface GetSalesDTO {
-  user_username?: string;
-  user_full_name?: string;
+  seller_name?: string;
   client_name?: string;
   start_timestamp?: string;
   end_timestamp?: string;
