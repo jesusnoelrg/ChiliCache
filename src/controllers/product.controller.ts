@@ -327,7 +327,7 @@ export const ProductController = {
 
   listProducts: async (req: Request, res: Response) => {
     try {
-      const query = 'SELECT id, name, price FROM products';
+      const query = 'SELECT id, name, price, stock FROM products';
       const result = db.prepare(query).all();
 
       return res.status(200).json({
