@@ -159,14 +159,32 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
     return;
   }
 
-  const productToAdd = {
-    ...product,
-    quantity: quantity
-  }
+  const isProductAdded = productsAdded.find(x => x.id === product.id);
 
-  productsAdded.push(productToAdd);
+  if(isProductAdded) {
+    sumQuantityProduct(isProductAdded, quantity, product.stock);
+  } else {
+    const productToAdd = {
+      ...product,
+      quantity: quantity
+    }
+
+    productsAdded.push(productToAdd);
+  }
+  
   renderTableProduct();
 })
+
+const sumQuantityProduct = (product, quantity, stock) => {
+  const newQuantity = quantity + product.quantity;
+
+  if(newQuantity > stock) {
+    showAlert('¡No puedes añadir más productos de los que hay en el stock!', 'info');
+    return;
+  }
+
+  product.quantity = newQuantity;
+}
 
 let productsAdded = [];
 
