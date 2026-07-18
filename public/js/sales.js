@@ -100,6 +100,8 @@ const fillSelectProducts = (data) => {
   })
 }
 
+let productList = []
+
 btnCreateSale.addEventListener('click', async () => {
   try {
     const res = await fetch(`${PRODUCTS_URL}/list/`, {
@@ -109,7 +111,9 @@ btnCreateSale.addEventListener('click', async () => {
 
     if(res.ok) {
       const result = await res.json();
-      fillSelectProducts(result.data);
+      productList = result.data;
+      fillSelectProducts(productList);
+      renderTableProduct();
     }
 
   } catch (err) { 
@@ -120,6 +124,87 @@ btnCreateSale.addEventListener('click', async () => {
 inputSearchClient.addEventListener('input', (e) => {
   searchClientsPredictive(e.target.value);
 })
+
+document.getElementById('btnAddProduct').addEventListener('click', () => {
+  const productId = selectProducts.value;
+  const inputQuantity = document.getElementById('inputQuantity').value;
+
+  if(productId === 'none'){
+    showAlert('Selecciona un producto para añadirlo.', 'info');
+    return;
+  }
+
+
+  const product = productList.find(x => x.id === Number(productId)) || null;
+
+  if(product === null) {
+    showAlert('Producto no encontrado.', 'error');
+    return;
+  }
+
+  const quantity = Number(inputQuantity);
+
+  if(isNaN(quantity)) {
+    showAlert('Añade un número valido en el campo de cantidad.', 'info');
+    return;
+  }
+
+  if(quantity <= 0) {
+    showAlert('Solo puedes añadir valores mayores a <b>0</b>.', 'info');
+    return;
+  }
+
+  if(quantity > product.stock) {
+    showAlert('¡No puedes añadir más productos de los que hay en el stock!', 'info');
+    return;
+  }
+
+  const productToAdd = {
+    ...product,
+    quantity: quantity
+  }
+
+  productsAdded.push(productToAdd);
+  renderTableProduct();
+})
+
+const productsAdded = [
+  /*{name: 'Salsa roja', price: 20.5, amount: 5},
+  {name: 'Salsa verde', price: 23.5, amount: 12}*/
+];
+
+const renderTableProduct = () => {
+  const table = document.getElementById('tableProduct');
+
+  if(!productsAdded || productsAdded.length === 0) {
+     table.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
+     return;
+  }
+
+  let data = '';
+
+  productsAdded.forEach(p => {
+    if(p.quantity <= 0) {
+      showAlert('Cantidad no valida.', 'error');
+      return;
+    }
+
+    data += `
+      <tr>
+        <th scope='row'>${p.name}</th>
+        <td>${p.price || 'N/A'}</td>
+        <td><input  type='number' class="form-control" value=${p.quantity}></td>
+        <td>
+          <button class="btn btn-danger" data-sale-id="${1}">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `
+  });
+
+  table.innerHTML = data;
+}
 
 /*
   ----------------------------------------------------------------

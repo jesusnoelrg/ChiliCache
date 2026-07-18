@@ -209,6 +209,7 @@
               </thead>
               <tbody id="saleList">
                 <!-- Sales -->
+              </tbody>
             </table>
           </div>
         </div>
@@ -294,12 +295,12 @@
                 </div>
                 <div class="col-3">
                   <div class="form-floating">
-                    <input type="number" class="form-control" id="inputCantidad" placeholder="Cantidad">
-                    <label for="inputCantidad">Cantidad</label>
+                    <input type="number" class="form-control" id="inputQuantity" placeholder="Cantidad">
+                    <label for="inputQuantity">Cantidad</label>
                   </div>
                 </div>
                 <div class="col-auto">
-                  <button type="button" class="btn btn-success h-100">
+                  <button id="btnAddProduct" type="button" class="btn btn-success h-100">
                     <i class="bi bi-plus-circle"></i> Añadir
                   </button>
                 </div>
@@ -315,7 +316,7 @@
                       <th class="text-center">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="tableProduct">
                     <!-- Product list-->
                   </tbody>
                 </table>
