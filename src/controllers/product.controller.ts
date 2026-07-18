@@ -325,6 +325,23 @@ export const ProductController = {
     }
   },
 
+  listProducts: async (req: Request, res: Response) => {
+    try {
+      const query = 'SELECT id, name, price FROM products';
+      const result = db.prepare(query).all();
+
+      return res.status(200).json({
+        'data': result
+      });
+    }catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      })
+    }
+  },
+
   deleteProduct: async(req: Request, res: Response) => {
     try{
       const { id } = req.params;

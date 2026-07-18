@@ -37,7 +37,7 @@ export const isAuthenticatedView = async (req: Request, res: Response, next: Nex
 
     if (!sessionData) {
       res.clearCookie('sid');
-      return res.redirect('/view/login');
+      return res.redirect('/login');
     }
 
     req.user = JSON.parse(sessionData);
