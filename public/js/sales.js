@@ -9,8 +9,9 @@ const CLIENTS_URL = `${API}/clients`;
 
 const btnSearchClient = document.getElementById('btnSearchClient');
 const inputSearchClient = document.getElementById('inputSearchClient');
+const clientValue = document.getElementById('clientValue');
 
-
+const listClients = document.getElementById('listClients');
 
 btnSearchClient.addEventListener('click', async () => {
 
@@ -18,30 +19,77 @@ btnSearchClient.addEventListener('click', async () => {
 
 let debounceTime;
 
-const renderListClients = (name) => {
+const searchClientsPredictive = (name) => {
   clearTimeout(debounceTime);
 
   debounceTime = setTimeout(async () => {
     const queryParams = new URLSearchParams({
       name: name,
-      limit: 10
     });
 
     try {
-      const res = await fetch(`${CLIENTS_URL}?${queryParams.toString()}`, {
+      const res = await fetch(`${CLIENTS_URL}/search?${queryParams.toString()}`, {
         method: 'GET',
+        headers: { 'Content-Type': 'application/json'},
         credentials: 'include'
       });
 
-
+      if(res.ok){
+        const result = await res.json();
+        renderListClients(result);
+      }
     } catch (err) {
       console.error(err);
     }
   }, 500)
 }
 
-inputSearchClient.addEventListener('input', () => {
+const showListClients = () => {
+  listClients.classList.add('d-block');
+  listClients.classList.remove('d-none');
+}
 
+const hideListClients = () => {
+  listClients.classList.add('d-none');
+  listClients.classList.remove('d-block');
+}
+
+const renderListClients = (data) => {
+  if(!data || data.length === 0) {
+    hideListClients();
+    return;
+  }
+
+  listClients.innerHTML = '';
+
+  let value = inputSearch.value.trim();
+
+  const coincidences = data.filter(item => item.name.includes(value));
+
+  if(coincidences.length > 0) {
+    showListClients();
+    coincidences.forEach(item => {
+      const name = item.name
+      const li = document.createElement('li');
+
+      const regex = new RegExp(`(${value})`, 'gi');
+      li.innerHTML = name.replace(regex, '<b>$1</b>');
+
+      li.addEventListener('click', () => {
+        inputSearchClient.value = name;
+        hideListClients();
+        listClients.innerHTML = '';
+        clientValue.innerHTML = name;
+      })
+
+      listClients.appendChild(li);
+    })
+  }
+
+}
+
+inputSearchClient.addEventListener('input', (e) => {
+  searchClientsPredictive(e.target.value);
 })
 
 /*
