@@ -168,10 +168,31 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
   renderTableProduct();
 })
 
-const productsAdded = [
-  /*{name: 'Salsa roja', price: 20.5, amount: 5},
-  {name: 'Salsa verde', price: 23.5, amount: 12}*/
-];
+let productsAdded = [];
+
+document.addEventListener('click', (e) => {
+  const button = e.target.closest('button[data-product-id]');
+
+  if(!button) return;
+
+  const row = button.closest('tr');
+
+  if(row) {
+    const productId = button.getAttribute('data-product-id');
+
+    row.style.transition = 'opacity 0.5s';
+    row.style.opacity = '0';
+    setTimeout(() => {
+      row.remove();
+      deleteProduct(productId)
+    }, 500)
+  }
+});
+
+const deleteProduct = (productId) => {
+  productsAdded = productsAdded.filter(x => x.id === productId);
+  renderTableProduct();
+}
 
 const renderTableProduct = () => {
   const table = document.getElementById('tableProduct');
@@ -195,7 +216,7 @@ const renderTableProduct = () => {
         <td>${p.price || 'N/A'}</td>
         <td><input  type='number' class="form-control" value=${p.quantity}></td>
         <td>
-          <button class="btn btn-danger" data-sale-id="${1}">
+          <button class="btn btn-danger" data-product-id="${p.id}">
             <i class="bi bi-trash"></i>
           </button>
         </td>
