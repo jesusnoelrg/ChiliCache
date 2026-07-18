@@ -1,21 +1,20 @@
 const API = 'http://localhost:3000/api'
 const SALES_URL = `${API}/sales`;
 const CLIENTS_URL = `${API}/clients`;
+const PRODUCTS_URL = `${API}/products`;
 
 /*
   ----------------------------------------------------------------
   CREATE SALES
 */
 
-const btnSearchClient = document.getElementById('btnSearchClient');
+const btnCreateSale = document.getElementById('btnCreateSale');
+
 const inputSearchClient = document.getElementById('inputSearchClient');
 const clientValue = document.getElementById('clientValue');
+const selectProducts = document.getElementById('selectProducts');
 
 const listClients = document.getElementById('listClients');
-
-btnSearchClient.addEventListener('click', async () => {
-
-});
 
 let debounceTime;
 
@@ -87,6 +86,36 @@ const renderListClients = (data) => {
   }
 
 }
+
+const fillSelectProducts = (data) => {
+  if(!data || data.length === 0) return;
+  
+
+  data.forEach(item => {
+    const option = document.createElement('option');
+    option.innerHTML = item.name;
+    option.value = item.id;
+
+    selectProducts.appendChild(option);
+  })
+}
+
+btnCreateSale.addEventListener('click', async () => {
+  try {
+    const res = await fetch(`${PRODUCTS_URL}/list/`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if(res.ok) {
+      const result = await res.json();
+      fillSelectProducts(result.data);
+    }
+
+  } catch (err) { 
+    console.error(err);
+  }
+})
 
 inputSearchClient.addEventListener('input', (e) => {
   searchClientsPredictive(e.target.value);
