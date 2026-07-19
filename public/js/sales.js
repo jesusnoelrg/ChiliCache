@@ -134,7 +134,7 @@ inputSearchClient.addEventListener('input', (e) => {
 
 document.getElementById('btnAddProduct').addEventListener('click', () => {
   const productId = selectProducts.value;
-  const inputQuantity = document.getElementById('inputQuantity').value;
+  const inputAmount = document.getElementById('inputAmount').value;
 
   if(productId === 'none'){
     showAlert('Selecciona un producto para añadirlo.', 'info');
@@ -149,19 +149,19 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
     return;
   }
 
-  const quantity = Number(inputQuantity);
+  const amount = Number(inputAmount);
 
-  if(isNaN(quantity)) {
+  if(isNaN(amount)) {
     showAlert('Añade un número valido en el campo de cantidad.', 'info');
     return;
   }
 
-  if(quantity <= 0) {
+  if(amount <= 0) {
     showAlert('Solo puedes añadir valores mayores a <b>0</b>.', 'info');
     return;
   }
 
-  if(quantity > product.stock) {
+  if(amount > product.stock) {
     showAlert('¡No puedes añadir más productos de los que hay en el stock!', 'info');
     return;
   }
@@ -169,11 +169,11 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
   const isProductAdded = productsAdded.find(x => x.id === product.id);
 
   if(isProductAdded) {
-    sumQuantityProduct(isProductAdded, quantity, product.stock);
+    sumAmountProduct(isProductAdded, amount, product.stock);
   } else {
     const productToAdd = {
       ...product,
-      quantity: quantity
+      amount: amount
     }
 
     productsAdded.push(productToAdd);
@@ -182,15 +182,15 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
   renderTableProduct();
 })
 
-const sumQuantityProduct = (product, quantity, stock) => {
-  const newQuantity = quantity + product.quantity;
+const sumAmountProduct = (product, amount, stock) => {
+  const newAmount = amount + product.amount;
 
-  if(newQuantity > stock) {
+  if(newAmount > stock) {
     showAlert('¡No puedes añadir más productos de los que hay en el stock!', 'info');
     return;
   }
 
-  product.quantity = newQuantity;
+  product.amount = newAmount;
 }
 
 document.addEventListener('click', (e) => {
@@ -198,7 +198,7 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('change', (e) => {
-  const input = e.target.closest('td[quantity-product-edit]');
+  const input = e.target.closest('td[amount-product-edit]');
 })
 
 const deleteRowProduct = (e) => {
@@ -236,7 +236,7 @@ const renderTableProduct = () => {
   let data = '';
 
   productsAdded.forEach(p => {
-    if(p.quantity <= 0) {
+    if(p.amount <= 0) {
       showAlert('Cantidad no valida.', 'error');
       return;
     }
@@ -245,7 +245,7 @@ const renderTableProduct = () => {
       <tr>
         <th scope='row'>${p.name}</th>
         <td>${p.price || 'N/A'}</td>
-        <td quantity-product-edit='true'><input type='number' class="form-control" value=${p.quantity}></td>
+        <td amount-product-edit='true'><input type='number' class="form-control" value=${p.amount}></td>
         <td>
           <button class="btn btn-danger" data-product-id="${p.id}">
             <i class="bi bi-trash"></i>
@@ -273,12 +273,12 @@ document.getElementById('btnRegisterSale')
 
     productsAdded.forEach((product) => {
       console.log(product);
-      if(product.quantity <= 0) {
+      if(product.amount <= 0) {
         showAlert(`Revisa la cantidad de '${product.name}' no puede ser menor o igual a 0`, 'info');
         return;
       }
 
-      if(product.stock < product.quantity) {
+      if(product.stock < product.amount) {
         showAlert(`'${product.name}' no tiene suficientes unidades en el stock (${product.stock})`, 'info');
         return;
       }
