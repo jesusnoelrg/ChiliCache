@@ -222,11 +222,11 @@ const deleteProduct = (productId) => {
   renderTableProduct();
 }
 
-const renderTableProduct = () => {
-  const table = document.getElementById('tableProduct');
+const tableProduct = document.getElementById('tableProduct');
 
+const renderTableProduct = () => {
   if(!productsAdded || productsAdded.length === 0) {
-     table.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
+     tableProduct.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
      return;
   }
 
@@ -242,7 +242,15 @@ const renderTableProduct = () => {
       <tr>
         <th scope='row'>${p.name}</th>
         <td>${p.price || 'N/A'}</td>
-        <td amount-product-edit='true'><input type='number' class="form-control" value=${p.amount}></td>
+        <td data-product-id="${p.id}">
+          <input 
+            type='number' 
+            class="form-control input-amount"
+            min=1
+            max=${p.stock} 
+            value=${p.amount}
+          >
+        </td>
         <td>
           <button class="btn btn-danger" data-product-id="${p.id}">
             <i class="bi bi-trash"></i>
@@ -252,8 +260,37 @@ const renderTableProduct = () => {
     `
   });
 
-  table.innerHTML = data;
+  tableProduct.innerHTML = data;
 }
+
+tableProduct.addEventListener('input', (e) => {
+  if(e.target.classList.contains('input-amount')){
+    const target = e.target;
+    const input = target.closest('td[data-product-id]');
+    if(!input) return;
+
+    const productId = Number(input.dataset.productId);
+    const newAmount = Number(target.value);
+
+    if(isNaN(newAmount)) return;
+
+    const product = productsAdded.find(p => p.id === productId);
+
+    if(product) {
+      if(newAmount > product.stock) {
+        modalCreateSale.hide();
+        showAlert(`Stock máximo alcanzado (${product.stock}).`, 'error', () => modalCreateSale.show());
+        target.value = product.stock; 
+        product.amount = product.stock;
+        return;
+      }
+
+      product.amount = newAmount;
+    }
+  }
+})
+
+
 
 document.getElementById('btnRegisterSale')
   .addEventListener('click', async  () => {
