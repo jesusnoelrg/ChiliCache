@@ -42,13 +42,13 @@ export const SaleController = {
           const product = selectProduct.get({id: item.id}) as ProductRow || undefined;
           if (!product) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
 
-          const total = product.price * item.quantity;
+          const total = product.price * item.amount;
           totalAcum += total;
 
           itemsAdded.push({
             id: item.id,
             name: product.name,
-            amount: item.quantity,
+            amount: item.amount,
             price: product.price
           });
         }
