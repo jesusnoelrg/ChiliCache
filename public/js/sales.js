@@ -176,6 +176,7 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
     productsAdded.push(productToAdd);
   }
 
+  updateTotalSale();
   renderTableProduct();
 })
 
@@ -212,9 +213,19 @@ const deleteRowProduct = (e) => {
     row.style.opacity = '0';
     setTimeout(() => {
       row.remove();
-      deleteProduct(productId)
+      deleteProduct(productId);
+      updateTotalSale();
     }, 500)
   }
+}
+
+const updateTotalSale = () => {
+
+  const total_sale = productsAdded.reduce((acc, product) => {
+    return acc + (product.amount * product.price)
+  }, 0);
+
+  lblTotal.innerHTML = total_sale;
 }
 
 const deleteProduct = (productId) => {
@@ -282,15 +293,15 @@ tableProduct.addEventListener('input', (e) => {
         showAlert(`Stock máximo alcanzado (${product.stock}).`, 'error', () => modalCreateSale.show());
         target.value = product.stock; 
         product.amount = product.stock;
+        updateTotalSale();
         return;
       }
 
       product.amount = newAmount;
+      updateTotalSale();
     }
   }
 })
-
-
 
 document.getElementById('btnRegisterSale')
   .addEventListener('click', async  () => {
