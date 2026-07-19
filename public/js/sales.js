@@ -92,10 +92,14 @@ const renderListClients = (data) => {
 
 const fillSelectProducts = (data) => {
   if(!data || data.length === 0) return;
-  
 
+  const optionsCount = document.querySelectorAll('#selectProducts option').length;
+
+  if(optionsCount >= data.length) return;
+  
   data.forEach(item => {
     const option = document.createElement('option');
+
     option.innerHTML = item.name;
     option.value = item.id;
 
