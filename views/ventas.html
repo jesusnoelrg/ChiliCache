@@ -253,12 +253,12 @@
               <!-- Date and pay -->
               <div class="mb-3">
                 <label class="form-label fw-bold">Fecha de la venta</label>
-                <input type="date" class="form-control" value="2024-09-22">
+                <input id="inputDate" type="date" class="form-control">
               </div>
               
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingPago" placeholder="Pago del cliente" value="1000">
-                <label for="floatingPago">Pago del cliente</label>
+                <input type="text" class="form-control" id="inputPay" placeholder="Pago del cliente" value="0.00">
+                <label for="inputPay">Pago del cliente</label>
               </div>
               
               <div class="form-check form-switch mb-3">
@@ -270,10 +270,10 @@
               <!-- Totals -->
               <div class="my-4">
                 <h5 class="fw-bold d-flex justify-content-between">
-                  Cambio: <span class="badge bg-success"><i class="bi bi-cash"></i> $57.50</span>
+                  Cambio: <span class="badge bg-success"><i class="bi bi-cash"></i> <b id="lblCambio">$0.00</b></span>
                 </h5>
                 <h5 class="fw-bold d-flex justify-content-between mt-2">
-                  Total: <span class="badge bg-success"><i class="bi bi-cash"></i> $942.50</span>
+                  Total: <span class="badge bg-success"><i class="bi bi-cash"></i> <b id="lblTotal">$0.00</b></span>
                 </h5>
               </div>
               

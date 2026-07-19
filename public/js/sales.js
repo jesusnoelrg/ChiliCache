@@ -16,6 +16,8 @@ const selectProducts = document.getElementById('selectProducts');
 
 const listClients = document.getElementById('listClients');
 
+const inputDate = document.getElementById('inputDate');
+
 let debounceTime;
 
 const searchClientsPredictive = (name) => {
@@ -100,7 +102,8 @@ const fillSelectProducts = (data) => {
   })
 }
 
-let productList = []
+let productList = [];
+let productsAdded = [];
 
 btnCreateSale.addEventListener('click', async () => {
   try {
@@ -112,6 +115,7 @@ btnCreateSale.addEventListener('click', async () => {
     if(res.ok) {
       const result = await res.json();
       productList = result.data;
+      inputDate.value = formatDateYYYYMMDD();
       fillSelectProducts(productList);
       renderTableProduct();
     }
@@ -171,7 +175,7 @@ document.getElementById('btnAddProduct').addEventListener('click', () => {
 
     productsAdded.push(productToAdd);
   }
-  
+
   renderTableProduct();
 })
 
@@ -186,9 +190,15 @@ const sumQuantityProduct = (product, quantity, stock) => {
   product.quantity = newQuantity;
 }
 
-let productsAdded = [];
-
 document.addEventListener('click', (e) => {
+  deleteRowProduct(e);
+});
+
+document.addEventListener('change', (e) => {
+  const input = e.target.closest('td[quantity-product-edit]');
+})
+
+const deleteRowProduct = (e) => {
   const button = e.target.closest('button[data-product-id]');
 
   if(!button) return;
@@ -205,7 +215,7 @@ document.addEventListener('click', (e) => {
       deleteProduct(productId)
     }, 500)
   }
-});
+}
 
 const deleteProduct = (productId) => {
   productsAdded = productsAdded.filter(x => x.id === productId);
@@ -232,7 +242,7 @@ const renderTableProduct = () => {
       <tr>
         <th scope='row'>${p.name}</th>
         <td>${p.price || 'N/A'}</td>
-        <td><input  type='number' class="form-control" value=${p.quantity}></td>
+        <td quantity-product-edit='true'><input type='number' class="form-control" value=${p.quantity}></td>
         <td>
           <button class="btn btn-danger" data-product-id="${p.id}">
             <i class="bi bi-trash"></i>
@@ -508,3 +518,18 @@ const renderTableSales = (sales) => {
 document.addEventListener('DOMContentLoaded', () => {
   fetchSales();
 })
+
+/*
+  ----------------------------------------------------------------
+  UTILS FUNCTIONS
+*/
+
+const formatDateYYYYMMDD = (d = new Date()) => {
+  const date = new Date(d);
+  console.log(date);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${year}-${month}-${day}`;
+}
