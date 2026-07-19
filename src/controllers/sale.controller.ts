@@ -20,8 +20,6 @@ export const SaleController = {
 
       if(isNaN(idClientNumber)) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
 
-
-
       const invoiceNumber = Number(invoice);
       if(isNaN(invoiceNumber)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
 
@@ -41,16 +39,16 @@ export const SaleController = {
         let itemsAdded: any[] = [];
 
         for(const item of productsList){
-          const product = selectProduct.get({id: item.id_product}) as ProductRow || undefined;
+          const product = selectProduct.get({id: item.id}) as ProductRow || undefined;
           if (!product) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
 
-          const total = product.price * item.amount;
+          const total = product.price * item.quantity;
           totalAcum += total;
 
           itemsAdded.push({
-            id: item.id_product,
+            id: item.id,
             name: product.name,
-            amount: item.amount,
+            amount: item.quantity,
             price: product.price
           });
         }

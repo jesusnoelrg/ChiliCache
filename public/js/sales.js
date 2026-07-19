@@ -3,6 +3,8 @@ const SALES_URL = `${API}/sales`;
 const CLIENTS_URL = `${API}/clients`;
 const PRODUCTS_URL = `${API}/products`;
 
+const modalCreateSale = new bootstrap.Modal(document.getElementById('formCreateSale'));
+
 /*
   ----------------------------------------------------------------
   CREATE SALES
@@ -78,6 +80,7 @@ const renderListClients = (data) => {
 
       li.addEventListener('click', () => {
         inputSearchClient.value = name;
+        inputSearchClient.setAttribute('client-id', item.id);
         hideListClients();
         listClients.innerHTML = '';
         clientValue.innerHTML = name;
@@ -254,6 +257,70 @@ const renderTableProduct = () => {
 
   table.innerHTML = data;
 }
+
+document.getElementById('btnRegisterSale')
+  .addEventListener('click', async  () => {
+    const clientId = inputSearchClient.getAttribute('client-id');
+    
+    if(!clientId || clientId === undefined) {
+      showAlert('Ingresa un cliente en el buscador de clientes.', 'info');
+      return;
+    }
+
+    let invoice = 0;
+
+    if(document.getElementById('switchInvoice').checked) invoice = 1;
+
+    productsAdded.forEach((product) => {
+      console.log(product);
+      if(product.quantity <= 0) {
+        showAlert(`Revisa la cantidad de '${product.name}' no puede ser menor o igual a 0`, 'info');
+        return;
+      }
+
+      if(product.stock < product.quantity) {
+        showAlert(`'${product.name}' no tiene suficientes unidades en el stock (${product.stock})`, 'info');
+        return;
+      }
+    });
+
+    const payload = {
+      id_client: clientId,
+      invoice: invoice,
+      products: productsAdded
+    };
+
+    try {
+      const res = await fetch(`${SALES_URL}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        let errorMsg = `Error en el servidor (${res.status})`;
+
+        try {
+          const errorRes = await res.json();
+          errorMsg = errorRes.message || errorMsg;
+        } catch {
+
+        }
+
+        modalCreateSale.hide();
+        showAlert(errorMsg, 'error', () => modalCreateSale.show());
+        return;
+      }
+
+      const result = await res.json();
+      modalCreateSale.hide();
+      showAlert(result.message, 'success');
+      fetchSales();
+    } catch (err) { 
+      console.log(err);
+    }
+})
 
 /*
   ----------------------------------------------------------------
@@ -526,7 +593,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const formatDateYYYYMMDD = (d = new Date()) => {
   const date = new Date(d);
-  console.log(date);
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
