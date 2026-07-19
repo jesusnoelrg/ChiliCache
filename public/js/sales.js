@@ -195,23 +195,22 @@ const sumAmountProduct = (product, amount, stock) => {
   product.amount = newAmount;
 }
 
-document.addEventListener('click', (e) => {
-  deleteRowProduct(e);
-});
-
 document.addEventListener('change', (e) => {
   const input = e.target.closest('td[amount-product-edit]');
 })
 
-const deleteRowProduct = (e) => {
+document.addEventListener('click', (e) => {
   const button = e.target.closest('button[data-product-id]');
 
   if(!button) return;
 
+  const productId = button.getAttribute('data-product-id');
+
+  if(!productId || isNaN(Number(productId))) return;
+  
   const row = button.closest('tr');
 
   if(row) {
-    const productId = button.getAttribute('data-product-id');
 
     row.style.transition = 'opacity 0.5s';
     row.style.opacity = '0';
@@ -221,7 +220,7 @@ const deleteRowProduct = (e) => {
       updateTotalSale();
     }, 500)
   }
-}
+});
 
 const updateTotalSale = () => {
 
@@ -233,7 +232,7 @@ const updateTotalSale = () => {
 }
 
 const deleteProduct = (productId) => {
-  productsAdded = productsAdded.filter(x => x.id === productId);
+  productsAdded = productsAdded.filter(x => x.id !== Number(productId));
   renderTableProduct();
 }
 
