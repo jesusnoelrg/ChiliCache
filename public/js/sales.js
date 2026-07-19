@@ -18,8 +18,6 @@ const selectProducts = document.getElementById('selectProducts');
 
 const listClients = document.getElementById('listClients');
 
-const inputDate = document.getElementById('inputDate');
-
 let debounceTime;
 
 const searchClientsPredictive = (name) => {
@@ -118,7 +116,6 @@ btnCreateSale.addEventListener('click', async () => {
     if(res.ok) {
       const result = await res.json();
       productList = result.data;
-      inputDate.value = formatDateYYYYMMDD();
       fillSelectProducts(productList);
       renderTableProduct();
     }
@@ -585,17 +582,3 @@ const renderTableSales = (sales) => {
 document.addEventListener('DOMContentLoaded', () => {
   fetchSales();
 })
-
-/*
-  ----------------------------------------------------------------
-  UTILS FUNCTIONS
-*/
-
-const formatDateYYYYMMDD = (d = new Date()) => {
-  const date = new Date(d);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-
-  return `${year}-${month}-${day}`;
-}
