@@ -572,6 +572,7 @@ const invoiceSearch = document.getElementById('invoiceSearch');
 const checkInvoice = document.getElementById('checkInvoice');
 
 const statusSearch = document.getElementById('statusSearch');
+const selectStatus = document.getElementById('selectStatus');
 const checkStatus = document.getElementById('checkStatus');
 
 const btnSearch = document.getElementById('btnSearch')
@@ -634,6 +635,10 @@ document.getElementById('checkStatus').addEventListener('change', () => {
     statusSearch.classList.add('d-none');
   }
 
+  fetchSales();
+})
+
+selectStatus.addEventListener('input', () => {
   fetchSales();
 })
 
@@ -733,7 +738,7 @@ const fetchSales = async () => {
   }
 
   if(checkStatus.checked) {
-    const status = document.getElementById('selectStatus').value;
+    const status = selectStatus.value;
 
     if(status === 'completed' || status === 'cancelled') {
       queryParams.append('status', status);
