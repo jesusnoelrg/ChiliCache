@@ -4,6 +4,14 @@ const CLIENTS_URL = `${API}/clients`;
 const PRODUCTS_URL = `${API}/products`;
 
 const modalCreateSale = new bootstrap.Modal(document.getElementById('formCreateSale'));
+const modalSalesDetail = new bootstrap.Modal(document.getElementById('modalSalesDetail'));
+
+/*
+  ----------------------------------------------------------------
+  SALES DETAIL
+*/
+
+
 
 /*
   ----------------------------------------------------------------
@@ -203,7 +211,12 @@ document.addEventListener('change', (e) => {
 })
 
 document.addEventListener('click', (e) => {
-  const button = e.target.closest('button[data-product-id]');
+  deleteRowProduct(e);
+  buttonsSales(e);
+});
+
+const deleteRowProduct = (event) => {
+  const button = event.target.closest('button[data-product-id]');
 
   if(!button) return;
 
@@ -223,7 +236,7 @@ document.addEventListener('click', (e) => {
       updateTotalSale();
     }, 500)
   }
-});
+}
 
 inputPay.addEventListener('input', () => {
   updateTotalSale();
@@ -616,6 +629,26 @@ const fetchSales = async () => {
 
 /*
   ----------------------------------------------------------------
+  BUTTONS VIEW AND CANCEL SALE
+*/
+
+const buttonsSales = (event) => {
+  const button = event.target.closest('button[data-sale-id]');
+
+  if(!button) return;
+
+  const id = button.getAttribute('data-sale-id');
+  const action = button.getAttribute('sale-action');
+
+  if(button.classList.contains('btn-danger') || action === 'cancel') {
+
+  } else {
+    modalSalesDetail.show();
+  }
+}
+
+/*
+  ----------------------------------------------------------------
   RENDER SALES
 */
 
@@ -642,11 +675,11 @@ const renderTableSales = (sales) => {
         <td>$${s.customer_payment}</td>
         <td>$${s.total}</td>
         <td>
-          <button class="btn btn-primary" data-sale-id="${s.id}">
-            <i class="bi bi-gear-fill"></i>
+          <button class="btn btn-info" sale-action='view' data-sale-id="${s.id}">
+            <i class="bi bi-eye-fill"></i>
           </button>
-          <button class="btn btn-danger" data-sale-id="${s.id}">
-            <i class="bi bi-trash"></i>
+          <button class="btn btn-danger" sale-action='cancel'  data-sale-id="${s.id}">
+            <i class="bi bi-x-circle-fill"></i>
           </button>
         </td>
       </tr>
