@@ -158,6 +158,12 @@ document.getElementById('formReportSales').addEventListener('submit', async (e) 
   }
 });
 
+const listReportClients = document.getElementById('listReportClients')
+
+reportClient.addEventListener('input', (e) => {
+  searchClientsPredictive(e.target.value, reportClient, listReportClients)
+})
+
 /*
   ----------------------------------------------------------------
   SALES CANCEL
@@ -218,7 +224,7 @@ const lblChange = document.getElementById('lblChange');
 
 let debounceTime;
 
-const searchClientsPredictive = (name) => {
+const searchClientsPredictive = (name, element, list) => {
   clearTimeout(debounceTime);
 
   debounceTime = setTimeout(async () => {
@@ -235,7 +241,7 @@ const searchClientsPredictive = (name) => {
 
       if(res.ok){
         const result = await res.json();
-        renderListClients(result);
+        renderListClients(result, element, list);
       }
     } catch (err) {
       console.error(err);
@@ -253,20 +259,22 @@ const hideListClients = () => {
   listClients.classList.remove('d-block');
 }
 
-const renderListClients = (data) => {
+const renderListClients = (data, element, list) => {
   if(!data || data.length === 0) {
-    hideListClients();
+    list.classList.add('d-none');
+    list.classList.remove('d-block');
     return;
   }
 
-  listClients.innerHTML = '';
+  list.innerHTML = '';
 
-  let value = inputSearch.value.trim();
+  let value = element.value.trim();
 
   const coincidences = data.filter(item => item.name.includes(value));
 
   if(coincidences.length > 0) {
-    showListClients();
+    list.classList.add('d-block');
+    list.classList.remove('d-none');
     coincidences.forEach(item => {
       const name = item.name
       const li = document.createElement('li');
@@ -275,14 +283,17 @@ const renderListClients = (data) => {
       li.innerHTML = name.replace(regex, '<b>$1</b>');
 
       li.addEventListener('click', () => {
-        inputSearchClient.value = name;
-        inputSearchClient.setAttribute('client-id', item.id);
-        hideListClients();
-        listClients.innerHTML = '';
+        element.value = name;
+        element.setAttribute('client-id', item.id);
+        
+        list.classList.add('d-none');
+        list.classList.remove('d-block');
+
+        list.innerHTML = '';
         clientValue.innerHTML = name;
       })
 
-      listClients.appendChild(li);
+      list.appendChild(li);
     })
   }
 
@@ -328,7 +339,7 @@ btnCreateSale.addEventListener('click', async () => {
 })
 
 inputSearchClient.addEventListener('input', (e) => {
-  searchClientsPredictive(e.target.value);
+  searchClientsPredictive(e.target.value, inputSearchClient, listClients);
 })
 
 document.getElementById('btnAddProduct').addEventListener('click', () => {

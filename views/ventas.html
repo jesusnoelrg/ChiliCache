@@ -257,7 +257,7 @@
                 <div class="autocomplete-container col">
                   <label class="form-label fw-bold">Buscar cliente:</label>
                   <input id="inputSearchClient" type="text" class="form-control w-100" value="" autocomplete="off" placeholder="Nombre del cliente">
-                  <ul id="listClients"></ul>
+                  <ul id="listClients" class="autocomplete-list" ></ul>
                 </div>
                 <div class="mt-2">
                   <small class="d-flex"><b>Cliente: </b> <p id="clientValue" class="mb-0 ms-1">N/A</p></small>
@@ -364,13 +364,15 @@
 
             <!-- Optional filters -->
             <div class="row g-3 pb-3">
-              <div class="col-md-6">
+              <div class="autocomplete-container col-md-6">
                 <label for="reportSeller" class="form-label fw-bold">Vendedor</label>
                 <input type="text" class="form-control" id="reportSeller" placeholder="Nombre vendedor (opcional)">
+                
               </div>
-              <div class="col-md-6">
+              <div class="autocomplete-container col-md-6">
                 <label for="reportClient" class="form-label fw-bold">Cliente</label>
                 <input type="text" class="form-control" id="reportClient" placeholder="Nombre cliente (opcional)">
+                <ul id="listReportClients" class="autocomplete-list"></ul>
               </div>
             </div>
 
