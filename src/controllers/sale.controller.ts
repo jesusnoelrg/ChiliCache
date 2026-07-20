@@ -153,6 +153,7 @@ export const SaleController = {
           s.id,
           u.full_name AS seller_name,
           c.name AS client_name,
+          s.status,
           s.total,
           s.customer_payment,
           s.invoice,
