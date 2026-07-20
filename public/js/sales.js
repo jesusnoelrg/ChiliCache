@@ -2,6 +2,7 @@ const API = 'http://localhost:3000/api'
 const SALES_URL = `${API}/sales`;
 const CLIENTS_URL = `${API}/clients`;
 const PRODUCTS_URL = `${API}/products`;
+const USERS_URL = `${API}/users`;
 
 const modalCreateSale = new bootstrap.Modal(document.getElementById('formCreateSale'));
 const modalSalesDetail = new bootstrap.Modal(document.getElementById('modalSalesDetail'));
@@ -157,6 +158,44 @@ document.getElementById('formReportSales').addEventListener('submit', async (e) 
     console.error(err);
   }
 });
+
+const getAllSellerNames = async () => {
+  try {
+    const res = await fetch(`${USERS_URL}/all/name`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if(!res.ok) {
+      throw new Error(res);
+    }
+
+    const result = await res.json();
+    fillReportSeller(result.names);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const fillReportSeller = (names) => {
+  reportSeller.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+
+  const defaultOption = document.createElement('option');
+  defaultOption.selected = true;
+  defaultOption.value = '';
+  defaultOption.textContent = 'Ninguno';
+  fragment.appendChild(defaultOption);
+  
+  names.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    fragment.appendChild(opt);
+  })
+
+  reportSeller.appendChild(fragment);
+}
 
 const listReportClients = document.getElementById('listReportClients')
 
@@ -932,5 +971,6 @@ const renderTableSales = (sales) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  getAllSellerNames();
   fetchSales();
 })
