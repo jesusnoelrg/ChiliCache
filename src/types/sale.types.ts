@@ -1,7 +1,8 @@
 export interface CreateSaleDTO {
   id_client: number;
   invoice: number;
-  products: SaleDetailItemDTO[]
+  customer_payment: number;
+  products: SaleDetailItemDTO[];
 }
 
 export interface SaleDetailItemDTO {

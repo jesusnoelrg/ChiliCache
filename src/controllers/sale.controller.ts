@@ -6,7 +6,7 @@ import { isRecordFieldPresent } from "../utils/db.utils";
 export const SaleController = {
   createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
     try{
-      const { id_client, invoice, products } = req.body;
+      const { id_client, invoice, customer_payment, products } = req.body;
       const idUserNumber = req.user?.id;
 
       if(!idUserNumber){
@@ -18,16 +18,19 @@ export const SaleController = {
 
       const idClientNumber = Number(id_client);
 
-      if(isNaN(idClientNumber)) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
+      if(isNaN(idClientNumber) || !idClientNumber) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
 
       const invoiceNumber = Number(invoice);
-      if(isNaN(invoiceNumber)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
+      if(isNaN(invoiceNumber) || !invoice) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
+
+      const paymentNumber = Number(customer_payment);
+      if(isNaN(paymentNumber) || !customer_payment) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
 
       const isUserExist = isRecordFieldPresent({table: "users", column: "id", value: idUserNumber});
-      if(!isUserExist) return res.status(404).json({"success": false, "message": `El usuario con el (ID: ${idUserNumber}) no existe.`})
+      if(!isUserExist) return res.status(404).json({"success": false, "message": `El usuario con el (ID: ${idUserNumber}) no existe.`});
       
-        const isClientExist = isRecordFieldPresent({table: "clients", column: "id", value: idClientNumber});
-      if(!isClientExist) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idUserNumber}) no existe.`})
+      const isClientExist = isRecordFieldPresent({table: "clients", column: "id", value: idClientNumber});
+      if(!isClientExist) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idUserNumber}) no existe.`});
 
       const selectProduct = db.prepare("SELECT id, name, price, stock FROM products WHERE id = :id");
       const insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
@@ -56,6 +59,7 @@ export const SaleController = {
         const saleResult = insertSale.run({
           total: totalAcum, 
           invoice: invoice,
+          customer_payment: paymentNumber,
           id_client: idClientNumber,
           id_user: idUserNumber
         });
@@ -264,6 +268,7 @@ export const SaleController = {
           u.full_name AS op_name,
           c.name AS client_name,
           s.total,
+          s.customer_payment,
           s.invoice,
           s.date
         FROM sales AS s
