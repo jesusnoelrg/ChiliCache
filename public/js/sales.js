@@ -55,6 +55,16 @@ const fillSaleDetail = (data) => {
   document.getElementById('detailOpName').innerHTML = data.op_name;
   document.getElementById('detailDate').innerHTML = data.date;
   document.getElementById('detailInvoice').innerHTML = (data.invoice === 1) ? 'Sí' : 'No';
+  document.getElementById('detailStatus').innerHTML = `
+    ${data.status === 'completed' ? 
+      `
+      <b class='text-success'>Completado</b>
+      ` 
+    : 
+      `
+      <b class='text-danger'>Cancelado</b>
+      `
+    }`
   document.getElementById('detailTotal').innerHTML = data.total;
 
   const table = document.getElementById('detailProductList');
@@ -776,6 +786,17 @@ const renderTableSales = (sales) => {
         <td>${s.client_name || 'N/A'}</td>
         <td>${s.seller_name || 'N/A'}</td>
         <td>${s.date}</td>
+        <td>
+          ${s.status === 'completed' ? 
+            `
+              <span class='text-success'>Completado</span>
+            ` 
+          : 
+            `
+              <span class='text-danger'>Cancelado</span>
+            `
+          }
+        </td>
         <td >
           ${s.invoice === 1 ? 'Sí' : 'No' || 'N/A'}
         </td>
