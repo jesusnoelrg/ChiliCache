@@ -427,7 +427,11 @@ export const SaleController = {
 
   generateReportPDF: async (req: Request<{}, {}, {}, FiltersSaleReport>, res: Response) => {
     try {
-      const { start_timestamp, end_timestamp } = req.query;
+      const { 
+        start_timestamp, end_timestamp,
+        client_name, seller_name,
+        invoice
+      } = req.query;
 
       if(!start_timestamp || !end_timestamp) {
         return res.status(400).json({
@@ -436,10 +440,15 @@ export const SaleController = {
         });
       }
 
-      let saleDate: any = {
+      let saleData: any = {
         start_timestamp: `${start_timestamp} 00:00:00`,
         end_timestamp: `${end_timestamp} 23:59:59`
       }
+
+      let dataSale = {
+        start_date: start_timestamp,
+        end_date: end_timestamp
+      } as DataSaleReport;
 
       let query = `
         SELECT
@@ -455,21 +464,43 @@ export const SaleController = {
         FROM sales AS s
           INNER JOIN users AS u ON u.id = s.id_user
           INNER JOIN clients AS c ON c.id = s.id_client
-        WHERE s.date >= :start_timestamp AND s.date <= :end_timestamp
+        WHERE (s.date >= :start_timestamp AND s.date <= :end_timestamp) AND (s.status = 'completed')
       `;
 
-      const result = db.prepare(query).all(saleDate) as SaleReportItem[];
+      
+      if(client_name && client_name !== undefined) {
+        saleData.client_name = `%${client_name}%`;
+        dataSale.client_name = client_name;
+        query += ' AND (c.name LIKE :client_name)';
+      }
+
+      if(seller_name && seller_name !== undefined) {
+        saleData.seller_name = `%${seller_name}`;
+        dataSale.seller_name = seller_name;
+        query += ' AND (u.full_name LIKE :seller_name)';
+      }
+
+      if(invoice && invoice !== undefined) {
+        const invoiceNumber = Number(invoice);
+
+        if(isNaN(invoiceNumber)) {
+          return res.status(400).json({
+            "success": false,
+            "message": "Debes ingresar (1 o 0) para obtener el tipo de facturación."
+          });
+        }
+
+        saleData.invoice = invoice;
+        query += ' AND (s.invoice = :invoice)';
+      }
+
+      const result = db.prepare(query).all(saleData) as SaleReportItem[];
+
+      dataSale.data = result;
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename="reporte_${start_timestamp}_${end_timestamp}.pdf"`);
 
-      const dataSale = {
-        start_date: start_timestamp,
-        end_date: end_timestamp,
-        data: result
-      } as DataSaleReport
-
-      console.log(result)
       generatePdfReportHandler(dataSale, res);
     } catch (err: any) {
       console.log(err);

@@ -33,11 +33,16 @@ export interface GetSalesDTO {
 export interface FiltersSaleReport {
   start_timestamp: string;
   end_timestamp: string;
+  seller_name?: string;
+  client_name?: string;
+  invoice?: number;
 }
 
 export interface DataSaleReport {
   start_date: string;
   end_date: string;
+  seller_name?: string;
+  client_name?: string;
   data: SaleReportItem[]; 
 }
 
@@ -46,6 +51,6 @@ export interface SaleReportItem {
   client_name: string;
   seller_name: string;
   total: number;
-  invoice: number;
+  invoice: string;
   date: string;
 }

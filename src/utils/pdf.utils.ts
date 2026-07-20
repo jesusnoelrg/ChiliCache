@@ -25,18 +25,23 @@ export const generatePdfReportHandler = (report: DataSaleReport, res: Response) 
     .text(`(${report.start_date} | ${report.end_date})`, {align: 'center'})
     
 
-  doc.moveDown(1.5);
+  doc.moveDown(1.5).fillColor('black').fontSize(10);
 
   const totalAll = sales.reduce((acc, sale) => {
     return acc + (sale.total)
-  }, 0)
+  }, 0);
+
+  if(report.client_name) {
+    doc.text(`Nombre del cliente: ${report.client_name}`);
+  }
+
+  if(report.seller_name) {
+    doc.text(`Nombre del vendedor: ${report.seller_name}`);
+  }
 
   doc
-    .fillColor('black')
-    .fontSize(10)
-    .text(`Total de registros: ${sales.length}`);
-  
-  doc.text(`Monto total: $${totalAll}`);
+    .text(`Total de registros: ${sales.length}`)
+    .text(`Monto total: $${totalAll}`);
 
   doc.moveDown(0.5);
 
