@@ -29,3 +29,17 @@ export interface GetSalesDTO {
   limit?: number;
   offset?: number;
 }
+
+export interface FiltersSaleReport {
+  start_timestamp: string;
+  end_timestamp: string;
+}
+
+export interface SaleReportItem {
+  id: number;
+  client_name: string;
+  seller_name: string;
+  total: number;
+  invoice: number;
+  date: string;
+}

@@ -1,7 +1,9 @@
 import db from "../config/db";
 import type { Request, Response } from "express";
-import { CreateSaleDTO, GetSalesDTO, ProductRow } from "../types/sale.types";
+import { CreateSaleDTO, GetSalesDTO, ProductRow, FiltersSaleReport, SaleReportItem } from "../types/sale.types";
 import { isRecordFieldPresent } from "../utils/db.utils";
+
+import { generatePdfReportHandler } from '../utils/pdf.utils';
 
 export const SaleController = {
   createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
@@ -410,6 +412,51 @@ export const SaleController = {
       }
 
       console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      });
+    }
+  },
+
+  generateReportPDF: async (req: Request<{}, {}, {}, FiltersSaleReport>, res: Response) => {
+    try {
+      const { start_timestamp, end_timestamp } = req.query;
+
+      if(!start_timestamp || !end_timestamp) {
+        return res.status(400).json({
+          "success": false,
+          "message": "¡Debe ingresar una fecha de inicio y de fin para poder generar un reporte"
+        });
+      }
+
+      let saleDate: any = {
+        start_timestamp: `${start_timestamp} 00:00:00`,
+        end_timestamp: `${end_timestamp} 23:59:59`
+      }
+
+      let query = `
+        SELECT
+          s.id,
+          c.name AS client_name,
+          u.full_name AS seller_name,
+          s.total,
+          s.invoice,
+          s.date
+        FROM sales AS s
+          INNER JOIN users AS u ON u.id = s.id_user
+          INNER JOIN clients AS c ON c.id = s.id_client
+        WHERE s.date >= :start_timestamp AND s.date <= :end_timestamp
+      `;
+
+      const result = db.prepare(query).all(saleDate) as SaleReportItem[];
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="reporte_${start_timestamp}_${end_timestamp}.pdf"`);
+
+      generatePdfReportHandler(result, res);
+    } catch (err: any) {
+      console.log(err);
       return res.status(500).json({
         "success": false,
         "message": "[ERROR 500]: Error en la base de datos."
