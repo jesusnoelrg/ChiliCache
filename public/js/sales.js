@@ -27,7 +27,9 @@ const openSalesDetail = async (saleId) => {
       try {
         const errorRes = await res.json();
         errorMsg = errorRes.message || errorMsg;
-      } catch {}
+      } catch (errorr){
+        console.error(errorr);
+      }
 
       showAlert(errorMsg, 'error');
       return;
@@ -48,6 +50,7 @@ const openSalesDetail = async (saleId) => {
 }
 
 const fillSaleDetail = (data) => {
+  document.getElementById('btnCancelSale').setAttribute('cancel-sale-id', data.id_venta);
   document.getElementById('detailClientName').innerHTML = data.client_name;
   document.getElementById('detailOpName').innerHTML = data.op_name;
   document.getElementById('detailDate').innerHTML = data.date;
@@ -72,6 +75,48 @@ const fillSaleDetail = (data) => {
 
   table.innerHTML = fillTable;
 }
+
+/*
+  ----------------------------------------------------------------
+  SALES CANCEL
+*/
+
+const cancelSale = async (saleId) => {
+  if(!saleId) return;
+
+  try {
+    const res = await fetch(`${SALES_URL}/${saleId}`, {
+      method: 'PATCH',
+      credentials: 'include'
+    });
+
+    if(!res.ok) {
+      let errorMsg = `Error del servidor (${res.status})`;
+
+      try {
+        const errorRes = await res.json();
+        errorMsg = errorRes.message || errorMsg;
+      } catch {}
+
+      showAlert(errorMsg, 'error');
+      return;
+    }
+
+    const result = await res.json();
+    modalSalesDetail.hide();
+    showAlert(result.message, 'success');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.getElementById('btnCancelSale').addEventListener('click', () => {
+  const id = document.getElementById('btnCancelSale').getAttribute('cancel-sale-id');
+  if(!id || id === undefined) return;
+  showConfirm(`¿Estás seguro de cancelar la venta (ID: ${id})`,
+    () => cancelSale(Number(id))
+  );
+})
 
 /*
   ----------------------------------------------------------------
@@ -701,7 +746,9 @@ const buttonsSales = (event) => {
   const action = button.getAttribute('sale-action');
 
   if(button.classList.contains('btn-danger') || action === 'cancel') {
-
+    showConfirm(`¿Estás seguro de cancelar la venta (ID: ${id})`,
+      () => cancelSale(id)
+    );
   } else {
     openSalesDetail(id);
   }
