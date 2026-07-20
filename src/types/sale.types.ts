@@ -35,6 +35,12 @@ export interface FiltersSaleReport {
   end_timestamp: string;
 }
 
+export interface DataSaleReport {
+  start_date: string;
+  end_date: string;
+  data: SaleReportItem[]; 
+}
+
 export interface SaleReportItem {
   id: number;
   client_name: string;

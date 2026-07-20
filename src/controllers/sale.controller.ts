@@ -1,6 +1,12 @@
 import db from "../config/db";
 import type { Request, Response } from "express";
-import { CreateSaleDTO, GetSalesDTO, ProductRow, FiltersSaleReport, SaleReportItem } from "../types/sale.types";
+import { 
+  CreateSaleDTO, 
+  GetSalesDTO, 
+  ProductRow, 
+  FiltersSaleReport,
+  DataSaleReport, 
+  SaleReportItem } from "../types/sale.types";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { generatePdfReportHandler } from '../utils/pdf.utils';
@@ -441,7 +447,10 @@ export const SaleController = {
           c.name AS client_name,
           u.full_name AS seller_name,
           s.total,
-          s.invoice,
+          CASE
+            WHEN s.invoice = 1 THEN 'Sí'
+            ELSE 'No'
+          END AS invoice,
           s.date
         FROM sales AS s
           INNER JOIN users AS u ON u.id = s.id_user
@@ -454,7 +463,14 @@ export const SaleController = {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename="reporte_${start_timestamp}_${end_timestamp}.pdf"`);
 
-      generatePdfReportHandler(result, res);
+      const dataSale = {
+        start_date: start_timestamp,
+        end_date: end_timestamp,
+        data: result
+      } as DataSaleReport
+
+      console.log(result)
+      generatePdfReportHandler(dataSale, res);
     } catch (err: any) {
       console.log(err);
       return res.status(500).json({
