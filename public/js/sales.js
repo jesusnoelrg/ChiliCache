@@ -91,6 +91,73 @@ const fillSaleDetail = (data) => {
   SALES REPORT
 */
 
+const reportStartDate = document.getElementById('startDate');
+const reportEndDate = document.getElementById('endDate');
+const reportSeller = document.getElementById('reportSeller');
+const reportClient = document.getElementById('reportClient');
+const reportInvoice = document.getElementById('reportInvoice');
+
+document.getElementById('formReportSales').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const start_timestamp = reportStartDate.value;
+  const end_timestamp = reportEndDate.value;
+
+  if(!start_timestamp || !end_timestamp) {
+    showAlert('Debe de ingresar una fecha de inicio y de fin.', 'info');
+    return;
+  }
+
+  let queryParams = new URLSearchParams({
+    start_timestamp: start_timestamp,
+    end_timestamp: end_timestamp
+  });
+
+  const seller_name = reportSeller.value.trim();
+  const client_name = reportClient.value.trim();
+
+  if(seller_name && seller_name !== '') {
+    queryParams.append('seller_name', seller_name);
+  }
+
+  if(client_name && client_name !== '') {
+    queryParams.append('client_name', client_name);
+  }
+
+  const invoice = reportInvoice.value;
+
+  if(invoice && (invoice === '0' || invoice === '1')) {
+    queryParams.append('invoice', Number(invoice));
+  }
+  
+  try {
+    const res = await fetch(`${SALES_URL}/reports/pdf?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/pdf' },
+      credentials: 'include'
+    });
+
+    if(!res.ok) {
+      let errorMsg = `Error del servidor (${res.status})`;
+
+      const errorRes = await res.json().catch(() => null);
+      errorMsg = errorRes.message || errorMsg;
+
+      showAlert(errorMsg, 'error');
+      return;
+    }
+
+    const blob = await res.blob();
+    const pdfUrl = URL.createObjectURL(blob);
+
+    window.open(pdfUrl, '__blank');
+
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 /*
   ----------------------------------------------------------------
   SALES CANCEL
