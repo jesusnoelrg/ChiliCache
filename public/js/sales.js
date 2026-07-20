@@ -11,7 +11,67 @@ const modalSalesDetail = new bootstrap.Modal(document.getElementById('modalSales
   SALES DETAIL
 */
 
+const openSalesDetail = async (saleId) => {
+  if(!saleId) return;
+  document.getElementById('detailIdSale').innerHTML = saleId;
 
+  try {
+    const res = await fetch(`${SALES_URL}/${saleId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if(!res.ok) {
+      let errorMsg = `Error del servidor (${res.status})`;
+
+      try {
+        const errorRes = await res.json();
+        errorMsg = errorRes.message || errorMsg;
+      } catch {}
+
+      showAlert(errorMsg, 'error');
+      return;
+    }
+
+    const result = await res.json();
+
+    if(!result.data) {
+      showAlert('No hay datos por mostrar', 'info');
+      return;
+    }
+
+    fillSaleDetail(result.data);
+    modalSalesDetail.show();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const fillSaleDetail = (data) => {
+  document.getElementById('detailClientName').innerHTML = data.client_name;
+  document.getElementById('detailOpName').innerHTML = data.op_name;
+  document.getElementById('detailDate').innerHTML = data.date;
+  document.getElementById('detailInvoice').innerHTML = (data.invoice === 1) ? 'Sí' : 'No';
+  document.getElementById('detailTotal').innerHTML = data.total;
+
+  const table = document.getElementById('detailProductList');
+  let fillTable = '';
+
+  data.products.forEach(p => {
+    const subtotal = Number(p.price) * Number(p.amount);
+
+    fillTable += `
+    <tr>
+      <th class='scope'>${p.product_name}</th>
+      <td>${p.price}</td>
+      <td>${p.amount}</td>
+      <td>$${subtotal}</td>
+    </tr>
+    `
+  });
+
+  table.innerHTML = fillTable;
+}
 
 /*
   ----------------------------------------------------------------
@@ -643,7 +703,7 @@ const buttonsSales = (event) => {
   if(button.classList.contains('btn-danger') || action === 'cancel') {
 
   } else {
-    modalSalesDetail.show();
+    openSalesDetail(id);
   }
 }
 
