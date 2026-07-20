@@ -11,6 +11,9 @@ router.get('/', isAuthenticated, authorize(['seller', 'admin']), UserController.
 //Obtener un usuario
 router.get('/:id', isAuthenticated, authorize(['seller', 'admin']), UserController.getUserById);
 
+//Obtener solo los nombres de todos los usuarios
+router.get('/all/name', isAuthenticated, authorize(['seller', 'admin']), UserController.getUsersName);
+
 //Crear un nuevo usuario
 router.post('/', UserController.createUser);
 

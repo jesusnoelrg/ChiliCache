@@ -135,6 +135,23 @@ export const UserController = {
     }
   },
 
+  getUsersName: async (req: Request, res:Response) => {
+    try {
+       const query = "SELECT full_name FROM users";
+       const result = db.prepare(query).all() as { full_name: string }[];
+
+       const names = result.map(n => n.full_name);
+
+       return res.status(200).json({'success': true, names});
+    } catch(err: any) {
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
   getUserById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;

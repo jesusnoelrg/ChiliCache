@@ -153,8 +153,7 @@ export const ClientController = {
   searchClients: async (req: Request<{}, {}, {}, {name: string}>, res: Response) => {
     try {
       const { name } = req.query;
-
-      console.log(name)
+      
       if(!name || name === undefined || name.trim() === ''){
         return res.status(200).json([])
       }
