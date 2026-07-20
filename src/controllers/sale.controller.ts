@@ -141,6 +141,7 @@ export const SaleController = {
         start_timestamp, end_timestamp,
         min_total, max_total,
         invoice,
+        status,
         limit,
         offset 
       } = req.query;
@@ -195,7 +196,11 @@ export const SaleController = {
         }
 
         queryData.invoice = invoiceNumber;
-        query += ' AND invoice = :invoice'
+        query += ' AND invoice = :invoice';
+      }
+      if(status){
+        queryData.status = status;
+        query += " AND s.status = :status";
       }
 
       if(min_total || max_total) {

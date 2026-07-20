@@ -25,6 +25,7 @@ export interface GetSalesDTO {
   min_total?: number;
   max_total?: number;
   invoice: number;
+  status?: string;
   limit?: number;
   offset?: number;
 }
