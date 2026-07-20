@@ -119,6 +119,15 @@
               </div>
             </div>
 
+            <div id="statusSearch" class="form-floating d-none me-2">
+              <select class="form-select" id="selectStatus" aria-label="Floating label select filter for status">
+                <option selected>Todos</option>
+                <option value="completed">Completado</option>
+                <option value="cancelled">Cancelado</option>
+              </select>
+              <label for="selectStatus">Estado de venta</label>
+            </div>
+
             <div class="form-floating d-block" id="normalSearch">
               <input type="text" class="form-control" id="inputSearch" placeholder="">
               <label id="lblSearch" for="inputSearch"></label>
@@ -185,6 +194,15 @@
                     </label>
                   </div>
                 </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkStatus">
+                    <label class="form-check-label" for="checkStatus">
+                      Estado de venta
+                    </label>
+                  </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
                 <li>
                   Límite: 
                   <input type="number" class="form-control" id="inputLimit" placeholder="10">

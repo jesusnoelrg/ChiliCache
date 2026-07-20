@@ -532,6 +532,7 @@ const filters = {
   'client_name': 'Nombre del cliente',
   'seller_name': 'Nombre del vendedor',
   'invoice': 'Factura',
+  'status': 'Estado de venta',
   'total': 'Total',
   'timestamp': 'Fecha'
 }
@@ -569,6 +570,10 @@ const inputMax = document.getElementById('inputMax');
 
 const invoiceSearch = document.getElementById('invoiceSearch');
 const checkInvoice = document.getElementById('checkInvoice');
+
+const statusSearch = document.getElementById('statusSearch');
+const checkStatus = document.getElementById('checkStatus');
+
 const btnSearch = document.getElementById('btnSearch')
 
 const updateFilter = () => {
@@ -617,15 +622,28 @@ document.getElementById('checkInvoice').addEventListener('change', () => {
   }
 
   fetchSales();
+});
+
+document.getElementById('checkStatus').addEventListener('change', () => {
+
+  if(checkStatus.checked) {
+    statusSearch.classList.add('d-block');
+    statusSearch.classList.remove('d-none');
+  } else {
+    statusSearch.classList.remove('d-block');
+    statusSearch.classList.add('d-none');
+  }
+
+  fetchSales();
 })
 
 document.querySelectorAll('input[name=saleFilters]').forEach(radio => {
   radio.addEventListener('change', () => updateFilter())
-})
+});
 
 document.querySelectorAll('input[name=radioInvoice]').forEach(radio => {
   radio.addEventListener('change', () => fetchSales())
-})
+});
 
 
 btnSearch.addEventListener('click', (e) => {
@@ -711,6 +729,14 @@ const fetchSales = async () => {
 
     if(checkedInvoice.value === '0' || checkedInvoice.value === '1') {
       queryParams.append('invoice', checkedInvoice.value);
+    }
+  }
+
+  if(checkStatus.checked) {
+    const status = document.getElementById('selectStatus').value;
+
+    if(status === 'completed' || status === 'cancelled') {
+      queryParams.append('status', status);
     }
   }
 
