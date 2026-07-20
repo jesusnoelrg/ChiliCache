@@ -85,7 +85,7 @@ const cancelSale = async (saleId) => {
   if(!saleId) return;
 
   try {
-    const res = await fetch(`${SALES_URL}/${saleId}`, {
+    const res = await fetch(`${SALES_URL}/${saleId}/cancel`, {
       method: 'PATCH',
       credentials: 'include'
     });
