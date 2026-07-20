@@ -18,6 +18,9 @@ const selectProducts = document.getElementById('selectProducts');
 
 const listClients = document.getElementById('listClients');
 
+const inputPay = document.getElementById('inputPay');
+const lblChange = document.getElementById('lblChange');
+
 let debounceTime;
 
 const searchClientsPredictive = (name) => {
@@ -207,7 +210,7 @@ document.addEventListener('click', (e) => {
   const productId = button.getAttribute('data-product-id');
 
   if(!productId || isNaN(Number(productId))) return;
-  
+
   const row = button.closest('tr');
 
   if(row) {
@@ -222,11 +225,20 @@ document.addEventListener('click', (e) => {
   }
 });
 
+inputPay.addEventListener('input', () => {
+  updateTotalSale();
+})
+
 const updateTotalSale = () => {
+  const pay = Number(inputPay.value);
 
   const total_sale = productsAdded.reduce((acc, product) => {
     return acc + (product.amount * product.price)
   }, 0);
+
+  if(pay && !isNaN(pay)) {
+    lblChange.innerHTML = pay - total_sale;
+  };
 
   lblTotal.innerHTML = total_sale;
 }
@@ -306,6 +318,18 @@ tableProduct.addEventListener('input', (e) => {
   }
 })
 
+const cleanCreateSale = () => {
+  inputSearchClient.value = '';
+  lblChange.innerHTML = 0.00;
+  lblTotal.innerHTML = 0.00;
+  tableProduct.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
+  productsAdded = [];
+  clientValue.innerHTML = 'N/A';
+  inputAmount.value = '';
+  selectProducts.value = 'none';
+  inputPay.value = '';
+}
+
 document.getElementById('btnRegisterSale')
   .addEventListener('click', async  () => {
     const clientId = inputSearchClient.getAttribute('client-id');
@@ -363,6 +387,7 @@ document.getElementById('btnRegisterSale')
 
       const result = await res.json();
       modalCreateSale.hide();
+      cleanCreateSale();
       showAlert(result.message, 'success');
       fetchSales();
     } catch (err) { 
