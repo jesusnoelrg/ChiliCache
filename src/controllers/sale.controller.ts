@@ -150,6 +150,7 @@ export const SaleController = {
           u.full_name AS seller_name,
           c.name AS client_name,
           s.total,
+          s.customer_payment,
           s.invoice,
           s.date
         FROM sales AS s

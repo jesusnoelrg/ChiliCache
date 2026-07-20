@@ -50,6 +50,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total REAL NOT NULL,
+    customer_payment INTEGER DEFAULT 0,
     status TEXT DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
     invoice INTEGER NOT NULL CHECK (invoice IN (0, 1)),
     id_client INTEGER NOT NULL,

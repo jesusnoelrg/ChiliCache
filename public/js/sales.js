@@ -639,6 +639,7 @@ const renderTableSales = (sales) => {
         <td >
           ${s.invoice === 1 ? 'Sí' : 'No' || 'N/A'}
         </td>
+        <td>$${s.customer_payment}</td>
         <td>$${s.total}</td>
         <td>
           <button class="btn btn-primary" data-sale-id="${s.id}">
