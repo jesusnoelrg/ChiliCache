@@ -1,4 +1,5 @@
 const API = 'http://localhost:3000/api'
+const DASHBOARD_URL = `${API}/dashboard`
 
 const countClients = document.getElementById('countClients');
 const countProducts = document.getElementById('countProducts');
@@ -7,7 +8,7 @@ const countUsers = document.getElementById('countUsers');
 
 const fillCounts = async () => {
   try {
-    const res = await fetch(`${API}/counts`, {
+    const res = await fetch(`${DASHBOARD_URL}/stats`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -17,12 +18,13 @@ const fillCounts = async () => {
       return;
     }
 
-    const counts = await res.json();
-
-    countClients.textContent = counts.clients;
-    countProducts.textContent = counts.products;
-    countSales.textContent = counts.sales;
-    countUsers = count.users;
+    const result = await res.json();
+    const stats = result.stats;
+    
+    countClients.textContent = stats.clients;
+    countProducts.textContent = stats.products;
+    countSales.textContent = stats.sales;
+    countUsers.textContent = stats.users;
   } catch (err) {
     console.error(err);
   }
