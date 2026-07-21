@@ -13,9 +13,9 @@ export const DashboardController = {
         (SELECT COUNT(*) FROM sales) as sales
       `
 
-      const stats = db.prepare(query).all();
+      const result  = db.prepare(query).all();
 
-      return res.status(200).json({"success": true, stats});
+      return res.status(200).json({"success": true, "stats": result[0]});
     } catch (err: any) {
       console.log("ERROR:" + err);
       return res.status(500).json({
