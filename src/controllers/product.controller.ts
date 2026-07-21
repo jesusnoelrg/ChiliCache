@@ -86,7 +86,7 @@ export const ProductController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      const product = db.prepare("SELECT * FROM products WHERE id = :id").get({id: idNumber});
+      const product = repository.selectProductById.get({id: idNumber});
 
       if(!product) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
@@ -324,8 +324,7 @@ export const ProductController = {
 
   listProducts: async (req: Request, res: Response) => {
     try {
-      const query = 'SELECT id, name, price, stock FROM products';
-      const result = db.prepare(query).all();
+      const result = repository.listProducts.all();
 
       return res.status(200).json({
         'data': result
@@ -349,7 +348,7 @@ export const ProductController = {
       const isProductIDExists = isRecordFieldPresent({table: "products", column: "id", value: idNumber});
       if(!isProductIDExists) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
-      const result = db.prepare("DELETE FROM products WHERE id = :id").run({id: idNumber});
+      const result = repository.deleteProductById.run({id: idNumber});
 
       if(result.changes === 0) return res.status(400).json({"success": false, "message": "No se pudo eliminar el producto."});
 
@@ -358,6 +357,73 @@ export const ProductController = {
         "message": "Producto eliminado exitosamente."
       })
     }catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      })
+    }
+  },
+
+  restockProduct: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { stock } = req.body;
+      const id_user = req.user?.id;
+
+      if(!id_user) {
+        return res.status(401).json({
+          "success": false,
+          "message": "No estás autenticado."
+        });
+      }
+
+      if(!id || !stock) {
+        return res.status(400).json({
+          "success": false,
+          "message": "¡Faltan campos para realizar la acción!",
+          "missing": {
+            id_product: !id,
+            stock: !stock
+          }
+        });
+      }
+
+      const idProductNumber = Number(id);
+
+      if(isNaN(idProductNumber)) {
+        return res.status(400).json({
+          "success": false,
+          "message": "ID inválido del producto."
+        });
+      }
+
+      const stockNumber = Number(stock);
+
+      if(isNaN(stockNumber)) {
+        return res.status(400).json({
+          "success": false,
+          "message": "Ingrese un número válido para actualizar el stock."
+        });
+      }
+
+      if(stockNumber <= 0) {
+        return res.status(400).json({
+          "success": false,
+          "message": "No puede ingresar un nuevo stock menor o igual a 0"
+        });
+      }
+
+      const result = repository.restockWithMovement(idProductNumber, id_user, stockNumber);
+
+      return res.status(200).json({
+        "success": true,
+        "id_product": idProductNumber,
+        "old_stock": result.old_stock,
+        "new_stock": result.new_stock,
+        "movement": result.movement
+      });
+    } catch (err: any) {
       console.log("Error: " + err);
       return res.status(500).json({
         "success": false,

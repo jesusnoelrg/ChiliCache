@@ -29,3 +29,20 @@ export interface GetProductsDTO {
 export interface Unit {
   unit: 'g' | 'kg' | 'ml' | 'L';
 }
+
+export interface SelectStockById {
+  id: number;
+  stock: number;
+}
+
+export interface CreateMovement {
+  type: TypeMovement;
+  old_stock: number;
+  new_stock: number;
+  id_product: number;
+  id_user: number;
+}
+
+export interface TypeMovement {
+  type: 'created' | 'restock' | 'sale';
+}
