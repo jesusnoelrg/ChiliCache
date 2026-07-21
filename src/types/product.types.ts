@@ -1,6 +1,6 @@
 export interface CreateProductDTO {
   name: string;
-  unit?: string;
+  unit?: Unit;
   net_content: number;
   price: number;
   stock?: number;
@@ -15,7 +15,7 @@ export interface UpdateProductDTO {
 
 export interface GetProductsDTO {
   name?: string;
-  unit?: 'g' | 'kg' | 'ml' | 'L';
+  unit?: Unit;
   minStock?: number;
   maxStock?: number;
   minContent?: number;
@@ -24,4 +24,8 @@ export interface GetProductsDTO {
   maxPrice?: number;
   limit?: number;
   offset?: number;
+}
+
+export interface Unit {
+  unit: 'g' | 'kg' | 'ml' | 'L';
 }
