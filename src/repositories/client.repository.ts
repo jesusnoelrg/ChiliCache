@@ -1,6 +1,6 @@
 import { Database, Statement } from 'better-sqlite3';
 
-import { CreateClientDTO, UpdateClientDTO, GetClient, GetName } from '../types/client.types';
+import { CreateClientDTO, GetClientsDTO, UpdateClientDTO, GetClient, GetName } from '../types/client.types';
 
 export class ClientRepository {
 
@@ -64,5 +64,47 @@ export class ClientRepository {
     const result = this.selectCheckName.get({name: name, id: id || 0});
 
     return result ? true : false;
+  }
+
+  private buildFindAllQuery(filters: GetClientsDTO) {
+    const { name, rfc, address, phone, email, limit = 10, offset = 0 } = filters;
+    
+    const conditions: string[] = [];
+    const params: Record<string, any> = {
+      limit: Number(limit),
+      offset: Number(offset)
+    };
+
+    if (name) {
+      conditions.push("name LIKE :name");
+      params.name = `%${name}%`;
+    }
+    if (rfc) {
+      conditions.push("rfc LIKE :rfc");
+      params.rfc = `%${rfc}%`;
+    }
+    if (address) {
+      conditions.push("address LIKE :address");
+      params.address = `%${address}%`;
+    }
+    if (phone) {
+      conditions.push("phone LIKE :phone");
+      params.phone = `%${phone}%`;
+    }
+    if (email) {
+      conditions.push("email LIKE :email");
+      params.email = `%${email}%`;
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const query = `SELECT * FROM clients ${whereClause} LIMIT :limit OFFSET :offset`;
+
+    return { query, params };
+  }
+
+  public findAll(filters: GetClientsDTO) {
+    const { query, params } = this.buildFindAllQuery(filters);
+
+    return this.db.prepare(query).all(params);
   }
 }
