@@ -1,14 +1,16 @@
 import db from "../config/db";
 import type {Request, Response} from "express";
+
+import { ClientRepository } from "../repositories/client.repository";
+
 import { CreateClientDTO, GetClientsDTO, UpdateClientDTO } from "../types/client.types";
 import {
-  generateInsertHelper,
-  updateHelper,
   rfcFormat,
   phoneFormat,
   emailFormat
 } from "../utils/sql.utils";
-import { isRecordFieldPresent } from "../utils/db.utils";
+
+const clientRepository = new ClientRepository(db);
 
 export const ClientController = {
   createClient: async(req: Request<{}, {}, CreateClientDTO>, res: Response) => {
@@ -27,29 +29,23 @@ export const ClientController = {
         });
       }
 
-      const checkNameUse = isRecordFieldPresent({table: 'clients', column: 'name', value: name})
+      const checkNameUse = clientRepository.checkNameUse(name);
       if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
       if(!rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
 
-      const clientData: any = {
+      if(email !== undefined && !emailFormat(email as string)) return res.status(400).json({"success": false, "message": "E-mail inválido."});
+      const validatePhone = phoneFormat(phone);
+      if(validatePhone === 'error') return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
+
+      const clientData: CreateClientDTO = {
         name: name,
         rfc: rfc,
-        address: address
+        address: address,
+        phone: phone ? phoneFormat(phone) : null,
+        email: email ?? null
       }
 
-      if(phone !== undefined){
-        const validatePhone = phoneFormat(phone);
-        if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
-        clientData.phone = validatePhone;
-      }
-
-      if(email !== undefined){
-        if(!emailFormat(email as string)) return res.status(400).json({"success": false, "message": "E-mail inválido."});
-        clientData.email = email;
-      }
-
-      const { columns, placeholders } = generateInsertHelper(clientData);
-      const result = db.prepare(`INSERT INTO clients (${columns}) VALUES (${placeholders})`).run(clientData);
+      const result = clientRepository.create(clientData);
       
       if(result.changes === 0) return res.status(400).json({"success": false, "message": "No se ha creado el cliente. Revise sus datos enviados."});
 
@@ -60,6 +56,11 @@ export const ClientController = {
       })
     }catch(err: any){
       console.log("ERROR:" + err);
+
+      if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return res.status(409).json({ success: false, message: "El cliente o RFC ya está registrado." });
+      }
+
       return res.status(500).json({
         "success": false,
         "message": "Error en la base de datos."
@@ -74,11 +75,10 @@ export const ClientController = {
       const idNumber: number = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const checkClientId = isRecordFieldPresent({table: "clients", column: "id", value: idNumber});
-      if(!checkClientId) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
-
-      const result = db.prepare("SELECT * FROM clients WHERE id = :id").get({id});
+      const result = clientRepository.findById(idNumber);
       
+      if(result == null) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+
       return res.status(200).json({
         "success": true,
         "data": result
@@ -94,49 +94,16 @@ export const ClientController = {
 
   getClients: async (req: Request<{}, {}, {}, GetClientsDTO>, res: Response) => {
     try{
-      const { name, rfc, address, phone, email, limit, offset } = req.query;
-
-      const limitNumber = Number(limit || 10);
-      const offsetNumber = Number(offset || 0);
-
-      const clientData: any = {
-        limit: limitNumber,
-        offset: offsetNumber
-      }
-      
-      let query = `SELECT * FROM clients WHERE 1 = 1`;
-
-      if(name !== undefined){
-        clientData.name = `%${name}%`;
-        query += " AND name LIKE :name";
-      }
-      if(rfc !== undefined){
-        clientData.rfc = `%${rfc}%`;
-        query += " AND rfc LIKE :rfc";
-      }
-      if(address !== undefined){
-        clientData.address = `%${address}%`;
-        query += " AND address LIKE :address";
-      }
-      if(phone !== undefined){
-        clientData.phone = `%${phone}%`;
-        query += " AND phone LIKE :phone";
-      }
-      if(email !== undefined){
-        clientData.email = `%${email}%`;
-        query += " AND email LIKE :email";
-      }
-
-      query += " LIMIT :limit OFFSET :offset"
-      const result = db.prepare(query).all(clientData);
+      const filters = req.query;
+      const result = clientRepository.findAll(filters);
 
       if(result.length === 0) return res.status(204).json({"success": true, "message": "No se han encontrado clientes."});
       
       return res.status(200).json({
         "success": true,
         "metadata": {
-          limit: clientData.limit,
-          offset: clientData.offset,
+          limit: Number(filters.limit || 10),
+          offset: Number(filters.offset || 0),
           count: result.length
         },
         "data": result
@@ -158,8 +125,7 @@ export const ClientController = {
         return res.status(200).json([])
       }
       
-      const query = `SELECT id, name FROM clients WHERE name LIKE :name`
-      const result = db.prepare(query).all({name: `%${name.trim()}%`});
+      const result = clientRepository.searchByName(name);
 
       return res.status(200).json(result);
     } catch(err: any) {
@@ -180,46 +146,31 @@ export const ClientController = {
 
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const clientData: any = {
-        id: id
+      if(name !== null && name !== undefined) {
+        if (name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
+        if(clientRepository.checkNameUse(name, id)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
       }
 
-      if(name !== undefined){
-        if(name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
-        const checkNameUse = checkNameAvailable(name, id);
-        if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
-        clientData.name = name;
-      }
+      if(rfc !== null && rfc !== undefined && !rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
 
-      if(rfc !== undefined){
-        if(!rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
-        clientData.rfc = rfc;
-      }
+      if(address !== null && rfc !== undefined && (address.length < 10 || address.length > 300)) return res.status(400).json({"success": false, "message": "La dirección del cliente debe tener entre 10 y 300 caracteres."});
 
-      if(address !== undefined){
-        if(address.length < 10 || address.length > 300) return res.status(400).json({"success": false, "message": "La dirección del cliente debe tener entre 10 y 300 caracteres."});
-        clientData.address = address;
-      }
+      if(phone !== null && rfc !== undefined && phoneFormat(phone) === 'error') return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
+    
+      if(email !== null && rfc !== undefined && !emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
 
-      if(phone !== undefined){
-        const validatePhone = phoneFormat(phone);
-        if(validatePhone == null) return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
-        clientData.phone = validatePhone;
-      } else {
-        clientData.phone = null;
-      }
-      
-      if(email !== undefined){
-        if(!emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
-        clientData.email = email
-      } else {
-        clientData.email = null;
+      const clientData: UpdateClientDTO = {
+        id: id,
+        name: name ?? null,
+        rfc: rfc ?? null,
+        address:  address ?? null,
+        phone: phone ?? null,
+        email: email ?? null
       }
 
       if(Object.keys(clientData).length < 2) return res.status(400).json({"success": false, "message": "No se ha introducido por lo menos un valor por modificar."});
 
-      const set_clausule = updateHelper(clientData);
-      const result = db.prepare(`UPDATE clients SET ${set_clausule} WHERE id = :id`).run(clientData);
+      const result = clientRepository.update(clientData);
 
       return res.status(200).json({
         "success": true,
@@ -241,10 +192,10 @@ export const ClientController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const checkClientId = isRecordFieldPresent({table: 'clients', column: 'id', value: idNumber});
-      if(!checkClientId) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+      const checkClientId = clientRepository.findById(idNumber);
+      if(checkClientId == null) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
 
-      const result = db.prepare("DELETE FROM clients WHERE id = :id").run({id: idNumber});
+      const result = clientRepository.delete(idNumber);
 
       if(result.changes === 0) return res.sendStatus(204);
 
@@ -257,24 +208,4 @@ export const ClientController = {
       });
     }
   }
-}
-
-const checkNameAvailable = (name: string, id?: number): boolean => {
-  if(!name) return false;
-
-  let data: any = { name };
-  let query = `SELECT name FROM clients WHERE name = :name`;
-
-  if(id !== undefined && id){
-    query += " AND id != :id";
-    data.id = Number(id);
-  }
-
-  const validate = db.prepare(query).get(data);
-
-  if(validate){
-    return true;
-  }
-
-  return false;
 }

@@ -10,6 +10,7 @@ import SaleRoutes from "./routes/sale.routes.ts";
 import AuthRoutes from "./routes/auth.routes.ts";
 import ViewRoutes from "./routes/views.routes.ts";
 import DashboardRoutes from './routes/dashboard.routes.ts';
+import MovementsRoutes from "./routes/movements.routes.ts";
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -47,6 +48,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/auth', AuthRoutes);
 app.use('/', ViewRoutes);
 app.use('/api/dashboard', DashboardRoutes);
+app.use('/api/movements', MovementsRoutes);
 app.use('/api/users', UserRoutes);
 app.use('/api/products', ProductRoutes);
 app.use('/api/clients', ClientRoutes);
