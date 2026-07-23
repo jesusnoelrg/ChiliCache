@@ -72,7 +72,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS movements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    type TEXT DEFAULT 'created' CHECK (type IN ('created', 'restock', 'sale')),
+    type TEXT DEFAULT 'created' CHECK (type IN ('created', 'restock', 'sale', 'cancel')),
     old_stock INTEGER NOT NULL,
     new_stock INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

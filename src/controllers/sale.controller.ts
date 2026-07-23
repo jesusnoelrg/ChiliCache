@@ -288,45 +288,21 @@ export const SaleController = {
   cancelSaleById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
+      const idUserNumber = req.user?.id;
+
+      if(!idUserNumber){
+        return res.status(404).json({
+          "success": false,
+          "message": "Usuario no identificado en la sesión."
+        })
+      }
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const stmtSale = db.prepare("SELECT status FROM sales WHERE id = :id");
-      const stmtProducts = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
-      const stmtUpdateStock = db.prepare("UPDATE products SET stock = stock + :amount WHERE id = :id");
-      const stmtUpdateStatus = db.prepare("UPDATE sales SET status = 'cancelled' WHERE id = :id");
+      const result = salesRepository.cancelSaleWithMovement(idNumber, idUserNumber);
 
-      const transaction = db.transaction((idNumber) => {
-        const { status } = stmtSale.get({id: idNumber}) as {status: 'cancelled' | 'completed'} || {};
-
-        if(!status) throw new Error(`SALE_NO_EXIST:${idNumber}`);
-        if(status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${idNumber}`);
-
-        const products = stmtProducts.all({id: idNumber}) as {id_product: number, amount: number}[];
-
-        if(products.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${idNumber}`);
-
-        for(const {id_product, amount} of products){
-          const result = stmtUpdateStock.run({amount: amount, id: id_product});
-          
-          if (result.changes === 0) {
-            throw new Error(`PRODUCT_NOT_FOUND_OR_UPDATE_FAILED:${id_product}:${idNumber}`);
-          }
-        }
-
-        const statusResult = stmtUpdateStatus.run({id: idNumber});
-
-        if (statusResult.changes === 0) {
-          throw new Error(`FAILED_TO_UPDATE_STATUS:${idNumber}`);
-        }
-
-        return {"success": true}
-      });
-
-      const confirmTransaction = transaction(idNumber);
-
-      if(!confirmTransaction.success){
+      if(!result.success){
         return res.status(400).json({
           "success": false,
           "message": "Ha ocurrido un error en la transación."

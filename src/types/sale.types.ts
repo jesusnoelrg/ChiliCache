@@ -28,9 +28,13 @@ export interface GetSalesDTO {
   min_total?: number;
   max_total?: number;
   invoice: number;
-  status?: string;
+  status?: SaleStatus;
   limit?: number;
   offset?: number;
+}
+
+export interface SaleStatus {
+  status: 'completed' | 'cancelled'
 }
 
 export interface DataCreateSale {
