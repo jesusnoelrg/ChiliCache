@@ -38,11 +38,12 @@ export function updateHelper(data: Record<string, any>, excludeKeys: string[] = 
  * @returns boolean
  */
 
-export const phoneFormat = (phone: string) => {
+export const phoneFormat = (phone: string | null) => {
+  if(!phone) return null;
   const onlyNumbers = phone.replace(/\D/g, '');
   const onlyTenDigits = /^\d{10}$/.test(onlyNumbers);
 
-  return onlyTenDigits ? onlyNumbers : null;
+  return onlyTenDigits ? onlyNumbers : 'error';
 };
 
 
