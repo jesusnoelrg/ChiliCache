@@ -6,11 +6,14 @@ import {
   GetSalesDTO, 
   ProductRow, 
   FiltersSaleReport,
-  DataSaleReport, 
+  DataSaleReport,
+  DataCreateSale,
   SaleReportItem } from "../types/sale.types";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { generatePdfReportHandler } from '../utils/pdf.utils';
+
+const salesRepository = new SalesRepository();
 
 export const SaleController = {
   createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
@@ -104,7 +107,7 @@ export const SaleController = {
     }
   },
 
-  getSales: async (req: Request<{}, {}, {}, GetSalesDTO>, res: Response) => {
+  getSales: async (req: Request, res: Response) => {
     try{
       const { 
         seller_name,
@@ -115,7 +118,7 @@ export const SaleController = {
         status,
         limit,
         offset 
-      } = req.query;
+      } = req.query as unknown as GetSalesDTO;
 
       const limitNumber = Number(limit || 10);
       const offsetNumber = Number(offset || 0);
@@ -364,13 +367,13 @@ export const SaleController = {
     }
   },
 
-  generateReportPDF: async (req: Request<{}, {}, {}, FiltersSaleReport>, res: Response) => {
+  generateReportPDF: async (req: Request, res: Response) => {
     try {
       const { 
         start_timestamp, end_timestamp,
         client_name, seller_name,
         invoice
-      } = req.query;
+      } = req.query as unknown as FiltersSaleReport;
 
       if(!start_timestamp || !end_timestamp) {
         return res.status(400).json({

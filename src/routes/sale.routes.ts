@@ -7,7 +7,7 @@ const router = Router();
 
 router.post('/', isAuthenticated, authorize(['seller', 'admin']), SaleController.createSale);
 
-router.get('/', isAuthenticated, authorize(['seller', 'admin']), SaleController.getSales as any);
+router.get('/', isAuthenticated, authorize(['seller', 'admin']), SaleController.getSales);
 
 router.get('/:id', isAuthenticated, authorize(['seller', 'admin']), SaleController.getSaleById);
 
