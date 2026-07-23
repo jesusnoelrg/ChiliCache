@@ -13,7 +13,7 @@ export const SaleController = {
       const idUserNumber = req.user?.id;
 
       if(!idUserNumber){
-        return res.status(404).json({
+        return res.status(401).json({
           "success": false,
           "message": "Usuario no identificado en la sesión."
         })
@@ -31,7 +31,7 @@ export const SaleController = {
       if(isNaN(idClientNumber) || !idClientNumber) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
 
       const invoiceNumber = Number(invoice);
-      if(isNaN(invoiceNumber) || !invoice) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
+      if(isNaN(invoiceNumber) || (invoice !== 0 && invoice !== 1)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
 
       const paymentNumber = Number(customer_payment);
       if(isNaN(paymentNumber) || !customer_payment) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
@@ -61,7 +61,7 @@ export const SaleController = {
       return res.status(200).json({
         "success": true,
         "message": "¡Venta registrada exitosamente!",
-        "id_venta": result.id_sale,
+        "id_sale": result.id_sale,
         "sale": result.sale
       });
     }catch(err: any){
@@ -70,16 +70,16 @@ export const SaleController = {
       if(err.message.startsWith('PRODUCT_NOT_FOUND')){
         const productId = err.message.split(':')[1]
         return res.status(404).json({
-          "success": true,
+          "success": false,
           "message": `El producto con el (ID: ${productId}) no existe.`
         });
       }
 
       if(err.message.startsWith('PRODUCT_NOT_AVAILABLE')) {
         const p = err.message.split(':');
-        return res.status(404).json({
-          "success": true,
-          "message": `El producto ${p[2]} (ID: ${p[1]}) no se encuentra deshabilitado para la venta.`
+        return res.status(400).json({
+          "success": false,
+          "message": `El producto ${p[2]} (ID: ${p[1]}) se encuentra deshabilitado para la venta.`
         });
       }
 
@@ -291,7 +291,7 @@ export const SaleController = {
       const idUserNumber = req.user?.id;
 
       if(!idUserNumber){
-        return res.status(404).json({
+        return res.status(401).json({
           "success": false,
           "message": "Usuario no identificado en la sesión."
         })

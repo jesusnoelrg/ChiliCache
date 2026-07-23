@@ -19,7 +19,7 @@ export class SalesRepository {
       for (const p of products) {
         const product = this.selectProduct.get({id: p.id}) as ProductRow || undefined;
         if (!product) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
-        if (product.is_active !== 0) throw new Error(`PRODUCT_NOT_AVAILABLE:${p.id}:${p.name}`);
+        if (product.is_active !== 1) throw new Error(`PRODUCT_NOT_AVAILABLE:${p.id}:${p.name}`);
 
         const total = product.price * p.amount;
         totalAcum += total;
@@ -72,7 +72,13 @@ export class SalesRepository {
       return { 
         "success": true, 
         "id_sale": id_sale,
-        "sale": saleRes
+        "sale": {
+          total: totalAcum, 
+          invoice: data_sale.invoice,
+          customer_payment: data_sale.customer_payment,
+          id_client: data_sale.id_client,
+          id_user: data_sale.id_user
+        }
       };
     });
 
@@ -97,12 +103,11 @@ export class SalesRepository {
       if(products.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${id_sale}`);
 
       for(const {id_product, amount} of products){
-        const result = this.updateStockCancel.run({amount: amount, id: id_product});
-            
-        if (result.changes === 0) throw new Error(`PRODUCT_NOT_FOUND_OR_UPDATE_FAILED:${id_product}:${id_sale}`);
-
         const { stock }= this.selectStock.get({ id_product: id_product }) as { stock: number } || undefined;
         if(!stock) throw new Error(`PRODUCT_NOT_FOUND:${id_product}:${id_sale}`);
+
+        const result = this.updateStockCancel.run({amount: amount, id: id_product});
+        if (result.changes === 0) throw new Error(`PRODUCT_NOT_FOUND_OR_UPDATE_FAILED:${id_product}:${id_sale}`);
 
         const new_stock: number = stock + amount;
 
