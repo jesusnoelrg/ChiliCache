@@ -85,4 +85,7 @@ export class ProductRepository {
   public selectProductById = db.prepare("SELECT * FROM products WHERE id = :id");
   public listProducts = db.prepare('SELECT id, name, price, stock FROM products');
   public deleteProductById = db.prepare("DELETE FROM products WHERE id = :id")
+
+  public selectIsActiveById = db.prepare("SELECT id, is_active FROM products WHERE id = :id");
+  public updateIsActive = db.prepare("UPDATE products SET is_active = :is_active WHERE id = :id");
 }

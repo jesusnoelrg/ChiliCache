@@ -29,6 +29,7 @@ db.exec(`
     net_content INTEGER NOT NULL,
     price REAL NOT NULL,
     stock INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -80,7 +81,7 @@ db.exec(`
     FOREIGN KEY(id_product) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY(id_user) REFERENCES users(id)
   );
-   
+
   CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(id_user);
   CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(id_client);
   CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);

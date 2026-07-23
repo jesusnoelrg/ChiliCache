@@ -338,6 +338,59 @@ export const ProductController = {
     }
   },
 
+  toggleProduct: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { is_active } = req.body;
+
+      const idNumber = Number(id);
+      if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
+      const isActiveNumber = is_active;
+      if(isNaN(isActiveNumber)) return res.status(400).json({"success": false, "message": "Debes especificar con (0 o 1) para alternar si se activa el producto."})
+
+      const product = repository.selectProductById.get({id: idNumber}) as {id: number, is_active: number} || undefined;
+
+      if(!product) {
+        return res.status(404).json({
+          "success": false,
+          "message": `El producto con el (ID: ${idNumber}) no existe.`
+        });
+      }
+
+      const msgToggle = (isActiveNumber === 1) ? 'activado' : 'desactivado';
+
+      if(product.is_active === is_active) {
+        return res.status(203).json({
+          "success": true,
+          "message": `El producto (ID: ${idNumber}) ya se encontraba ${msgToggle}.`
+        });
+      }
+
+      const result = repository.updateIsActive.run({
+        id: idNumber,
+        is_active: isActiveNumber
+      });
+
+      if(result.changes === 0) {
+        res.status(200).json({
+          "success": true,
+          "message": "El proceso se ha completado pero no ha habido cambios."
+        })
+      }
+
+      return res.status(200).json({
+        "success": true,
+        "message": `¡El producto (ID: ${idNumber}) ha sido ${msgToggle}!`
+      })
+    } catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      })
+    }
+  },
+
   deleteProduct: async(req: Request, res: Response) => {
     try{
       const { id } = req.params;

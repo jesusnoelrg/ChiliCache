@@ -17,6 +17,8 @@ router.get('/list/', isAuthenticated, authorize(['seller', 'admin']), ProductCon
 
 router.delete('/:id', isAuthenticated, authorize(['seller', 'admin']), ProductController.deleteProduct);
 
+router.patch('/:id/toggle', isAuthenticated, authorize(['admin']), ProductController.toggleProduct);
+
 router.patch('/:id/restock', isAuthenticated, authorize(['seller', 'admin']), ProductController.restockProduct);
 
 export default router;
