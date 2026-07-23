@@ -29,6 +29,7 @@ db.exec(`
     net_content INTEGER NOT NULL,
     price REAL NOT NULL,
     stock INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -68,10 +69,25 @@ db.exec(`
     FOREIGN KEY(id_sale) REFERENCES sales(id),
     FOREIGN KEY(id_product) REFERENCES products(id)
   );
-   
+
+  CREATE TABLE IF NOT EXISTS movements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT DEFAULT 'created' CHECK (type IN ('created', 'restock', 'sale', 'cancel')),
+    old_stock INTEGER NOT NULL,
+    new_stock INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_product INTEGER NOT NULL,
+    id_user INTEGER NOT NULL,
+    FOREIGN KEY(id_product) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY(id_user) REFERENCES users(id)
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(id_user);
   CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(id_client);
   CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);
+
+  CREATE INDEX IF NOT EXISTS idx_movements_product ON movements(id_product);
+  CREATE INDEX IF NOT EXISTS idx_movements_user ON movements(id_user);
 `)
 
 export default db;

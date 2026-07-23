@@ -2,12 +2,14 @@ export interface CreateSaleDTO {
   id_client: number;
   invoice: number;
   customer_payment: number;
-  products: SaleDetailItemDTO[];
+  products: SaleDetailItem[];
 }
 
-export interface SaleDetailItemDTO {
-  id_product: number;
+export interface SaleDetailItem {
+  id: number;
+  name: string;
   amount: number;
+  price: number;
 }
 
 export interface ProductRow {
@@ -15,6 +17,7 @@ export interface ProductRow {
   name: string;
   price: number;
   stock: number;
+  is_active: number;
 }
 
 export interface GetSalesDTO {
@@ -25,7 +28,7 @@ export interface GetSalesDTO {
   min_total?: number;
   max_total?: number;
   invoice: number;
-  status?: string;
+  status?: SaleStatus;
   limit?: number;
   offset?: number;
 }
@@ -53,4 +56,15 @@ export interface SaleReportItem {
   total: number;
   invoice: string;
   date: string;
+}
+
+export interface SaleStatus {
+  status: 'completed' | 'cancelled'
+}
+
+export interface DataCreateSale {
+  id_client: number;
+  id_user: number;
+  invoice: number;
+  customer_payment: number;
 }

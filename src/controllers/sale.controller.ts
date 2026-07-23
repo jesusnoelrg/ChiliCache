@@ -1,4 +1,5 @@
 import db from "../config/db";
+import { SalesRepository } from "../repositories/sales.repository";
 import type { Request, Response } from "express";
 import { 
   CreateSaleDTO, 
@@ -18,9 +19,16 @@ export const SaleController = {
       const idUserNumber = req.user?.id;
 
       if(!idUserNumber){
-        return res.status(404).json({
+        return res.status(401).json({
           "success": false,
           "message": "Usuario no identificado en la sesión."
+        })
+      }
+
+      if(!products) {
+        return res.status(400).json({
+          "success": false,
+          "message": "No se han establecido productos para realizar la venta."
         })
       }
 
@@ -29,7 +37,7 @@ export const SaleController = {
       if(isNaN(idClientNumber) || !idClientNumber) return res.status(400).json({"success": false, "message": "ID del cliente inválido."});
 
       const invoiceNumber = Number(invoice);
-      if(isNaN(invoiceNumber) || !invoice) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
+      if(isNaN(invoiceNumber) || (invoice !== 0 && invoice !== 1)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
 
       const paymentNumber = Number(customer_payment);
       if(isNaN(paymentNumber) || !customer_payment) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
@@ -40,100 +48,55 @@ export const SaleController = {
       const isClientExist = isRecordFieldPresent({table: "clients", column: "id", value: idClientNumber});
       if(!isClientExist) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idUserNumber}) no existe.`});
 
-      const selectProduct = db.prepare("SELECT id, name, price, stock FROM products WHERE id = :id");
-      const insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
-      const insertDetails = db.prepare("INSERT INTO sales_detail (price, amount, id_sale, id_product) VALUES (:price, :amount, :id_sale, :id_product)");
-      const updateStock = db.prepare("UPDATE products SET stock = stock - :amount WHERE id = :id AND stock >= :amount");
-
-      const saleTransaction = db.transaction((productsList, idClientNumber, idUserNumber, invoice) => {
-        let totalAcum: number = 0;
-        let itemsAdded: any[] = [];
-
-        for(const item of productsList){
-          const product = selectProduct.get({id: item.id}) as ProductRow || undefined;
-          if (!product) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
-
-          const total = product.price * item.amount;
-          totalAcum += total;
-
-          itemsAdded.push({
-            id: item.id,
-            name: product.name,
-            amount: item.amount,
-            price: product.price
-          });
-        }
-
-        const saleResult = insertSale.run({
-          total: totalAcum, 
-          invoice: invoice,
-          customer_payment: paymentNumber,
-          id_client: idClientNumber,
-          id_user: idUserNumber
-        });
-        
-        const saleResultId = saleResult.lastInsertRowid;
-
-        for(const item of itemsAdded){
-          insertDetails.run({
-            price: item.price,
-            amount: item.amount,
-            id_sale: saleResultId,
-            id_product: item.id
-          });
-
-          const stockResult = updateStock.run({
-            amount: item.amount,
-            id: item.id
-          });
-
-          console.log(stockResult.changes)
-
-          if(stockResult.changes === 0) throw new Error(`INSUFFICIENT_STOCK:${item.id}:${item.name}`);
-        }
-
-        return { "success": true, saleResultId };
-      })
-
-      try{
-        const saleId = saleTransaction(products, idClientNumber, idUserNumber, invoice);
-
-        if(!saleId.success){
-          return res.status(400).json({
-            "success": false,
-            "message": "Ha ocurrido un error en la transación."
-          });
-        }
-
-        return res.status(200).json({
-          "success": true,
-          "message": "¡Venta registrada exitosamente!",
-          "id_venta": saleId.saleResultId
-        });
-      }catch(err: any){
-        if(err.message.startsWith('PRODUCT_NOT_FOUND')){
-          const productId = err.message.split(':')[1]
-          return res.status(404).json({
-            "success": true,
-            "message": `El producto con el (ID: ${productId}) no existe.`
-          });
-        }
-
-        if(err.message.startsWith('INSUFFICIENT_STOCK')){
-          const product = err.message.split(':');
-          return res.status(400).json({
-            "success": false,
-            "message": `Inventario insuficiente para el producto '${product[2]}' (ID: ${product[1]})`
-          })
-        }
-
-        return res.status(500).json({
-          "success": false,
-          "message": "Error interno al procesar la transacción en la base de datos."
-        })
+      const dataTransaction: DataCreateSale = {
+        id_client: idClientNumber,
+        id_user: idUserNumber,
+        invoice: invoiceNumber,
+        customer_payment: paymentNumber
       }
+
+      const result = salesRepository.createSaleWithMovement(products, dataTransaction)
+
+      if(!result.success){
+        return res.status(400).json({
+          "success": false,
+            "message": "Ha ocurrido un error en la transación."
+        });
+      }
+
+      return res.status(200).json({
+        "success": true,
+        "message": "¡Venta registrada exitosamente!",
+        "id_sale": result.id_sale,
+        "sale": result.sale
+      });
     }catch(err: any){
       console.log("Error: " + err);
+
+      if(err.message.startsWith('PRODUCT_NOT_FOUND')){
+        const productId = err.message.split(':')[1]
+        return res.status(404).json({
+          "success": false,
+          "message": `El producto con el (ID: ${productId}) no existe.`
+        });
+      }
+
+      if(err.message.startsWith('PRODUCT_NOT_AVAILABLE')) {
+        const p = err.message.split(':');
+        return res.status(400).json({
+          "success": false,
+          "message": `El producto ${p[2]} (ID: ${p[1]}) se encuentra deshabilitado para la venta.`
+        });
+      }
+
+      if(err.message.startsWith('INSUFFICIENT_STOCK')){
+        const product = err.message.split(':');
+        return res.status(400).json({
+          "success": false,
+          "message": `Inventario insuficiente para el producto '${product[2]}' (ID: ${product[1]})`
+        })
+      }
+
       return res.status(500).json({
         "success": false,
         "message": "[ERROR 500]: Error en la base de datos."
@@ -331,45 +294,21 @@ export const SaleController = {
   cancelSaleById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
+      const idUserNumber = req.user?.id;
+
+      if(!idUserNumber){
+        return res.status(401).json({
+          "success": false,
+          "message": "Usuario no identificado en la sesión."
+        })
+      }
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const stmtSale = db.prepare("SELECT status FROM sales WHERE id = :id");
-      const stmtProducts = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
-      const stmtUpdateStock = db.prepare("UPDATE products SET stock = stock + :amount WHERE id = :id");
-      const stmtUpdateStatus = db.prepare("UPDATE sales SET status = 'cancelled' WHERE id = :id");
+      const result = salesRepository.cancelSaleWithMovement(idNumber, idUserNumber);
 
-      const transaction = db.transaction((idNumber) => {
-        const { status } = stmtSale.get({id: idNumber}) as {status: 'cancelled' | 'completed'} || {};
-
-        if(!status) throw new Error(`SALE_NO_EXIST:${idNumber}`);
-        if(status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${idNumber}`);
-
-        const products = stmtProducts.all({id: idNumber}) as {id_product: number, amount: number}[];
-
-        if(products.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${idNumber}`);
-
-        for(const {id_product, amount} of products){
-          const result = stmtUpdateStock.run({amount: amount, id: id_product});
-          
-          if (result.changes === 0) {
-            throw new Error(`PRODUCT_NOT_FOUND_OR_UPDATE_FAILED:${id_product}:${idNumber}`);
-          }
-        }
-
-        const statusResult = stmtUpdateStatus.run({id: idNumber});
-
-        if (statusResult.changes === 0) {
-          throw new Error(`FAILED_TO_UPDATE_STATUS:${idNumber}`);
-        }
-
-        return {"success": true}
-      });
-
-      const confirmTransaction = transaction(idNumber);
-
-      if(!confirmTransaction.success){
+      if(!result.success){
         return res.status(400).json({
           "success": false,
           "message": "Ha ocurrido un error en la transación."
