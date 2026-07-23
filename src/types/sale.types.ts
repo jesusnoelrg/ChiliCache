@@ -2,12 +2,14 @@ export interface CreateSaleDTO {
   id_client: number;
   invoice: number;
   customer_payment: number;
-  products: SaleDetailItemDTO[];
+  products: SaleDetailItem[];
 }
 
-export interface SaleDetailItemDTO {
-  id_product: number;
+export interface SaleDetailItem {
+  id: number;
+  name: string;
   amount: number;
+  price: number;
 }
 
 export interface ProductRow {
@@ -15,6 +17,7 @@ export interface ProductRow {
   name: string;
   price: number;
   stock: number;
+  is_active: number;
 }
 
 export interface GetSalesDTO {
@@ -28,4 +31,11 @@ export interface GetSalesDTO {
   status?: string;
   limit?: number;
   offset?: number;
+}
+
+export interface DataCreateSale {
+  id_client: number;
+  id_user: number;
+  invoice: number;
+  customer_payment: number;
 }
