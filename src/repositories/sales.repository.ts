@@ -6,6 +6,10 @@ export class SalesRepository {
   private insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
   private insertDetails = db.prepare("INSERT INTO sales_detail (price, amount, id_sale, id_product) VALUES (:price, :amount, :id_sale, :id_product)");
   private updateStock = db.prepare("UPDATE products SET stock = stock - :amount WHERE id = :id AND stock >= :amount");
+  private insertMovement = db.prepare(`
+    INSERT INTO movements (type, old_stock, new_stock, id_product, id_user)
+    VALUES (:type, :old_stock, :new_stock, :id_product, :id_user)  
+  `);
   
   public createSaleWithMovement (products: SaleDetailItem[], data_sale: DataCreateSale) {
     const transaction = db.transaction(() => {
@@ -25,6 +29,16 @@ export class SalesRepository {
           name: product.name,
           amount: p.amount,
           price: product.price
+        });
+
+        let new_stock: number = product.stock - p.amount;
+
+        this.insertMovement.run({
+          type: 'sale',
+          old_stock: product.stock,
+          new_stock: new_stock,
+          id_product: product.id,
+          id_user: data_sale.id_user
         });
       }
 
