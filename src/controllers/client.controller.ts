@@ -75,11 +75,10 @@ export const ClientController = {
       const idNumber: number = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const checkClientId = clientRepository.findById(idNumber);
-      if(checkClientId == null) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
-
       const result = clientRepository.findById(idNumber);
       
+      if(result == null) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idNumber}) no existe.`});
+
       return res.status(200).json({
         "success": true,
         "data": result
@@ -180,17 +179,18 @@ export const ClientController = {
 
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      if(name !== null && (name.length < 3 || name.length > 80)) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
+      if(name !== null && name !== undefined) {
+        if (name.length < 3 || name.length > 80) return res.status(400).json({"success": false, "message": "El nombre del cliente debe tener entre 3 y 80 caracteres."});
+        if(clientRepository.checkNameUse(name, id)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
+      }
 
-      if(name !== null && clientRepository.checkNameUse(name, id)) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
+      if(rfc !== null && rfc !== undefined && !rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
 
-      if(rfc !== null && !rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
+      if(address !== null && rfc !== undefined && (address.length < 10 || address.length > 300)) return res.status(400).json({"success": false, "message": "La dirección del cliente debe tener entre 10 y 300 caracteres."});
 
-      if(address !== null && (address.length < 10 || address.length > 300)) return res.status(400).json({"success": false, "message": "La dirección del cliente debe tener entre 10 y 300 caracteres."});
-
-      if(phone !== null && phoneFormat(phone) === 'error') return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
+      if(phone !== null && rfc !== undefined && phoneFormat(phone) === 'error') return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
     
-      if(email !== null && !emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
+      if(email !== null && rfc !== undefined && !emailFormat(email)) return res.status(400).json({"success": false, "message": "E-Mail inválido."});
 
       const clientData: UpdateClientDTO = {
         id: id,

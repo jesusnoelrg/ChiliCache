@@ -34,7 +34,7 @@ export class ClientRepository {
     this.deleteClientStmt = db.prepare('DELETE FROM clients WHERE id = :id');
   }
 
-  public findNameById (id: string): string | null {
+  public findNameById (id: number): string | null {
     const result = this.selectNameById.get({id: id}) as { name: string } || undefined;
 
     return result ? result.name : null;
