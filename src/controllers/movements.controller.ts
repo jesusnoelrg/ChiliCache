@@ -47,7 +47,7 @@ export const MovementController = {
 
       if(start_timestamp) {
         movementData.start_timestamp = `${start_timestamp} 00:00:00`;
-        query += " AND (m.created_at >= :start_timestamp"
+        query += " AND (m.created_at >= :start_timestamp)"
       }
 
       if(end_timestamp){
