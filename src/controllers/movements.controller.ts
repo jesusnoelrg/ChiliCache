@@ -64,11 +64,10 @@ export const MovementController = {
         query += " AND (p.name LIKE :product_name)"
       }
 
-      if(order === 'desc') {
-        query += " ORDER BY m.created_at DESC"
-      }
+      const rawOrder = (order as string)?.toUpperCase();
+      const sortOrder = rawOrder === 'ASC' ? 'ASC' : 'DESC';
 
-      query += " LIMIT :limit OFFSET :offset";
+      query += ` ORDER BY m.created_at ${sortOrder} LIMIT :limit OFFSET :offset`;
 
       const result = db.prepare(query).all(movementData);
 
