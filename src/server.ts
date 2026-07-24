@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 
 import db from './config/db.ts';
 
+import CompanyRoutes from './routes/company.routes.ts';
 import UserRoutes from './routes/user.routes.ts';
 import ProductRoutes from "./routes/product.routes.ts";
 import ClientRoutes from "./routes/client.routes.ts";
@@ -45,6 +46,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
 });
 
+app.use('/api/company', CompanyRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/', ViewRoutes);
 app.use('/api/dashboard', DashboardRoutes);

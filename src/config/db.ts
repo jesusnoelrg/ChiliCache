@@ -82,6 +82,17 @@ db.exec(`
     FOREIGN KEY(id_user) REFERENCES users(id)
   );
 
+  CREATE TABLE IF NOT EXISTS company (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    logo_path TEXT,
+    name TEXT NOT NULL,
+    tax_id TEXT NOT NULL,
+    address TEXT,
+    phone TEXT,
+    email TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(id_user);
   CREATE INDEX IF NOT EXISTS idx_sales_client ON sales(id_client);
   CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);
