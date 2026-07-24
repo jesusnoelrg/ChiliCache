@@ -45,10 +45,14 @@ export const MovementController = {
         query += " AND (m.type = :type)";
       }
 
-      if(start_timestamp && end_timestamp){
+      if(start_timestamp) {
         movementData.start_timestamp = `${start_timestamp} 00:00:00`;
-         movementData.end_timestamp = `${end_timestamp} 23:59:59`;
-        query += " AND (m.created_at >= :start_timestamp AND m.created_at <= :end_timestamp)";
+        query += " AND (m.created_at >= :start_timestamp"
+      }
+
+      if(end_timestamp){
+        movementData.end_timestamp = `${end_timestamp} 23:59:59`;
+        query += " AND (m.created_at <= :end_timestamp)";
       }
 
       if(seller_name){

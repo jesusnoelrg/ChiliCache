@@ -88,6 +88,7 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_movements_product ON movements(id_product);
   CREATE INDEX IF NOT EXISTS idx_movements_user ON movements(id_user);
+  CREATE INDEX IF NOT EXISTS idx_movements_created_at ON movements(created_at DESC);
 `)
 
 export default db;
