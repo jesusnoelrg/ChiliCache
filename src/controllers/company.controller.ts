@@ -9,7 +9,7 @@ import db from '../config/db'
 
 const repository = new CompanyRepository(db);
 
-export const ComapnyController = {
+export const CompanyController = {
   getPublic: async (req: Request, res: Response) => {
     try {
       const cached = await redisClient.get('company:info');

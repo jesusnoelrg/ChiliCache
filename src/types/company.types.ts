@@ -13,3 +13,12 @@ export interface CompanyInfo {
   email: string | null;
   updated_at: string;
 }
+
+export interface UpdateCompanyInfo {
+  name: string | null;
+  logo_path: string | null;
+  tax_id: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+}

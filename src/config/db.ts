@@ -85,8 +85,8 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     logo_path TEXT,
-    name TEXT NOT NULL,
-    tax_id TEXT NOT NULL,
+    name TEXT DEFAULT 'ChiliCache',
+    tax_id TEXT,
     address TEXT,
     phone TEXT,
     email TEXT,

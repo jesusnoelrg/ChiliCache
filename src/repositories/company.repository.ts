@@ -18,8 +18,8 @@ export class CompanyRepository {
         tax_id = COALESCE(excluded.tax_id, tax_id),
         address = COALESCE(excluded.address, address),
         phone = COALESCE(excluded.phone, phone),
-        email = COALESCE(excluded.email, email)
-        updated_at: CURRENT_TIMESTAMP
+        email = COALESCE(excluded.email, email),
+        updated_at = CURRENT_TIMESTAMP
       `);
   }
 
