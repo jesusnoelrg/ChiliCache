@@ -58,26 +58,26 @@ const fetchMovements = async () => {
     queryParams.append('type', type);
   }
 
-  if((start_timestamp !== "" && start_timestamp !== undefined) 
-    && (end_timestamp !== "" && end_timestamp !== undefined)) {
-    const startDate = new Date(start_timestamp || '2000-01-01');
-    const endDate = new Date(end_timestamp || '2100-01-01');
+  let startDate = start_timestamp ? new Date(start_timestamp) : null;
+  let endDate = end_timestamp ? new Date(end_timestamp) : null;
 
-
-    if(isNaN(startDate.getTime()) || isNaN(endDate.getTime())){
-      showAlert('Las dos fechas deben ser validas.', 'info');
-      return;
-    }
-
-    if (startDate > endDate) {
-      showAlert('La fecha inicial no puede superar a la fecha final', 'info');
-      return;
-    }
-
-    queryParams.append(`start_timestamp`, start_timestamp);
-    queryParams.append(`end_timestamp`, end_timestamp);
+  if(startDate && isNaN(startDate.getTime())){
+    showAlert('La fecha inicial no es válida.', 'info');
+    return;
   }
 
+  if(endDate && isNaN(endDate.getTime())) {
+    showAlert('La fecha final no es válida.', 'info');
+    return;
+  }
+
+  if(startDate && endDate && startDate > endDate) {
+    showAlert('La fecha inicial no puede superar a la fecha final', 'info');
+    return;
+  }
+
+  if (start_timestamp) queryParams.append('start_timestamp', start_timestamp);
+  if (end_timestamp) queryParams.append('end_timestamp', end_timestamp);
   if (sellerName) queryParams.append('seller_name', sellerName);
   if (productName) queryParams.append('product_name', productName);
 
