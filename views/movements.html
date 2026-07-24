@@ -120,15 +120,27 @@
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <label class="form-label fw-bold small mb-1">Filtro por texto</label>
-                  <input type="text" class="form-control form-control-sm mb-1" id="filterProductName" placeholder="Nombre de producto">
-                  <input type="text" class="form-control form-control-sm mb-2" id="filterSellerName" placeholder="Nombre de vendedor">
+                  <input 
+                    id="filterProductName" type="text" 
+                    class="form-control form-control-sm mb-1" 
+                    placeholder="Nombre de producto"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    >
+                  <input 
+                    id="filterSellerName" type="text" 
+                    class="form-control form-control-sm mb-2" 
+                    placeholder="Nombre de vendedor" 
+                    autocomplete="off" autocorrect="off"
+                    spellcheck="false">
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <label class="form-label fw-bold small mb-1">Orden</label>
                   <select class="form-select form-select-sm mb-2" id="filterOrder">
-                    <option value="DESC" selected>Más recientes primero</option>
-                    <option value="ASC">Más antiguos primero</option>
+                    <option value="desc" selected>Más recientes primero</option>
+                    <option value="asc">Más antiguos primero</option>
                   </select>
                 </li>
                 <li>
