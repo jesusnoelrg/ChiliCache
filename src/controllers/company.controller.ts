@@ -1,7 +1,8 @@
-import type { Request, Response } from 'express';
+import { response, type Request, type Response } from 'express';
 import redisClient from '../config/redis.ts';
-import { CompanyRepository } from '../repositories/company.repository';
+import { phoneFormat, emailFormat } from '../utils/sql.utils';
 
+import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyInfo, CompanyPublic } from '../types/company.types';
 
 import db from '../config/db'
@@ -83,6 +84,43 @@ export const ComapnyController = {
         ...result,
         "logo": result.logo_path
       });
+    } catch(err: any){
+      console.log("Error: " + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "[ERROR 500]: Error en la base de datos."
+      })
+    }
+  },
+
+  updateInfo: async (req: Request, res: Response) => {
+    try {
+      const {
+        name, logo_path, tax_id,
+        address, phone, email
+      } = req.body;
+
+      if(name && (name.length < 3 && name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
+
+      const validePhone = phoneFormat(phone);
+      if(phone && validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
+      if(email && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
+      
+      const result = repository.set({
+        name: name ?? null,
+        logo_path: logo_path ?? null,
+        tax_id: tax_id ?? null,
+        address: address ?? null,
+        phone: validePhone ?? null,
+        email: email ?? null
+      });
+
+      if(!result) res.status(400).json({ "success": false, "message": "Algo ha salido mal al intentar actualizar los datos de la empresa"})
+
+      return res.status(200).json({
+        "success":  true,
+        "message": "¡Datos de la empresa actualizados exitosamente!"
+      })
     } catch(err: any){
       console.log("Error: " + err);
       return res.status(500).json({
