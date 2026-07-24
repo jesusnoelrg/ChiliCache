@@ -3,7 +3,7 @@ import redisClient from '../config/redis.ts';
 import { phoneFormat, emailFormat } from '../utils/sql.utils';
 
 import { CompanyRepository } from '../repositories/company.repository';
-import { CompanyInfo, CompanyPublic } from '../types/company.types';
+import { CompanyInfo, CompanyPublic, UpdateCompanyInfo } from '../types/company.types';
 
 import db from '../config/db'
 
@@ -106,16 +106,20 @@ export const CompanyController = {
       if(phone && validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
       if(email && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
       
-      const result = repository.set({
+      const data: UpdateCompanyInfo = {
         name: name ?? null,
         logo_path: logo_path ?? null,
         tax_id: tax_id ?? null,
         address: address ?? null,
         phone: validePhone ?? null,
         email: email ?? null
-      });
+      }
+
+      const result = repository.set(data);
 
       if(!result) res.status(400).json({ "success": false, "message": "Algo ha salido mal al intentar actualizar los datos de la empresa"})
+
+      await redisClient.set('company:info', JSON.stringify(data));
 
       return res.status(200).json({
         "success":  true,
