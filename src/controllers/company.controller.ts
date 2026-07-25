@@ -18,11 +18,13 @@ export const CompanyController = {
       if(cached) {
         const { name, logo_path } = JSON.parse(cached);
 
-        return res.status(200).json({
-          "success": true,
-          name,
-          logo: logo_path
-        });
+        if(name && logo_path) {
+          return res.status(200).json({
+            "success": true,
+            name,
+            logo: logo_path
+          });
+        }
       }
 
       const result = repository.getAllInfo() as CompanyInfo;
@@ -83,7 +85,6 @@ export const CompanyController = {
       return res.status(200).json({
         "success": true,
         ...result,
-        "logo": result.logo_path
       });
     } catch(err: any){
       console.log("Error: " + err);
@@ -103,42 +104,39 @@ export const CompanyController = {
 
       const newLogoPath = req.file?.path;
 
-      if(name && (name.length < 3 && name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
+      if(name && (name.length < 3 || name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
       const validePhone = phoneFormat(phone);
       if(phone && validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
       if(email && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
       
 
-      if(newLogoPath) {
-        const currentDataRaw = await redisClient.get('company:info');
-        let oldLogoPath: string | null = null;
+      const currentCompany = repository.getAllInfo();
 
-        if(currentDataRaw) {
-          const { logo_path } = JSON.parse(currentDataRaw);
-          oldLogoPath = logo_path;
-        }
-
-        if(oldLogoPath && oldLogoPath !== newLogoPath) {
-          await fs.access(oldLogoPath);
-          await fs.unlink(oldLogoPath);
+      if(newLogoPath && currentCompany?.logo_path) {
+        if(currentCompany.logo_path !== newLogoPath) {
+          try {
+            await fs.unlink(currentCompany.logo_path);
+          } catch (fileErr) {
+            console.warn(`No se pudo eliminar el archivo anterior: ${currentCompany.logo_path}`);
+          }
         }
       }
 
       const data: UpdateCompanyInfo = {
-        name: name ?? null,
-        logo_path: newLogoPath ?? null,
-        tax_id: tax_id ?? null,
-        address: address ?? null,
-        phone: validePhone ?? null,
-        email: email ?? null
+        name: name ?? currentCompany?.name ?? null,
+        logo_path: newLogoPath ?? currentCompany?.logo_path ?? null,
+        tax_id: tax_id ?? currentCompany?.tax_id ?? null,
+        address: address ?? currentCompany?.address ?? null,
+        phone: validePhone ?? currentCompany?.phone ?? null,
+        email: email ?? currentCompany?.email ?? null
       }
 
       const result = repository.set(data);
 
       if(!result) res.status(400).json({ "success": false, "message": "Algo ha salido mal al intentar actualizar los datos de la empresa"})
 
-      await redisClient.set('company:info', JSON.stringify(data));
+      await redisClient.del('company:info');
 
       return res.status(200).json({
         "success":  true,
