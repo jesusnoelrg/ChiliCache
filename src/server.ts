@@ -27,6 +27,7 @@ const __dirname = dirname(__filename);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.static(path.join(__dirname, '../views')));
+app.use(express.static(path.join(__dirname, '../uploads')));
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {

@@ -1,6 +1,5 @@
-import {type Request, type Response, type NextFunction, response} from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import redisClient  from '../config/redis';
-
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   const sessionId = req.cookies['sid'];

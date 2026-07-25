@@ -96,9 +96,11 @@ export const CompanyController = {
   updateInfo: async (req: Request, res: Response) => {
     try {
       const {
-        name, logo_path, tax_id,
+        name, tax_id,
         address, phone, email
       } = req.body;
+
+      const logo_path = req.file?.path;
 
       if(name && (name.length < 3 && name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
