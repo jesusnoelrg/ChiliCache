@@ -1,4 +1,5 @@
 import { response, type Request, type Response } from 'express';
+import fs from 'fs/promises';
 import redisClient from '../config/redis.ts';
 import { phoneFormat, emailFormat } from '../utils/sql.utils';
 
@@ -100,7 +101,7 @@ export const CompanyController = {
         address, phone, email
       } = req.body;
 
-      const logo_path = req.file?.path;
+      const newLogoPath = req.file?.path;
 
       if(name && (name.length < 3 && name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
@@ -108,9 +109,25 @@ export const CompanyController = {
       if(phone && validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
       if(email && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
       
+
+      if(newLogoPath) {
+        const currentDataRaw = await redisClient.get('company:info');
+        let oldLogoPath: string | null = null;
+
+        if(currentDataRaw) {
+          const { logo_path } = JSON.parse(currentDataRaw);
+          oldLogoPath = logo_path;
+        }
+
+        if(oldLogoPath && oldLogoPath !== newLogoPath) {
+          await fs.access(oldLogoPath);
+          await fs.unlink(oldLogoPath);
+        }
+      }
+
       const data: UpdateCompanyInfo = {
         name: name ?? null,
-        logo_path: logo_path ?? null,
+        logo_path: newLogoPath ?? null,
         tax_id: tax_id ?? null,
         address: address ?? null,
         phone: validePhone ?? null,
