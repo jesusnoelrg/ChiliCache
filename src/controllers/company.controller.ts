@@ -4,7 +4,7 @@ import redisClient from '../config/redis.ts';
 import { phoneFormat, emailFormat } from '../utils/sql.utils';
 
 import { CompanyRepository } from '../repositories/company.repository';
-import { CompanyInfo, CompanyPublic, UpdateCompanyInfo } from '../types/company.types';
+import { CompanyInfo, UpdateCompanyInfo } from '../types/company.types';
 
 import db from '../config/db'
 
