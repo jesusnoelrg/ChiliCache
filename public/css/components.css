@@ -130,15 +130,15 @@
 }
 
 .login-background{
-	background: rgb(217, 83, 65);
-    background: radial-gradient(circle, rgb(217, 65, 65) 0%, rgb(140, 42, 42) 100%);
+	background: var(--color-primario);
+    background: radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
 }
 
 .aside-background{
-    background: rgb(217, 65, 65);
-    background: -moz-radial-gradient(circle, rgb(217, 65, 65) 0%, rgrgb(137, 48, 48)00%);
-    background: -webkit-radial-gradient(circle, rgb(217, 83, 65) 0%, rgb(137, 48, 48) 100%);
-    background: radial-gradient(circle, rgb(217, 65, 65) 0%, rgb(137, 48, 48) 100%);
+    background: var(--color-primario);
+    background: -moz-radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
+    background: -webkit-radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
+    background: radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8d941",endColorstr="#5b8930",GradientType=1);
 }
 

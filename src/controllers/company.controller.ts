@@ -145,8 +145,8 @@ export const CompanyController = {
         address: address !== '' ? address : null,
         phone: phone !== '' ? phone : null,
         email: email !== '' ? email : null,
-        primary_color: primary_color !== '' ? primary_color : '#563d7c',
-        secondary_color: secondary_color !== '' ? secondary_color : '#6c757d'
+        primary_color: primary_color !== '' ? primary_color : '#bf2121',
+        secondary_color: secondary_color !== '' ? secondary_color : '#893030'
       }
 
       const result = repository.set(data);

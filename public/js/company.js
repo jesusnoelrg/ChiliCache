@@ -6,6 +6,10 @@ const companyRfc = document.getElementById('companyRfc');
 const companyAddress = document.getElementById('companyAddress');
 const companyEmail = document.getElementById('companyEmail');
 const companyPhone = document.getElementById('companyPhone');
+const companyPrimaryColor = document.getElementById('primaryColor');
+const primaryColorText = document.getElementById('primaryColorText');
+const companySecondaryColor = document.getElementById('secondaryColor');
+const secondaryColorText = document.getElementById('secondaryColorText');
 
 companyLogo.addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -132,6 +136,10 @@ const fillForm = (data) => {
   if(!data) return;
 
   previewLogo.src = cleanStaticUrl(data.logo);
+  companyPrimaryColor.value = data.primary_color;
+  companySecondaryColor.value = data.secondary_color;
+  primaryColorText.value = data.primary_color;
+  secondaryColorText.value = data.secondary_color;
   companyName.value = data.name;
   companyRfc.value = data.tax_id;
   companyAddress.value = data.address;

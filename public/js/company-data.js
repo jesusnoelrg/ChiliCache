@@ -24,6 +24,8 @@ const fetchCompany = async () => {
 
     if(result.logo) updateFavicon(result.logo);
 
+    applyTheme(result.primary_color, result.secondary_color);
+
     elements.forEach(element => {
       const type = element.getAttribute('data-company');
       if(type === 'name') element.textContent = result.name;
@@ -57,6 +59,18 @@ const cleanStaticUrl = (path) => {
   
   return clean;
 };
+
+const applyTheme = (primaryColor, secondaryColor) => {
+  const root = document.documentElement;
+
+  if (primaryColor) {
+    root.style.setProperty('--color-primario', primaryColor);
+  }
+
+  if (secondaryColor) {
+    root.style.setProperty('--color-secundario', secondaryColor);
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchCompany();
