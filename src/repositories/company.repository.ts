@@ -7,11 +7,11 @@ export class CompanyRepository {
   private insertInfo: Statement;
 
   constructor(private db: Database) {
-    this.selectPublic = db.prepare('SELECT name, logo_path FROM company WHERE id = 1');
+    this.selectPublic = db.prepare('SELECT name, logo_path, primary_color, secondary_color FROM company WHERE id = 1');
     this.selectAll = db.prepare('SELECT * FROM company WHERE id = 1');
     this.insertInfo = db.prepare(`
-      INSERT INTO company (id, name, logo_path, tax_id, address, phone, email, updated_at)
-      VALUES (1, :name, :logo_path, :tax_id, :address, :phone, :email, CURRENT_TIMESTAMP)
+      INSERT INTO company (id, name, logo_path, tax_id, address, phone, email, primary_color, secondary_color, updated_at)
+      VALUES (1, :name, :logo_path, :tax_id, :address, :phone, :email, :primary_color, :secondary_color, CURRENT_TIMESTAMP)
       ON CONFLICT(id) DO UPDATE SET
         name = COALESCE(excluded.name, 'ChiliCache'),
         logo_path = excluded.logo_path,
@@ -19,6 +19,8 @@ export class CompanyRepository {
         address = excluded.address,
         phone = excluded.phone,
         email = excluded.email,
+        primary_color = COALESCE(excluded.primary_color, '#bf2121'),
+        secondary_color = COALESCE(excluded.secondary_color, '#893030'),
         updated_at = CURRENT_TIMESTAMP
       `);
   }
