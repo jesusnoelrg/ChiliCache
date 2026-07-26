@@ -13,4 +13,18 @@
         form.classList.add('was-validated')
       }, false)
     })
-  })()
+})();
+
+const emailFormat = (email) => {
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+}
+
+const phoneFormat = (phone) => {
+  if(!phone) return null;
+
+  const onlyNumbers = phone.replace(/\D/g, '');
+  const onlyTenDigits = /^\d{10}$/.test(onlyNumbers);
+
+  return onlyTenDigits ? onlyNumbers : 'error';
+}

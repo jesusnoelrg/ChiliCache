@@ -22,17 +22,41 @@ const fetchCompany = async () => {
 
     const result = await res.json();
 
+    if(result.logo) updateFavicon(result.logo);
+
     elements.forEach(element => {
       const type = element.getAttribute('data-company');
-      alert(result.name)
       if(type === 'name') element.textContent = result.name;
-      if(type === 'logo') element.src = result.logo; 
+      if (type === 'logo') {
+        element.src = cleanStaticUrl(result.logo);
+      }
     });
   } catch (err) {
     console.error(err);
   }
 }
 
+const updateFavicon = (logo) => {
+  if(!logo) return;
+
+  const favicon = document.querySelector('link[rel*=icon]');
+
+  if(!favicon) return;
+
+  favicon.href =  cleanStaticUrl(logo);
+}
+
+const cleanStaticUrl = (path) => {
+  if (!path) return '/img/logo.png';
+
+  let clean = path.replace(/\\/g, '/');
+  
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean;
+  }
+  
+  return clean;
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchCompany();
