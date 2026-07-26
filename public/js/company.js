@@ -7,6 +7,24 @@ const companyAddress = document.getElementById('companyAddress');
 const companyEmail = document.getElementById('companyEmail');
 const companyPhone = document.getElementById('companyPhone');
 
+companyLogo.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showAlert('Por favor, selecciona un archivo de imagen válido.', 'error');
+    companyLogo.value = '';
+    return;
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+
+  previewLogo.src = objectUrl;
+  previewLogo.onload = () => {
+    URL.revokeObjectURL(objectUrl);
+  };
+})
+
 document.getElementById('formCompanySettings').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData();
@@ -76,6 +94,7 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
 
     if(result.success) {
       showAlert(result.message, 'success');
+      fetchCompany();
     }
   } catch (err) {
     console.error(err);
