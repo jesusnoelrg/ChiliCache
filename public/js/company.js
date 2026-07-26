@@ -101,6 +101,8 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
   }
 });
 
+document.getElementById('btnResetForm').addEventListener('click', () => fetchAllData());
+
 const fetchAllData = async () => {
   try {
     const res = await fetch(`${API_COMPANY}/`, {
