@@ -1,6 +1,8 @@
 export interface CompanyPublic {
   name: string;
   logo_path: string;
+  primary_color: string;
+  secondary_color: string;
 }
 
 export interface CompanyInfo {
@@ -11,6 +13,8 @@ export interface CompanyInfo {
   address: string | null;
   phone: string | null;
   email: string | null;
+  primary_color: string;
+  secondary_color: string;
   updated_at: string;
 }
 
@@ -21,4 +25,6 @@ export interface UpdateCompanyInfo {
   address: string | null;
   phone: string | null;
   email: string | null;
+  primary_color: string;
+  secondary_color: string;
 }

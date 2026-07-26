@@ -46,6 +46,7 @@ export const phoneFormat = (phone: string | null) => {
   return onlyTenDigits ? onlyNumbers : 'error';
 };
 
+export const hexColorFormat = (hexcolor: string) => hexcolor.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/);
 
 /**
  * Validate that the text follows the format of a email.

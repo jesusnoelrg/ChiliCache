@@ -142,19 +142,16 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8d941",endColorstr="#5b8930",GradientType=1);
 }
 
-.perfil-card{
-    background-color: rgba(184, 217, 65, 0.193);
-    border: 1px solid #D3E4A6;
-    cursor: pointer;
-    transition: all .3s;
-}
-
-.perfil-card:hover{
-    background-color: #D3E4A6;
-}
-
 .perfil-card * p{
     font-size: 14px;
+}
+
+.perfil-card > i {
+    font-size: 35px;
+}
+
+#iconAvatar {
+    font-size: 100px;
 }
 
 .module{

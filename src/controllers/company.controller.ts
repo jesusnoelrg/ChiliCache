@@ -1,7 +1,7 @@
 import { response, type Request, type Response } from 'express';
 import fs from 'fs/promises';
 import redisClient from '../config/redis.ts';
-import { phoneFormat, emailFormat } from '../utils/sql.utils';
+import { phoneFormat, emailFormat, hexColorFormat } from '../utils/sql.utils';
 
 import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyInfo, UpdateCompanyInfo } from '../types/company.types';
@@ -16,13 +16,15 @@ export const CompanyController = {
       const cached = await redisClient.get('company:info');
 
       if(cached) {
-        const { name, logo_path } = JSON.parse(cached);
+        const { name, logo_path, primary_color, secondary_color } = JSON.parse(cached);
 
         if(name && logo_path) {
           return res.status(200).json({
             "success": true,
             name,
-            logo: logo_path
+            logo: logo_path,
+            primary_color,
+            secondary_color
           });
         }
       }
@@ -39,7 +41,9 @@ export const CompanyController = {
       return res.status(200).json({
         "success": true,
         "name": result.name,
-        "logo": result.logo_path
+        "logo": result.logo_path,
+        "primary_color": result.primary_color,
+        "secondary_color": result.secondary_color
       });
     } catch(err: any){
       console.log("Error: " + err);
@@ -58,7 +62,9 @@ export const CompanyController = {
         const { 
           name, logo_path,
           tax_id, address,
-          phone, email, updated_at
+          phone, email, 
+          primary_color, secondary_color,
+          updated_at
         } = JSON.parse(cached);
 
         return res.status(200).json({
@@ -69,6 +75,8 @@ export const CompanyController = {
           address,
           phone,
           email,
+          primary_color,
+          secondary_color,
           updated_at
         });
       }
@@ -99,7 +107,8 @@ export const CompanyController = {
     try {
       const {
         name, tax_id,
-        address, phone, email
+        address, phone, email,
+        primary_color, secondary_color
       } = req.body;
 
       const newLogoPath = req.file?.path;
@@ -111,8 +120,21 @@ export const CompanyController = {
         if(validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
       }
 
-      if(email && email.trim() !== '' && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
+      if(email && email.trim() !== '' && !emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
       
+      if(primary_color && primary_color.trim() !== '' && !hexColorFormat(primary_color)) {
+        return res.status(400).json({
+          "success": false,
+          "message": "El color primario tiene el formato incorrecto, usa el formato HexColor (ej. #563d7c)"
+        });
+      }
+
+      if(secondary_color && secondary_color.trim() !== '' && !hexColorFormat(secondary_color)) {
+        return res.status(400).json({
+          "success": false,
+          "message": "El color secundario tiene el formato incorrecto, usa el formato HexColor (ej. #563d7c)"
+        });
+      }
 
       const currentCompany = repository.getAllInfo();
 
@@ -122,7 +144,9 @@ export const CompanyController = {
         tax_id: tax_id !== '' ? tax_id : null,
         address: address !== '' ? address : null,
         phone: phone !== '' ? phone : null,
-        email: email !== '' ? email : null
+        email: email !== '' ? email : null,
+        primary_color: primary_color !== '' ? primary_color : '#563d7c',
+        secondary_color: secondary_color !== '' ? secondary_color : '#6c757d'
       }
 
       const result = repository.set(data);
