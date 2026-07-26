@@ -16,7 +16,7 @@ export interface CompanyInfo {
 
 export interface UpdateCompanyInfo {
   name: string | null;
-  logo_path: string | null;
+  logo_path: string | null | undefined;
   tax_id: string | null;
   address: string | null;
   phone: string | null;

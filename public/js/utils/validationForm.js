@@ -26,5 +26,5 @@ const phoneFormat = (phone) => {
   const onlyNumbers = phone.replace(/\D/g, '');
   const onlyTenDigits = /^\d{10}$/.test(onlyNumbers);
 
-  return onlyTenDigits ? onlyNumbers : 'error';
+  return onlyTenDigits ? onlyNumbers : null;
 }

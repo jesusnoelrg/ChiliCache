@@ -7,7 +7,6 @@ const companyAddress = document.getElementById('companyAddress');
 const companyEmail = document.getElementById('companyEmail');
 const companyPhone = document.getElementById('companyPhone');
 
-
 document.getElementById('formCompanySettings').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData();
@@ -16,7 +15,7 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
   const rfc = companyRfc.value;
   const email = companyEmail.value;
   const address = companyAddress.value;
-  const phone = phoneFormat(companyPhone.value);
+  let phone = companyPhone.value;
   const logo = companyLogo.value;
 
   if(name !== '' && (name.length <= 3 || name.length >= 80)) {
@@ -39,20 +38,24 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
     return;
   }
 
-  if(phone === 'error') {
-    showAlert('Formato del número de telefono incorrecto.','info');
-    return;
+  if(phone !== ''){
+    phone = phoneFormat(phone);
+
+    if(phone === null) {
+      showAlert('Formato del número de telefono incorrecto.','info');
+      return;
+    }
   }
 
   if(companyLogo.files.length > 0) {
     formData.append('logo', companyLogo.files[0]);
   }
 
-  formData.append('name', name !== '' ? name : null);
-  formData.append('tax_id', rfc !== '' ? rfc : null);
-  formData.append('email', email !== '' ? email : null);
-  formData.append('address', address !== '' ? address : null);
-  formData.append('phone', phone !== '' ? phone : null);
+  formData.append('name', name);
+  formData.append('tax_id', rfc);
+  formData.append('email', email);
+  formData.append('address', address);
+  formData.append('phone', phone);
 
   try {
     const res = await fetch(`${API_COMPANY}/`, {

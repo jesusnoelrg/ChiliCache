@@ -13,12 +13,12 @@ export class CompanyRepository {
       INSERT INTO company (id, name, logo_path, tax_id, address, phone, email, updated_at)
       VALUES (1, :name, :logo_path, :tax_id, :address, :phone, :email, CURRENT_TIMESTAMP)
       ON CONFLICT(id) DO UPDATE SET
-        name = COALESCE(excluded.name, name),
-        logo_path = COALESCE(excluded.logo_path, logo_path),
-        tax_id = COALESCE(excluded.tax_id, tax_id),
-        address = COALESCE(excluded.address, address),
-        phone = COALESCE(excluded.phone, phone),
-        email = COALESCE(excluded.email, email),
+        name = COALESCE(excluded.name, 'ChiliCache'),
+        logo_path = excluded.logo_path,
+        tax_id = excluded.tax_id,
+        address = excluded.address,
+        phone = excluded.phone,
+        email = excluded.email,
         updated_at = CURRENT_TIMESTAMP
       `);
   }

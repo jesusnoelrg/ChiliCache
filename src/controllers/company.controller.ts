@@ -104,37 +104,38 @@ export const CompanyController = {
 
       const newLogoPath = req.file?.path;
 
-      if(name && (name.length < 3 || name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
+      if(name && (name.length <= 3 || name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
-      const validePhone = phoneFormat(phone);
-      if(phone && validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
-      if(email && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
+      if(phone && phone.trim() !== '') {
+        const validePhone = phoneFormat(phone);
+        if(validePhone === 'error') return res.status(400).json({'success': false, 'message': 'Número de telefono inválido.'});
+      }
+
+      if(email && email.trim() !== '' && emailFormat(email)) return res.status(400).json({'success': false, 'message': 'E-Mail inválido.'});
       
 
       const currentCompany = repository.getAllInfo();
 
-      if(newLogoPath && currentCompany?.logo_path) {
-        if(currentCompany.logo_path !== newLogoPath) {
-          try {
-            await fs.unlink(currentCompany.logo_path);
-          } catch (fileErr) {
-            console.warn(`No se pudo eliminar el archivo anterior: ${currentCompany.logo_path}`);
-          }
-        }
-      }
-
       const data: UpdateCompanyInfo = {
-        name: name ?? currentCompany?.name ?? null,
+        name: name !== '' ? name : 'ChiliCache',
         logo_path: newLogoPath ?? currentCompany?.logo_path ?? null,
-        tax_id: tax_id ?? currentCompany?.tax_id ?? null,
-        address: address ?? currentCompany?.address ?? null,
-        phone: validePhone ?? currentCompany?.phone ?? null,
-        email: email ?? currentCompany?.email ?? null
+        tax_id: tax_id !== '' ? tax_id : null,
+        address: address !== '' ? address : null,
+        phone: phone !== '' ? phone : null,
+        email: email !== '' ? email : null
       }
 
       const result = repository.set(data);
 
       if(!result) res.status(400).json({ "success": false, "message": "Algo ha salido mal al intentar actualizar los datos de la empresa"})
+
+      if(newLogoPath && currentCompany?.logo_path && currentCompany.logo_path !== newLogoPath) {
+        try {
+            await fs.unlink(currentCompany.logo_path);
+          } catch (fileErr) {
+            console.warn(`[FS] No se pudo eliminar el archivo anterior: ${currentCompany.logo_path}`);
+          }
+      }
 
       await redisClient.del('company:info');
 
