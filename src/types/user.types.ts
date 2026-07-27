@@ -46,4 +46,4 @@ export interface User {
   password: string;
   full_name: string;
   role: Role;
-}   
+}
