@@ -53,13 +53,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/company', CompanyRoutes);
 app.use('/api/auth', AuthRoutes);
-app.use('/', ViewRoutes);
 app.use('/api/dashboard', DashboardRoutes);
 app.use('/api/movements', MovementsRoutes);
 app.use('/api/users', UserRoutes);
 app.use('/api/products', ProductRoutes);
 app.use('/api/clients', ClientRoutes);
 app.use('/api/sales', SaleRoutes);
+app.use('/', ViewRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
