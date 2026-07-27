@@ -5,14 +5,20 @@ import { authorize } from '../middlewares/role.middleware';
 
 const router = Router();
 
-router.post('/', authorize(['seller', 'admin']), isAuthenticated, ProductController.createProduct);
+router.post('/', isAuthenticated, authorize(['seller', 'admin']), ProductController.createProduct);
 
-router.get('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.getProductById);
+router.get('/id/:id', isAuthenticated, authorize(['seller', 'admin']), ProductController.getProductById);
 
-router.get('/', authorize(['seller', 'admin']), isAuthenticated, ProductController.getProducts);
+router.get('/', isAuthenticated, authorize(['seller', 'admin']), ProductController.getProducts);
 
-router.put('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.updateProduct);
+router.put('/:id', isAuthenticated, authorize(['seller', 'admin']), ProductController.updateProduct);
 
-router.delete('/:id', authorize(['seller', 'admin']), isAuthenticated, ProductController.deleteProduct);
+router.get('/list/', isAuthenticated, authorize(['seller', 'admin']), ProductController.listProducts);
+
+router.delete('/:id', isAuthenticated, authorize(['seller', 'admin']), ProductController.deleteProduct);
+
+router.patch('/:id/toggle', isAuthenticated, authorize(['admin']), ProductController.toggleProduct);
+
+router.patch('/:id/restock', isAuthenticated, authorize(['seller', 'admin']), ProductController.restockProduct);
 
 export default router;

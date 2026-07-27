@@ -135,6 +135,23 @@ export const UserController = {
     }
   },
 
+  getUsersName: async (req: Request, res:Response) => {
+    try {
+       const query = "SELECT full_name FROM users";
+       const result = db.prepare(query).all() as { full_name: string }[];
+
+       const names = result.map(n => n.full_name);
+
+       return res.status(200).json({'success': true, names});
+    } catch(err: any) {
+      console.log("ERROR:" + err);
+      return res.status(500).json({
+        "success": false,
+        "message": "Error en la base de datos."
+      });
+    }
+  },
+
   getUserById: async (req: Request, res: Response) => {
     try{
       const { id } = req.params;
@@ -159,7 +176,7 @@ export const UserController = {
   updateUser: async (req: Request<any, {}, UpdateUserDTO>, res: Response) => {
     try {
       const { id } = req.params;
-      const {username, password, full_name, role} = req.body;
+      const {username, password, old_password, full_name, role} = req.body;
 
       const idNumber = Number(id);
 
@@ -178,6 +195,15 @@ export const UserController = {
         });
       }
 
+      const currentUser = req.user;
+      console.log(currentUser?.id);
+      if(currentUser?.role !== 'admin' && currentUser?.id !== idNumber){
+        return res.status(403).json({
+          "success": false,
+          "message": "¡No tienes permisos para editar a otros usuarios!"
+        });
+      }
+
       const checkUsername = checkUsernameAvailable(username as string, idNumber);
       if(!checkUsername.success) return res.status(409).json(checkUsername);
 
@@ -186,7 +212,38 @@ export const UserController = {
       }
 
       if(username) userData.username = username;
-      if(password) userData.password = password;
+      if(password) {
+        if(currentUser?.role === 'seller'){
+          if(!old_password){
+            return res.status(400).json({
+              "success": false,
+              "message": "Por favor, proporciona tu antigua contraseña."
+            });
+          }
+
+          
+          const hashOldPsw = db.prepare('SELECT password FROM users WHERE id = :id').get({id: id}) as any;
+          
+          if(!hashOldPsw){
+            return res.status(404).json({
+              "success": false,
+              "message": "El usuario solicitado no existe o fue dado de baja."
+            });
+          }
+
+          const resultPsw = await verifyPassword(old_password, hashOldPsw.password as string)
+
+          if(!resultPsw){
+            return res.status(400).json({
+              "success": false,
+              "message": "¡La contraseña que has ingresado no coincide con la antigua!"
+            });
+          }
+        }
+
+        const encryptedPassword = await hashPassword(password);
+        userData.password = encryptedPassword;
+      };
       if(full_name) userData.full_name = full_name;
       if(role) userData.role = role;
 
@@ -194,9 +251,17 @@ export const UserController = {
       let query = `UPDATE users SET ${placeholders} WHERE id = :id`
       let result = db.prepare(query).run(userData);
 
+      let successMsg = "";
+
+      if(password && old_password){
+        successMsg = "¡Has cambiado tu contraseña exitosamente!";
+      } else {
+        successMsg = `Actualización exitosa${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+      }
+
       return res.status(200).json({
         "success": true,
-        "message": `Actualización exitosa${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+        "message": successMsg
       })
     }catch(err: any){
       res.status(500).json({
@@ -247,6 +312,14 @@ export const UserController = {
       })
     }catch(err: any){
       console.error(err);
+
+      if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+        return res.status(409).json({
+          success: false,
+          message: "No se puede eliminar el usuario porque tiene historial de ventas o registros asociados en el sistema."
+        });
+      }
+
       return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
     }
   },
@@ -255,14 +328,14 @@ export const UserController = {
     try{
       const { username, password } = req.body;
 
-      if(!username || !password){
+      if(!username || !password || typeof username !== 'string' || typeof password !== 'string'){
         return res.status(400).json({
           "success": false,
-          "message": "¡Faltan campos por llenar!"
+          "message": "¡Campo inválidos o vacíos!"
         })
       }
 
-      const query = "SELECT username, password, role FROM users WHERE username = :username"
+      const query = "SELECT id, username, password, role, full_name FROM users WHERE username = :username"
       const user = db.prepare(query).get({username: username}) as SessionUser;
       if(!user){
         return res.status(401).json({
@@ -292,6 +365,7 @@ export const UserController = {
 
       const sessionData: any = {
         uuid: uuid,
+        id: user.id,
         username: user.username,
         role: user.role
       }
@@ -307,8 +381,14 @@ export const UserController = {
       })
 
       return res.status(200).json({
-        success: true,
-        message: "¡Inicio de sesión exitoso!"
+        "success": true,
+        "message": "¡Inicio de sesión exitoso!",
+        "user": {
+          "id": user.id,
+          "username": user.username,
+          "full_name": user.full_name,
+          "role": user.role
+        }
       });
     }catch(err: any){
       console.error(err);

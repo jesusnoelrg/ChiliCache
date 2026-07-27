@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChiliCache | Inicio</title>
+  <script>
+    (() => {
+      const primary = localStorage.getItem('primary_color');
+      const secondary = localStorage.getItem('secondary_color');
+      if(primary) document.documentElement.style.setProperty('--color-primario', primary);
+      if(secondary) document.documentElement.style.setProperty('--color-secundario', secondary);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const name = localStorage.getItem('company_name');
+        const logo = localStorage.getItem('logo');
+
+        document.querySelectorAll('[data-company]').forEach(item => {
+          const type = item.getAttribute('data-company');
+          if(type === 'name' && name) item.textContent = name;
+          if(type === 'logo' && logo) item.src = logo;
+
+          item.classList.add('loaded');
+        });
+      })
+    })();
+  </script>
+
+  <!--Bootstrap-->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <!--CSS my styles-->
+  <link rel="stylesheet" href="/css/general.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/variables.css">
+
+  <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon">
+</head>
+
+<body class="d-flex body-100">
+  <aside id="mainAside" class="aside-background">
+    <div class="d-flex flex-column">
+      <div class="aside-header d-flex justify-content-center align-items-center mt-3">
+        <img data-company="logo" src="/img/logo.png" alt="Logo" width="70px" height="60px">
+        <h5 data-company="name" class="aside-title-logo ps-3 text-white"></h5>
+      </div>
+      <nav class="mt-3">
+        <hr class="text-white">
+        <p class="aside-category-name text-white fw-bold ps-2">Menú</p>
+        <ul class="list-unstyled w-100">
+          <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Inicio" data-bs-placement="right"
+              class="nav-section-select d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-house-door-fill"></i> <span class="aside-section-name">Inicio</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/clients" data-bs-toggle="tooltip" title="Clientes"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-people-fill"></i> <span class="aside-section-name">Clientes</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/products" data-bs-toggle="tooltip" title="Productos"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-box-seam-fill"></i> <span class="aside-section-name">Productos</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/sales" data-bs-toggle="tooltip" title="Ventas"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-cart-check-fill"></i> <span class="aside-section-name">Ventas</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/movements" data-bs-toggle="tooltip" title="Movimientos"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip">
+              <i class="bi bi-arrow-left-right"></i>
+              <span class="aside-section-name">Movimientos</span></a>
+          </li>
+          <li class="nav-section-li px-3 py-1"><a href="/users" data-bs-toggle="tooltip" title="Usuarios"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-person-workspace"></i> <span class="aside-section-name">Usuarios</span></a></li>
+        </ul>
+        <hr class="text-white">
+        <p class="aside-category-name text-white fw-bold ms-2">Configuración</p>
+        <ul class="list-unstyled w-100">
+          <li class="nav-section-li px-3 py-1"><a href="/my_account" data-bs-toggle="tooltip" title="Mi cuenta"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-person-gear"></i> <span class="aside-section-name">Mi cuenta</span></a></li>
+          <li class="nav-section-li px-3 py-1"><a href="/company" data-bs-toggle="tooltip" title="Datos de la empresa"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                class="bi bi-building-fill-gear"></i> <span class="aside-section-name">Datos de la empresa</span></a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  <main class="bg-main container-fluid p-0">
+    <header class="d-flex justify-content-between align-items-center shadow">
+      <div class="d-flex align-items-center">
+        <button type="button" id="btnAside" class="ms-2 px-2 border-0 rounded-10">
+          <i class="bi bi-list fs-3 fw-bold text-primario"></i>
+        </button>
+      </div>
+      <div class="d-flex align-items-center me-3">
+        <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
+          <i class="bi bi-person-circle"></i>
+          <div class="d-flex flex-column justify-content-start ms-2">
+            <div class="d-flex flex-row">
+              <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
+              <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+            </div>
+            <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
+          </div>
+        </div>
+        <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>
+      </div>
+    </header>
+    <section>
+      <div class="m-4 bg-white px-5 py-3 rounded-10 shadow-sm">
+        <h1 class="fs-3 fw-bold">Panel principal</h1>
+        <p class="fs-6">Bienvenido al panel principal del sistema de gestión de <b data-company="name"></b>. Aquí encontrarás
+          un conjunto de herramientas y módulos diseñados para facilitar el acceso a los diferentes
+          listados y funcionalidades del sistema.</p>
+      </div>
+      <div class="list-modules d-flex flex-wrap justify-content-center justify-content-xxl-evenly">
+        <a href="/clients"
+          class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-clientes p-2 m-3 text-white text-decoration-none">
+          <i class="module-icon bi bi-people-fill"></i>
+          <p class="m-0">Clientes</p>
+          <p class="fw-bold" id="countClients">0</p>
+        </a>
+        <a href="/products"
+          class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-productos p-2 m-3 text-white text-decoration-none">
+          <i class="module-icon bi bi-box-seam-fill"></i>
+          <p class="m-0">Productos</p>
+          <p class="fw-bold" id="countProducts">0</p>
+        </a>
+        <a href="/sales"
+          class="col-12 col-sm-6 col-lg-4 col-xl-2 module rounded-10 shadow bg-ventas p-2 m-3 text-white text-decoration-none">
+          <i class="module-icon bi bi-cart-check-fill"></i>
+          <p class=" m-0">Ventas</p>
+          <p class="fw-bold" id="countSales">0</p>
+        </a>
+        <a href="/users"
+          class="col-12 col-sm-6 col-lg-4 col-xl-2 p-2 m-3 text-white text-decoration-none module rounded-10 shadow bg-usuarios">
+          <i class="module-icon bi bi-person-workspace"></i>
+          <p class="m-0">Usuarios</p>
+          <p class="fw-bold" id="countUsers">0</p>
+        </a>
+      </div>
+      <div class="m-4 p-4 bg-white rounded-10 shadow-sm">
+        <h2 class="fs-4 fw-bold mb-3">Últimos movimientos</h2>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Vendedor</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Stock anterior</th>
+                <th scope="col">Stock nuevo</th>
+                <th scope="col">Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="movementsList">
+              <!-- Last 5 moves -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!--JS-->
+  <script src="/js/bootstrap.bundle.min.js"></script>
+
+  <script src="/js/utils/auth-global.js"></script>
+  <script src="/js/company-data.js"></script>
+  <script src="/js/main-panel.js"></script>
+  <script src="/js/global-layout.js"></script>
+</body>
+
+</html>

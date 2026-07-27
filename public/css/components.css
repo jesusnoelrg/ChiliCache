@@ -25,6 +25,19 @@
     background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
 }
 
+/*Textos
+---------------------------------------------------------------------*/
+
+.form-message-error{
+    display: none;
+    color: var(--text-error);
+    background-color: var(--bg-error);
+    border: red solid 1px;
+    border-radius: 5px;
+    font-size: 13.5px;
+    padding:  5px 0px 5px 0px;
+}
+
 /*Botones
 ---------------------------------------------------------------------*/
 
@@ -117,31 +130,28 @@
 }
 
 .login-background{
-	background: rgb(184,217,65);
-    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(119,140,42,1) 100%);
+	background: var(--color-primario);
+    background: radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
 }
 
 .aside-background{
-    background: rgb(184,217,65);
-    background: -moz-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
-    background: -webkit-radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
-    background: radial-gradient(circle, rgba(184,217,65,1) 0%, rgba(91,137,48,1) 100%);
+    background: var(--color-primario);
+    background: -moz-radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
+    background: -webkit-radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
+    background: radial-gradient(circle, var(--color-primario) 0%, var(--color-secundario) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8d941",endColorstr="#5b8930",GradientType=1);
-}
-
-.perfil-card{
-    background-color: rgba(184, 217, 65, 0.193);
-    border: 1px solid #D3E4A6;
-    cursor: pointer;
-    transition: all .3s;
-}
-
-.perfil-card:hover{
-    background-color: #D3E4A6;
 }
 
 .perfil-card * p{
     font-size: 14px;
+}
+
+.perfil-card > i {
+    font-size: 35px;
+}
+
+#iconAvatar {
+    font-size: 100px;
 }
 
 .module{
@@ -189,3 +199,33 @@
     padding: 15px;
     align-items: center;
 }
+
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    max-width: 300px;
+    max-height: 250px;
+    overflow-y: auto;
+    list-style: none;
+    background-color: rgb(250, 250, 250);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.26) 0px 0px 12px;
+    margin: 0;
+    padding: 0;
+    z-index: 99;
+}
+
+.autocomplete-list > li {
+    padding: 10px 0px 5px 10px;
+}
+
+.autocomplete-list > li:hover{
+    background-color: rgb(235, 235, 235);
+}
+

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChiliCache | Mi cuenta</title>
+  <script>
+    (() => {
+      const primary = localStorage.getItem('primary_color');
+      const secondary = localStorage.getItem('secondary_color');
+      if(primary) document.documentElement.style.setProperty('--color-primario', primary);
+      if(secondary) document.documentElement.style.setProperty('--color-secundario', secondary);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const name = localStorage.getItem('company_name');
+        const logo = localStorage.getItem('logo');
+
+        document.querySelectorAll('[data-company]').forEach(item => {
+          const type = item.getAttribute('data-company');
+          if(type === 'name' && name) item.textContent = name;
+          if(type === 'logo' && logo) item.src = logo;
+
+          item.classList.add('loaded');
+        });
+      })
+    })();
+  </script>
+  <!--Bootstrap-->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <!--CSS my styles-->
+  <link rel="stylesheet" href="/css/general.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/variables.css">
+  <!--Logo-->
+  <link rel="shortcut icon" href="./img/logo.png" type="image/x-icon">
+</head>
+<body>
+  <div class="d-flex h-100">
+    <aside id="mainAside" class="aside-background">
+      <div class="d-flex flex-column">
+        <div class="aside-header d-flex justify-content-center align-items-center mt-3">
+          <img data-company="logo" src="" alt="Logotipo" width="70px" height="60px">
+          <h5 data-company="name" class="aside-title-logo ps-3 text-white">ChiliCache</h5>
+        </div>
+        <nav class="mt-3">
+          <hr class="text-white">
+          <p class="aside-category-name text-white fw-bold ps-2">Menú</p>
+          <ul class="list-unstyled w-100">
+            <li class="nav-section-li px-3 py-1"><a href="/home" data-bs-toggle="tooltip" title="Inicio"
+                data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-house-door-fill"></i> <span class="aside-section-name">Inicio</span></a></li>
+            <li class="nav-section-li px-3 py-1"><a href="/clients" data-bs-toggle="tooltip" title="Clientes"
+                data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-people-fill"></i> <span class="aside-section-name">Clientes</span></a></li>
+            <li class="nav-section-li px-3 py-1"><a href="/products" data-bs-toggle="tooltip" title="Productos"
+                data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-box-seam-fill"></i> <span class="aside-section-name">Productos</span></a></li>
+            <li class="nav-section-li px-3 py-1"><a href="/sales" data-bs-toggle="tooltip" title="Ventas"
+                data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-cart-check-fill"></i> <span class="aside-section-name">Ventas</span></a></li>
+            <li class="nav-section-li px-3 py-1"><a href="/movements" data-bs-toggle="tooltip" title="Movimientos"
+              data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip">
+              <i class="bi bi-arrow-left-right"></i>
+              <span class="aside-section-name">Movimientos</span></a>
+            </li>
+            <li class="nav-section-li px-3 py-1"><a href="/users" data-bs-toggle="tooltip" title="Usuarios" data-bs-placement="right"
+                class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-person-workspace"></i> <span class="aside-section-name">Usuarios</span></a></li>
+          </ul>
+          <hr class="text-white">
+          <p class="aside-category-name text-white fw-bold ms-2">Configuración</p>
+          <ul class="list-unstyled w-100">
+            <li class="nav-section-li px-3 py-1"><a data-bs-toggle="tooltip" title="Mi cuenta" data-bs-placement="right"
+                class="nav-section-select d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-person-gear"></i> <span class="aside-section-name">Mi cuenta</span></a></li>
+            <li class="nav-section-li px-3 py-1"><a href="/company" data-bs-toggle="tooltip" title="Datos de la empresa"
+                data-bs-placement="right" class="d-block p-2 rounded-10 text-decoration-none text-white nav-tooltip"><i
+                  class="bi bi-building-fill-gear"></i> <span class="aside-section-name">Datos de la empresa</span></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+    <main class="bg-main container-fluid p-0">
+      <header class="d-flex justify-content-between align-items-center shadow">
+        <div class="d-flex align-items-center">
+          <button type="button" id="btnAside" class="ms-2 px-2 border-0 rounded-10"><i
+              class="bi bi-list fs-3 fw-bold text-primario"></i></button>
+        </div>
+        <div class="d-flex align-items-center me-3">
+          <div class="d-flex justify-content-center align-items-center perfil-card rounded-10 px-3 py-1">
+            <i class="bi bi-person-circle"></i>
+            <div class="d-flex flex-column justify-content-start ms-2">
+              <div class="d-flex flex-row">
+                <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
+                <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+              </div>
+              <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
+            </div>
+          </div>
+          <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>
+        </div>
+      </header>
+      <section class="p-4">
+        <div class="row g-4">
+          <!-- Columna Izquierda: Vista de Datos Actuales -->
+          <div class="col-12 col-lg-5">
+            <div class="bg-white p-4 rounded-10 shadow-sm h-100">
+              <div class="text-center mb-4">
+                <i id="iconAvatar" class="bi bi-person-circle"></i>
+                <h3 class="fs-4 fw-bold mb-1 accountUsername">Usuario 1</h3>
+                <span id="accountRole" class="badge bg-danger rounded-pill">Dueño</span>
+              </div>
+              
+              <hr class="text-muted">
+
+              <div class="mt-3">
+                <div class="mb-3 d-flex align-items-center">
+                  <div class="bg-light p-2 rounded-10 me-3">
+                    <i class="bi bi-person text-danger fs-4"></i>
+                  </div>
+                  <div>
+                    <p class="text-muted small mb-0">Nombre de usuario (Username)</p>
+                    <p class="fw-bold mb-0 accountUsername">Usuario 1</p>
+                  </div>
+                </div>
+
+                <div class="mb-3 d-flex align-items-center">
+                  <div class="bg-light p-2 rounded-10 me-3">
+                    <i class="bi bi-card-text text-danger fs-4"></i>
+                  </div>
+                  <div>
+                    <p class="text-muted small mb-0">Nombre completo</p>
+                    <p id="accountFullname" class="fw-bold mb-0">Administrador ChiliCache</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Formulario de Edición -->
+          <div class="col-12 col-lg-7">
+            <div class="bg-white p-4 rounded-10 shadow-sm h-100">
+              <h2 class="fs-4 fw-bold mb-1">Editar mis datos</h2>
+              <p class="text-muted small mb-4">Actualiza la información de tu cuenta aquí.</p>
+              
+              <form id="formEditMe">
+                <div class="row">
+                  <!-- Username -->
+                  <div class="col-md-6 mb-3">
+                    <label for="changeUsername" class="form-label fw-bold text-dark small">Nombre de usuario</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                      <input type="text" class="form-control border-start-0" id="changeUsername" name="username" value="Usuario 1">
+                    </div>
+                  </div>
+
+                  <!-- Full Name -->
+                  <div class="col-md-6 mb-3">
+                    <label for="changeFullname" class="form-label fw-bold text-dark small">Nombre completo</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0"><i class="bi bi-card-text text-muted"></i></span>
+                      <input type="text" class="form-control border-start-0" id="changeFullname" name="full_name" value="Administrador ChiliCache">
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="text-muted my-4">
+                
+                <h3 class="fs-5 fw-bold mb-3"><i class="bi bi-shield-lock me-2 text-danger"></i>Cambiar contraseña</h3>
+                
+                <div class="mb-3">
+                  <label for="changeCurrentPassword" class="form-label fw-bold text-dark small">Contraseña actual</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-key text-muted"></i></span>
+                    <input type="password" class="form-control border-start-0" id="changeCurrentPassword" name="old_password" placeholder="••••••••">
+                  </div>
+                  <div class="form-text">Necesaria para confirmar los cambios de seguridad.</div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="changeNewPassword" class="form-label fw-bold text-dark small">Nueva contraseña</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                    <input type="password" class="form-control border-start-0" id="changeNewPassword" name="new_password" placeholder="Mínimo 8 caracteres">
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                  <button id="resetForm" type="button" class="btn btn-secondary px-4 rounded-10">Descartar</button>
+                  <button type="submit" class="btn btn-danger px-4 rounded-10">Guardar cambios</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal fade" tabindex="-1" id="modalAlerta" aria-hidden="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class=" modal-alert-header">
+            <div class="icon-alert-box d-flex justify-content-center align-items-center" id="cajaIconoAlerta">
+              <i class="bi bi-check text-white fs-1" id="iconoAlerta"></i>
+            </div>
+            <h4 id="tituloAlerta" class="modal-title w-100 text-center mt-5">Título</h4>
+          </div>
+          <div class="modal-body p-4">
+            <p id="mensajeAlerta" class="text-center fs-6">Mensaje de alerta</p>
+            <div class="d-flex justify-content-center pt-2">
+              <button type="button" class="btn-primario rounded-10 shadow py-2 px-5" id="btnAlerta"
+                data-bs-dismiss="modal">Aceptar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/company-data.js"></script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/global-layout.js"></script>
+  <script src="/js/utils/showAlerts.js"></script>
+  <script src="/js/mi-cuenta.js"></script>
+</body>
+</html>

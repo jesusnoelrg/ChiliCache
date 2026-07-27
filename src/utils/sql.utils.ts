@@ -38,13 +38,15 @@ export function updateHelper(data: Record<string, any>, excludeKeys: string[] = 
  * @returns boolean
  */
 
-export const phoneFormat = (phone: string) => {
+export const phoneFormat = (phone: string | null) => {
+  if(!phone) return null;
   const onlyNumbers = phone.replace(/\D/g, '');
   const onlyTenDigits = /^\d{10}$/.test(onlyNumbers);
 
-  return onlyTenDigits ? onlyNumbers : null;
+  return onlyTenDigits ? onlyNumbers : 'error';
 };
 
+export const hexColorFormat = (hexcolor: string) => hexcolor.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/);
 
 /**
  * Validate that the text follows the format of a email.

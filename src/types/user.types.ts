@@ -7,7 +7,9 @@ export interface LoginUser {
 
 export interface SessionUser {
   uuid: string;
+  id: string;
   username: string;
+  full_name: string;
   password?: string; 
   role: Role
 }
@@ -33,6 +35,7 @@ export interface UserRole {
 export interface UpdateUserDTO {
   username?: string;
   password?: string;
+  old_password?: string;
   full_name?: string;
   role?: Role;
 }

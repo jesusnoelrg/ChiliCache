@@ -12,7 +12,7 @@ export const authorize = (allowedRoles: Role[]) => {
     if(!allowedRoles.includes(user.role)){
       return res.status(403).json({
         "success": false,
-        "message": "¡No tienes los permisos necesarios",
+        "message": "¡No tienes los permisos necesarios para realizar esa acción!",
         "required": allowedRoles,
         "current": user.role
       });
