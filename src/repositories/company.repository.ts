@@ -25,7 +25,7 @@ export class CompanyRepository {
       `);
   }
 
-  public getPublicInfo(): CompanyPublic | undefined {
+  public async getPublicInfo(): Promise<CompanyPublic | undefined> {
     return this.selectPublic.get() as CompanyPublic | undefined;
   }
 
