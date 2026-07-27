@@ -82,10 +82,10 @@
           <i class="bi bi-person-circle"></i>
           <div class="d-flex flex-column justify-content-start ms-2">
             <div class="d-flex flex-row">
-              <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
-              <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+              <span class="badge perfil-badge rounded-pill bg-danger me-2"><%= user.role %></span>
+              <p class="fw-bold text-dark m-0"><%= user.username %></p>
             </div>
-            <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
+            <p class="text-gray m-0"><%= user.full_name %></p>
           </div>
         </div>
         <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>

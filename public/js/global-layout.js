@@ -1,42 +1,8 @@
-const d = document;
-
-const renderHeader = () => {
-  const cachedUser = sessionStorage.getItem('user-profile');
-
-  if(!cachedUser) return;
-
-  const user = JSON.parse(cachedUser);
-
-  d.getElementById('headerUsername').innerHTML = user.username;
-  d.getElementById('headerFullname').innerHTML = user.full_name;
-
-  const headerRol = d.getElementById('headerRol')
-  let role = '';
-
-  if(user.role === 'admin'){
-    role = 'Admin';
-    headerRol.classList.add('bg-danger');
-    headerRol.classList.remove('bg-success');
-  } else {
-    role = 'Vendedor';
-    headerRol.classList.add('bg-success');
-    headerRol.classList.remove('bg-danger');
-  }
-
-  headerRol.innerHTML = role;
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderHeader();
-})
-
-
-const btnAside = d.querySelector("#btnAside");
-const mainAside = d.querySelector("#mainAside");
-const sectionName = d.querySelectorAll(".aside-section-name");
-const textElements = d.querySelectorAll('.aside-category-name, .aside-title-logo');
-const tooltipAside = d.querySelectorAll('.nav-tooltip');
+const btnAside = document.querySelector("#btnAside");
+const mainAside = document.querySelector("#mainAside");
+const sectionName = document.querySelectorAll(".aside-section-name");
+const textElements = document.querySelectorAll('.aside-category-name, .aside-title-logo');
+const tooltipAside = document.querySelectorAll('.nav-tooltip');
 
 btnAside.addEventListener('click', () => {
   if (mainAside.classList.contains('aside-collapse')) {
