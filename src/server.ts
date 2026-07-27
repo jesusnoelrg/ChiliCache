@@ -25,8 +25,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 app.use(express.json());
-app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '../public')));
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '../views')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(helmet({

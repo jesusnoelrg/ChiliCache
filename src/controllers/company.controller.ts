@@ -20,17 +20,11 @@ export const CompanyController = {
         const { name, logo_path, primary_color, secondary_color } = JSON.parse(cached);
 
         if(name && logo_path) {
-          res.render('index', {
+          return res.render('index', {
             companyName: name,
-            companyLogo: logo_path 
-          });
-
-          return res.status(200).json({
-            "success": true,
-            name,
-            logo: logo_path,
-            primary_color,
-            secondary_color
+            companyLogo: logo_path,
+            primaryColor: primary_color,
+            secondaryColor: secondary_color 
           });
         }
       }
@@ -44,17 +38,11 @@ export const CompanyController = {
 
       await redisClient.set('company:info', JSON.stringify(result));
 
-      res.render('index', {
+      return res.render('index', {
         companyName: result.name,
-        companyLogo: result.logo_path 
-      });
-
-      return res.status(200).json({
-        "success": true,
-        "name": result.name,
-        "logo": result.logo_path,
-        "primary_color": result.primary_color,
-        "secondary_color": result.secondary_color
+        companyLogo: result.logo_path,
+        primaryColor: result.primary_color,
+        secondaryColor: result.secondary_color 
       });
     } catch(err: any){
       console.log("Error: " + err);
