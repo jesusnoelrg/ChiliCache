@@ -2,6 +2,15 @@ body{
 	height: 100vh;
 }
 
+[data-company] {
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+}
+
+[data-company].loaded {
+    opacity: 1;
+}
+
 aside{
 	height: auto;
 }

@@ -22,8 +22,14 @@ const fetchCompany = async () => {
 
     const result = await res.json();
 
-    if(result.logo) updateFavicon(result.logo);
+    if(result.logo) {
+      updateFavicon(result.logo);
+      localStorage.setItem('logo', cleanStaticUrl(result.logo));
+    };
 
+    localStorage.setItem('company_name', result.name);
+    localStorage.setItem('primary_color', result.primary_color);
+    localStorage.setItem('secondary_color', result.secondary_color);
     applyTheme(result.primary_color, result.secondary_color);
 
     elements.forEach(element => {
@@ -45,7 +51,7 @@ const updateFavicon = (logo) => {
 
   if(!favicon) return;
 
-  favicon.href =  cleanStaticUrl(logo);
+  favicon.href = cleanStaticUrl(logo);
 }
 
 const cleanStaticUrl = (path) => {

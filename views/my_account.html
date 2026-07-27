@@ -4,6 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChiliCache | Mi cuenta</title>
+  <script>
+    (() => {
+      const primary = localStorage.getItem('primary_color');
+      const secondary = localStorage.getItem('secondary_color');
+      if(primary) document.documentElement.style.setProperty('--color-primario', primary);
+      if(secondary) document.documentElement.style.setProperty('--color-secundario', secondary);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const name = localStorage.getItem('company_name');
+        const logo = localStorage.getItem('logo');
+
+        document.querySelectorAll('[data-company]').forEach(item => {
+          const type = item.getAttribute('data-company');
+          if(type === 'name' && name) item.textContent = name;
+          if(type === 'logo' && logo) item.src = logo;
+
+          item.classList.add('loaded');
+        });
+      })
+    })();
+  </script>
   <!--Bootstrap-->
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
