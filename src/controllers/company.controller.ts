@@ -1,5 +1,6 @@
 import { response, type Request, type Response } from 'express';
 import fs from 'fs/promises';
+import ejs from 'ejs';
 import redisClient from '../config/redis.ts';
 import { phoneFormat, emailFormat, hexColorFormat } from '../utils/sql.utils';
 
@@ -19,6 +20,11 @@ export const CompanyController = {
         const { name, logo_path, primary_color, secondary_color } = JSON.parse(cached);
 
         if(name && logo_path) {
+          res.render('index', {
+            companyName: name,
+            companyLogo: logo_path 
+          });
+
           return res.status(200).json({
             "success": true,
             name,
