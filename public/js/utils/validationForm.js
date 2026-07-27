@@ -28,3 +28,5 @@ const phoneFormat = (phone) => {
 
   return onlyTenDigits ? onlyNumbers : null;
 }
+
+const hexcolorFormat = (color) => /^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/.test(color);

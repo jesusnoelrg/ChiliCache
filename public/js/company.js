@@ -6,6 +6,7 @@ const companyRfc = document.getElementById('companyRfc');
 const companyAddress = document.getElementById('companyAddress');
 const companyEmail = document.getElementById('companyEmail');
 const companyPhone = document.getElementById('companyPhone');
+
 const companyPrimaryColor = document.getElementById('primaryColor');
 const primaryColorText = document.getElementById('primaryColorText');
 const companySecondaryColor = document.getElementById('secondaryColor');
@@ -27,7 +28,27 @@ companyLogo.addEventListener('change', (e) => {
   previewLogo.onload = () => {
     URL.revokeObjectURL(objectUrl);
   };
-})
+});
+
+companyPrimaryColor.addEventListener('change', () => {
+  primaryColorText.value = companyPrimaryColor.value;
+});
+
+companySecondaryColor.addEventListener('change', () => 
+  secondaryColorText.value = companySecondaryColor.value
+);
+
+primaryColorText.addEventListener('change', () => {
+  const color = primaryColorText.value;
+  if(!color || !hexcolorFormat(color)) return;
+  companyPrimaryColor.value = color;
+});
+
+secondaryColorText.addEventListener('change', () => {
+  const color = secondaryColorText.value;
+  if(!color || !hexcolorFormat(color)) return;
+  companySecondaryColor.value = color;
+});
 
 document.getElementById('formCompanySettings').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -39,6 +60,8 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
   const address = companyAddress.value;
   let phone = companyPhone.value;
   const logo = companyLogo.value;
+  const primary_color = companyPrimaryColor.value;
+  const secondary_color = companySecondaryColor.value;
 
   if(name !== '' && (name.length <= 3 || name.length >= 80)) {
     showAlert('El nombre de la empresa debe contener entre 3 y 80 caracteres.', 'info');
@@ -69,6 +92,20 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
     }
   }
 
+  if(primary_color) {
+    if(!hexcolorFormat(primary_color)) {
+      showAlert('El color primario no sigue el formato HexColor para los colores (ej #bf2121)', 'info');
+      return;
+    }
+  }
+
+  if(secondary_color) {
+    if(!hexcolorFormat(secondary_color)) {
+      showAlert('El color secundario no sigue el formato HexColor para los colores (ej #bf2121)', 'info');
+      return;
+    }
+  }
+
   if(companyLogo.files.length > 0) {
     formData.append('logo', companyLogo.files[0]);
   }
@@ -78,6 +115,8 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
   formData.append('email', email);
   formData.append('address', address);
   formData.append('phone', phone);
+  formData.append('primary_color', primary_color);
+  formData.append('secondary_color', secondary_color);
 
   try {
     const res = await fetch(`${API_COMPANY}/`, {
