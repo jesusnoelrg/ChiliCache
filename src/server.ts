@@ -13,6 +13,8 @@ import ViewRoutes from "./routes/views.routes.ts";
 import DashboardRoutes from './routes/dashboard.routes.ts';
 import MovementsRoutes from "./routes/movements.routes.ts";
 
+import { loadPublicData } from './middlewares/data.middleware';
+
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import dotenv from 'dotenv';
@@ -26,6 +28,8 @@ const __dirname = dirname(__filename);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
+app.set('view engine', 'ejs');
+app.use(loadPublicData);
 app.use(express.static(path.join(__dirname, '../views')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(helmet({
@@ -49,13 +53,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/company', CompanyRoutes);
 app.use('/api/auth', AuthRoutes);
-app.use('/', ViewRoutes);
 app.use('/api/dashboard', DashboardRoutes);
 app.use('/api/movements', MovementsRoutes);
 app.use('/api/users', UserRoutes);
 app.use('/api/products', ProductRoutes);
 app.use('/api/clients', ClientRoutes);
 app.use('/api/sales', SaleRoutes);
+app.use('/', ViewRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

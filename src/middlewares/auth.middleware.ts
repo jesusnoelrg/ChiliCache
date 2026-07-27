@@ -39,7 +39,13 @@ export const isAuthenticatedView = async (req: Request, res: Response, next: Nex
       return res.redirect('/login');
     }
 
-    req.user = JSON.parse(sessionData);
+    const userPased = JSON.parse(sessionData);
+    req.user = userPased;
+    res.locals.user = {
+      username: userPased.username,
+      full_name: userPased.full_name,
+      role: userPased.role === 'admin' ? 'Admin' : 'Vendedor'
+    }
     next();
   } catch (err: any) {
     console.error('Error en auth de vistas:', err);

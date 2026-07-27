@@ -366,6 +366,7 @@ export const UserController = {
       const sessionData: any = {
         uuid: uuid,
         id: user.id,
+        full_name: user.full_name,
         username: user.username,
         role: user.role
       }

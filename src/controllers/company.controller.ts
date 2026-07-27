@@ -1,5 +1,6 @@
 import { response, type Request, type Response } from 'express';
 import fs from 'fs/promises';
+import ejs from 'ejs';
 import redisClient from '../config/redis.ts';
 import { phoneFormat, emailFormat, hexColorFormat } from '../utils/sql.utils';
 
@@ -11,49 +12,6 @@ import db from '../config/db'
 const repository = new CompanyRepository(db);
 
 export const CompanyController = {
-  getPublic: async (req: Request, res: Response) => {
-    try {
-      const cached = await redisClient.get('company:info');
-
-      if(cached) {
-        const { name, logo_path, primary_color, secondary_color } = JSON.parse(cached);
-
-        if(name && logo_path) {
-          return res.status(200).json({
-            "success": true,
-            name,
-            logo: logo_path,
-            primary_color,
-            secondary_color
-          });
-        }
-      }
-
-      const result = repository.getAllInfo() as CompanyInfo;
-
-      if(!result) return res.status(404).json({
-        "success": false,
-        "message": 'No se ha encontrado los datos de la empresa.'
-      })
-
-      await redisClient.set('company:info', JSON.stringify(result));
-
-      return res.status(200).json({
-        "success": true,
-        "name": result.name,
-        "logo": result.logo_path,
-        "primary_color": result.primary_color,
-        "secondary_color": result.secondary_color
-      });
-    } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
-    }
-  },
-
   getInfo: async (req: Request, res: Response) => {
     try {
       const cached = await redisClient.get('company:info');

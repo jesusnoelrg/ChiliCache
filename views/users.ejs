@@ -4,28 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChiliCache | Inicio</title>
-  <script>
-    (() => {
-      const primary = localStorage.getItem('primary_color');
-      const secondary = localStorage.getItem('secondary_color');
-      if(primary) document.documentElement.style.setProperty('--color-primario', primary);
-      if(secondary) document.documentElement.style.setProperty('--color-secundario', secondary);
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const name = localStorage.getItem('company_name');
-        const logo = localStorage.getItem('logo');
-
-        document.querySelectorAll('[data-company]').forEach(item => {
-          const type = item.getAttribute('data-company');
-          if(type === 'name' && name) item.textContent = name;
-          if(type === 'logo' && logo) item.src = logo;
-
-          item.classList.add('loaded');
-        });
-      })
-    })();
-  </script>
+  <title><%= company.name %> | Inicio</title>
   <!--Bootstrap-->
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
@@ -34,16 +13,22 @@
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/variables.css">
+  <style>
+    :root {
+      --color-primario: <%= company.primary_color %>;
+      --color-secundario: <%= company.secondary_color %>
+    }
+  </style>
   <!--Logo-->
-  <link rel="shortcut icon" href="./img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="<%= company.logo %>" type="image/x-icon">
 </head>
 <body>
   <div class="d-flex h-100">
     <aside id="mainAside" class="aside-background">
       <div class="d-flex flex-column">
         <div class="aside-header d-flex justify-content-center align-items-center mt-3">
-          <img data-company="logo" src="" alt="user" width="70px" height="60px">
-          <h5 data-company="name" class="aside-title-logo ps-3 text-white">ChiliCache</h5>
+          <img src="<%= company.logo %>" alt="Logo" width="70px" height="60px">
+          <h5 class="aside-title-logo ps-3 text-white"><%= company.name %></h5>
         </div>
         <nav class="mt-3">
           <hr class="text-white">
@@ -97,10 +82,10 @@
             <i class="bi bi-person-circle"></i>
             <div class="d-flex flex-column justify-content-start ms-2">
               <div class="d-flex flex-row">
-                <span id="headerRol" class="badge perfil-badge rounded-pill bg-danger me-2">Dueño</span>
-                <p id="headerUsername" class="fw-bold text-dark m-0">Usuario 1</p>
+                <span class="badge perfil-badge rounded-pill bg-danger me-2"><%= user.role %></span>
+                <p class="fw-bold text-dark m-0"><%= user.username %></p>
               </div>
-              <p id="headerFullname" class="text-gray m-0">ChiliCache@gmail.com</p>
+              <p class="text-gray m-0"><%= user.full_name %></p>
             </div>
           </div>
           <button id="btnLogout" class="btn btn-danger ms-3">Cerrar sesión</button>
