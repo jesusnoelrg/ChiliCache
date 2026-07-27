@@ -38,6 +38,11 @@ export const CompanyController = {
 
       await redisClient.set('company:info', JSON.stringify(result));
 
+      res.render('index', {
+        companyName: result.name,
+        companyLogo: result.logo_path 
+      });
+
       return res.status(200).json({
         "success": true,
         "name": result.name,
