@@ -28,6 +28,7 @@ export interface GetUsersDTO {
   limit?: number;
   offset?: number;
 }
+
 export interface UserRole {
   role: Role;
 }
@@ -40,10 +41,17 @@ export interface UpdateUserDTO {
   role?: Role;
 }
 
-export interface User {
+export interface UpdateUserRepositoryParams {
+  id: number;
+  username?: string;
+  password?: string;
+  full_name?: string;
+  role?: Role;
+}
+
+export interface UserLogged {
   id: number;
   username: string;
-  password: string;
   full_name: string;
   role: Role;
 }
