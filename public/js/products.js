@@ -82,7 +82,7 @@ const formEditProduct = document.getElementById('formEditProduct');
 
 const setFormEdit = async (productId) => {
   try {
-    const res = await fetch(`${PRODUCT_URL}/${productId}`, {
+    const res = await fetch(`${PRODUCT_URL}/id/${productId}`, {
       method: 'GET',
       credentials: 'include'
     });
