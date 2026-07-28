@@ -15,6 +15,7 @@ import MovementsRoutes from "./routes/movements.routes.ts";
 
 import { loadPublicData } from './middlewares/data.middleware';
 import { errorNotFound } from './middlewares/error_404.middleware.ts';
+import { handleErrorGlobal } from './middlewares/error_500.midleware.ts';
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -62,6 +63,7 @@ app.use('/api/clients', ClientRoutes);
 app.use('/api/sales', SaleRoutes);
 app.use('/', ViewRoutes);
 app.use(errorNotFound);
+app.use(handleErrorGlobal);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

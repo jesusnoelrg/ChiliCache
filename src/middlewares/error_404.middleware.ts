@@ -1,6 +1,6 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
-export const errorNotFound = (req: Request, res: Response) => {
+export const errorNotFound = (req: Request, res: Response, next: NextFunction) => {
   if(req.originalUrl.startsWith('/api')){
     return res.status(404).json({
       success: false,
