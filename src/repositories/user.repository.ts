@@ -20,8 +20,8 @@ export class UserRepository {
     this.selectFullnames = db.prepare('SELECT full_name FROM users');
     this.selectById = db.prepare(`
       SELECT
-        username, password
-        full_name, role, created_at
+        username, full_name,
+        password, role, created_at
       FROM users
       WHERE id = :id
       `);
