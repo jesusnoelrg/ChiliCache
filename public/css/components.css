@@ -41,18 +41,6 @@
 /*Botones
 ---------------------------------------------------------------------*/
 
-.btn-primario{
-    background-color: var(--color-primario);
-    color: var(--color-blanco);
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn-primario:hover{
-    background-color: var(--tono4);
-}
-
 #btnAside{
     transition: all .3s;
 }
