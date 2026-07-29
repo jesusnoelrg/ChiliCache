@@ -1,5 +1,4 @@
 import type { Request, Response, NextFunction } from 'express';
-import { randomUUID } from 'crypto';
 import redisClient from '../config/redis.ts';
 import db from '../config/db.ts';
 
@@ -9,12 +8,11 @@ import type {
   CreateUserDTO, 
   GetUsersDTO, 
   UpdateUserDTO, UpdateUserRepositoryParams,
-  UserRole, 
-  SessionUser } from '../types/user.types.ts'
+  UserRoleAndId, 
+  SessionUser 
+} from '../types/user.types.ts'
 
 import { UserRepository } from '../repositories/user.repository.ts';
-import { updateHelper } from '../utils/sql.utils.ts';
-import { isRecordFieldPresent } from '../utils/db.utils'
 import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
 
 const userRepository = new UserRepository(db);
@@ -279,84 +277,80 @@ export const UserController = {
     }
   },
 
-  deleteUser: async (req: Request, res: Response) => {
+  deleteUser: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const idNumber = Number(id);
 
-      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+      if(isNaN(idNumber)) return res.status(400).json({success: false, message: "ID inválido."});
 
-      const checkId = isRecordFieldPresent({table: "users", column: "id", value: idNumber});
-      if(!checkId) {
+      const userTarget = userRepository.getRoleAndId(idNumber) as UserRoleAndId | undefined;
+
+      if(!userTarget) {
         return res.status(404).json({
-          "success": false,
-          "message": `¡El usuario con el (ID: ${idNumber}) no existe!`
+          success: false,
+          message: `¡El usuario con el (ID: ${idNumber}) no existe!`
         });
       }
 
-      //TODO: Logic to verify that the user does not delete himself
-
-      const checkRoleAdmin = db.prepare(`SELECT role FROM users WHERE id = :id`).get({id: idNumber}) as UserRole || undefined;
-
-      if(checkRoleAdmin && checkRoleAdmin.role === 'admin') {
+      if(userTarget.role === 'admin') {
         return res.status(403).json({
-          "success": false,
-          "message": "¡No puedes eliminar a un Administrador!"
+          success: false,
+          message: "¡No puedes eliminar a un Administrador!"
         });
       }
 
-      const result = db.prepare("DELETE FROM users WHERE id = :id").run({id: idNumber});
+      const result = userRepository.delete(userTarget.id);
 
       if(result.changes === 0){
         return res.status(400).json({
-          "success": true,
-          "message": "No se ha podido eliminar al usuario."
+          success: true,
+          message: "No se ha podido eliminar al usuario."
         });
       }
 
       res.status(200).json({
-        "success": true,
-        "message": "¡Usuario eliminado exitosamente!"
+        success: true,
+        message: "¡Usuario eliminado exitosamente!"
       })
     }catch(err: any){
-      console.error(err);
-
       if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+        console.error(err);
         return res.status(409).json({
           success: false,
           message: "No se puede eliminar el usuario porque tiene historial de ventas o registros asociados en el sistema."
         });
       }
 
-      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+      next(err);
     }
   },
 
-  loginUser: async (req: Request<{}, {}, LoginUser>, res: Response) => {
+  loginUser: async (req: Request<{}, {}, LoginUser>, res: Response, next: NextFunction) => {
     try{
       const { username, password } = req.body;
 
       if(!username || !password || typeof username !== 'string' || typeof password !== 'string'){
         return res.status(400).json({
-          "success": false,
-          "message": "¡Campo inválidos o vacíos!"
+          success: false,
+          message: "¡Campo inválidos o vacíos!"
         })
       }
 
-      const query = "SELECT id, username, password, role, full_name FROM users WHERE username = :username"
-      const user = db.prepare(query).get({username: username}) as SessionUser;
+      const user = userRepository.getSessionUser(username) as SessionUser | undefined;
+
       if(!user){
         return res.status(401).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
       const hashedPassword = user.password;
       if(!hashedPassword) {
         return res.status(404).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
@@ -364,8 +358,8 @@ export const UserController = {
 
       if(!verifyPsw){
         return res.status(404).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
@@ -390,18 +384,17 @@ export const UserController = {
       })
 
       return res.status(200).json({
-        "success": true,
-        "message": "¡Inicio de sesión exitoso!",
-        "user": {
-          "id": user.id,
-          "username": user.username,
-          "full_name": user.full_name,
-          "role": user.role
+        success: true,
+        message: "¡Inicio de sesión exitoso!",
+        user: {
+          id: user.id,
+          username: user.username,
+          full_name: user.full_name,
+          role: user.role
         }
       });
     }catch(err: any){
-      console.error(err);
-      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+      next(err);
     }
   }
 };

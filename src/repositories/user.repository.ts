@@ -1,18 +1,29 @@
 import { Database, Statement } from 'better-sqlite3';
-import { CreateUserDTO, GetUsersDTO, UpdateUserRepositoryParams } from '../types/user.types';
+import { 
+  CreateUserDTO, GetUsersDTO, 
+  UpdateUserRepositoryParams, Role,
+  SessionUser 
+} from '../types/user.types';
 
 export class UserRepository {
 
   private selectName: Statement;
   private selectPassword: Statement;
-  private insertUser: Statement;
   private selectFullnames: Statement;
   private selectById: Statement;
+  private selectRole: Statement;
+  private selectSessionUser: Statement;
+
+  private insertUser: Statement;
+  
   private updateUser: Statement;
+
+  private deleteUser: Statement;
 
   constructor(private db: Database) {
     this.selectName = db.prepare('SELECT id, username FROM users WHERE username = :username AND id != :id');
     this.selectPassword = db.prepare('SELECT password FROM users WHERE id = :id');
+    this.selectRole = db.prepare('SELECT id, role FROM users WHERE id = :id');
     this.insertUser = db.prepare(`
       INSERT INTO users (username, password, full_name, role)
       VALUES (:username, :password, :full_name, :role)
@@ -25,6 +36,12 @@ export class UserRepository {
       FROM users
       WHERE id = :id
       `);
+    this.selectSessionUser = db.prepare(`
+      SELECT
+        id, username, full_name,
+        password, role
+      FROM users WHERE username = :username
+      `)
     this.updateUser = db.prepare(`
       UPDATE users SET
         username = COALESCE(:username, username),
@@ -32,7 +49,8 @@ export class UserRepository {
         password = COALESCE(:password, password),
         role = COALESCE(:role, role)
       WHERE id = :id
-      `)
+      `);
+    this.deleteUser = db.prepare('DELETE FROM users WHERE id = :id');
   }
 
   public createUser (user: CreateUserDTO) {
@@ -52,6 +70,14 @@ export class UserRepository {
     return this.selectById.get({ id });
   }
 
+  public getRoleAndId (id: number) {
+    return this.selectRole.get({ id }) as { id: number, role: Role } | undefined;
+  }
+
+  public getSessionUser (username: string) {
+    return this.selectSessionUser.get({ username }) as SessionUser | undefined;
+  }
+
   public update (data: UpdateUserRepositoryParams) {
     return this.updateUser.run({
       id: data.id,
@@ -60,6 +86,10 @@ export class UserRepository {
       password: data.password ?? null,
       role: data.role ?? null
     });
+  }
+
+  public delete (id: number) {
+    return this.deleteUser.run({ id });
   }
 
   public getPassword (id: number) {

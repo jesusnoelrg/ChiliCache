@@ -29,7 +29,8 @@ export interface GetUsersDTO {
   offset?: number;
 }
 
-export interface UserRole {
+export interface UserRoleAndId {
+  id: number;
   role: Role;
 }
 
