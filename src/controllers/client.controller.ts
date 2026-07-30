@@ -1,5 +1,5 @@
 import db from "../config/db";
-import type {Request, Response} from "express";
+import type { Request, Response, NextFunction } from "express";
 
 import { ClientRepository } from "../repositories/client.repository";
 
@@ -13,7 +13,7 @@ import {
 const clientRepository = new ClientRepository(db);
 
 export const ClientController = {
-  createClient: async(req: Request<{}, {}, CreateClientDTO>, res: Response) => {
+  createClient: async(req: Request<{}, {}, CreateClientDTO>, res: Response, next: NextFunction) => {
     try{
       const { name, rfc, address, phone, email } = req.body;
 
@@ -70,20 +70,15 @@ export const ClientController = {
         data: clientData
       })
     }catch(err: any){
-      console.log("ERROR:" + err);
-
       if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
         return res.status(409).json({ success: false, message: "El cliente o RFC ya está registrado." });
       }
 
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getClientById: async(req: Request, res: Response) => {
+  getClientById: async(req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
@@ -99,15 +94,11 @@ export const ClientController = {
         "data": result
       })
     }catch(err: any){
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  getClients: async (req: Request<{}, {}, {}, GetClientsDTO>, res: Response) => {
+  getClients: async (req: Request<{}, {}, {}, GetClientsDTO>, res: Response, next: NextFunction) => {
     try{
       const filters = req.query;
       const result = clientRepository.findAll(filters);
@@ -124,15 +115,11 @@ export const ClientController = {
         "data": result
       });
     }catch(err: any){
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  searchClients: async (req: Request<{}, {}, {}, {name: string}>, res: Response) => {
+  searchClients: async (req: Request<{}, {}, {}, {name: string}>, res: Response, next: NextFunction) => {
     try {
       const { name } = req.query;
       
@@ -144,15 +131,11 @@ export const ClientController = {
 
       return res.status(200).json(result);
     } catch(err: any) {
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  updateClient: async (req: Request<any, {}, UpdateClientDTO>, res: Response) => {
+  updateClient: async (req: Request<any, {}, UpdateClientDTO>, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const { name, rfc, address, phone, email } = req.body;
@@ -192,15 +175,11 @@ export const ClientController = {
         "message": `Cliente actualizado exitosamente${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
       });
     }catch(err: any){
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  deleteClient: async (req: Request, res: Response) => {
+  deleteClient: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
@@ -216,11 +195,7 @@ export const ClientController = {
 
       return res.status(200).json({"success": true, "message": "Cliente eliminado exitosamente."});
     }catch(err: any){
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   }
 }
