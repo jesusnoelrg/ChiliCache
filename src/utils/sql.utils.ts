@@ -43,7 +43,7 @@ export const phoneFormat = (phone: string | null) => {
   const onlyNumbers = phone.replace(/\D/g, '');
   const onlyTenDigits = /^\d{10}$/.test(onlyNumbers);
 
-  return onlyTenDigits ? onlyNumbers : 'error';
+  return onlyTenDigits ? onlyNumbers : null;
 };
 
 export const hexColorFormat = (hexcolor: string) => hexcolor.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/);

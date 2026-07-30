@@ -19,40 +19,55 @@ export const ClientController = {
 
       if(!name || !rfc || !address){
         return res.status(400).json({
-          "success": false,
-          "message": "Faltan campos requeridos",
-          "missing": {
-            "name": !name,
-            "rfc": !rfc,
-            "address": !address
+          success: false,
+          message: "Faltan campos requeridos",
+          missing: {
+            name: !name,
+            rfc: !rfc,
+            address: !address
           }
         });
       }
 
       const checkNameUse = clientRepository.checkNameUse(name);
-      if(checkNameUse) return res.status(409).json({"success": false, "message": "¡Ese nombre ya esta en uso!"});
-      if(!rfcFormat(rfc)) return res.status(400).json({"success": false, "message": "Ingresa un RFC valido."});
+      if(checkNameUse) return res.status(409).json({success: false, message: "¡Ese nombre ya esta en uso!"});
+      if(!rfcFormat(rfc)) return res.status(400).json({success: false, message: "Ingresa un RFC valido."});
 
-      if(email !== undefined && !emailFormat(email as string)) return res.status(400).json({"success": false, "message": "E-mail inválido."});
+      if(email !== undefined && !emailFormat(email as string)) {
+        return res.status(400).json({
+          success: false, 
+          message: "E-mail inválido."
+        });
+      }
       const validatePhone = phoneFormat(phone);
-      if(validatePhone === 'error') return res.status(400).json({"success": false, "message": "El número de telefono ingresado no tiene el formato valido."});
+      if(phone && validatePhone === null) {
+        return res.status(400).json({
+          success: false, 
+          message: "El número de telefono ingresado no tiene el formato valido."
+        });
+      }
 
       const clientData: CreateClientDTO = {
         name: name,
         rfc: rfc,
         address: address,
-        phone: phone ? phoneFormat(phone) : null,
+        phone: phone ? validatePhone : null,
         email: email ?? null
       }
 
       const result = clientRepository.create(clientData);
       
-      if(result.changes === 0) return res.status(400).json({"success": false, "message": "No se ha creado el cliente. Revise sus datos enviados."});
+      if(result.changes === 0){
+        return res.status(400).json({
+          success: false, 
+          message: "No se ha creado el cliente. Revise sus datos enviados."
+        });
+      }
 
       res.status(201).json({
-        "success": true,
-        "message": "¡Cliente creado con éxito!",
-        "data": clientData
+        success: true,
+        message: "¡Cliente creado con éxito!",
+        data: clientData
       })
     }catch(err: any){
       console.log("ERROR:" + err);
