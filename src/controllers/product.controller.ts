@@ -1,14 +1,13 @@
 import type { Request, Response, NextFunction } from 'express';
-import { updateHelper } from "../utils/sql.utils";
+import { updateHelper, isUnit } from "../utils/sql.utils";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { ProductRepository } from '../repositories/product.repository';
 
 import {
-  Product,
   CreateProductDTO,
   UpdateProductDTO,
-  GetProductsDTO
+  ProductFilterDTO
 } from "../types/product.types";
 
 import db from '../config/db';
@@ -46,7 +45,7 @@ export const ProductController = {
       if(isNaN(stockNumber)) return res.status(400).json({"success": false, "message": "El stock debe ser un número valido."});
       if(stockNumber < 0) return res.status(400).json({"success": false, "message": "El stock debe ser un número positivo."});
 
-      const isProductNameUse = isRecordFieldPresent({table: "products", column: "name", value: name});
+      const isProductNameUse = repository.findNameWithoutId(name);
       if(isProductNameUse) return res.status(409).json({"success": false, "message": "¡El nombre del producto ya esta en uso!"});
 
       const productData: CreateProductDTO = {
@@ -94,7 +93,7 @@ export const ProductController = {
     }
   },
 
-  getProducts: async (req: Request<{}, {}, {}, GetProductsDTO>, res: Response) => {
+  getProducts: async (req: Request<{}, {}, {}, ProductFilterDTO>, res: Response, next: NextFunction) => {
     try{
       const { 
         name,
@@ -106,155 +105,124 @@ export const ProductController = {
         offset 
       } = req.query;
 
-      let query = `SELECT * FROM products WHERE 1 = 1`;
-
       const limitNumber = Number(limit || 10);
       const offsetNumber = Number(offset || 0);
 
       if(isNaN(limitNumber) || limitNumber < 1) return res.status(400).json({"success": false, "message": "El límite debe ser un número mayor que 0."});
       if(isNaN(offsetNumber)) return res.status(400).json({"success": false, "message": "El offset debe ser un número."});
 
-      const productData: any = {
+      const minStockNumber = Number(minStock || 0);
+      const maxStockNumber = Number(maxStock || 2147483646);
+
+      if (isNaN(minStockNumber) || isNaN(maxStockNumber)){
+        return res.status(400).json({
+          "success": false,
+          "message": 'Debes ingresar un número en los campos de stock.'
+        });
+      }
+
+      if(minStockNumber > maxStockNumber) {
+        return res.status(400).json({
+          "success": false,
+           "message": 'El stock minimo no puede superar al stock máximo.'
+        });
+      }
+
+      if(maxStockNumber > 2147483647) {
+        return res.status(400).json({
+          "success": false,
+          "message": 'El stock máximo excede el límite permitido por el sistema.'
+        });
+      }
+        
+
+      const minContentNumber = Number(minContent || 1);
+      const maxContentNumber = Number(maxContent || 2147483646);
+
+      if (isNaN(minContentNumber) || isNaN(maxContentNumber)){
+        return res.status(400).json({
+          "success": false,
+          "message": 'Debes ingresar un número en los campos de contenido neto.'
+        });
+      }
+
+      if(minContentNumber > maxContentNumber) {
+        return res.status(400).json({
+          "success": false,
+          "message": 'El contenido neto minimo no puede superar al contenido máximo.'
+        });
+      }
+
+      if(maxContentNumber > 2147483647) {
+        return res.status(400).json({
+          "success": false,
+          "message": 'El contenido máximo excede el límite permitido por el sistema.'
+        });
+      }
+
+      const minPriceNumber = Number(minPrice || 0);
+      const maxPriceNumber = Number(maxPrice || 999999999);
+
+      if (isNaN(minPriceNumber) || isNaN(maxPriceNumber)){
+        return res.status(400).json({
+          "success": false,
+          "message": 'Debes ingresar un número en los campos de precio.'
+        });
+      }
+
+      if(minPriceNumber > maxPriceNumber) {
+        return res.status(400).json({
+          "success": false,
+          "message": 'El precio minimo no puede superar al precio máximo.'
+        });
+      }
+
+      if(maxPriceNumber > 2147483647) {
+        return res.status(400).json({
+          "success": false,
+          "message": 'El precio máximo excede el límite permitido por el sistema.'
+        });
+      }
+
+      if(unit && !isUnit(unit)) {
+        return res.status(400).json({
+          "success": true,
+          "message": "Has ingresado un tipo de unidad no valido. Por favor usa ('g', 'kg', 'ml' o 'L')."
+        });
+      }
+
+      const filters: ProductFilterDTO = {
+        name,
+        unit,
+        minStock: minStockNumber,
+        maxStock: maxStockNumber,
+        minContent: minContentNumber,
+        maxContent: maxContentNumber,
+        minPrice: minPriceNumber,
+        maxPrice: maxPriceNumber,
         limit: limitNumber,
         offset: offsetNumber,
       }
 
-      if(name !== undefined){
-        productData.name = `%${name}%`;
-        query += " AND name LIKE :name";
-      }
-
-      if(unit !== undefined){
-        productData.unit = unit;
-        query += " AND unit = :unit";
-      }
-
-      if(minStock !== undefined || maxStock !== undefined) {
-        let minStockNumber = Number(minStock || 0);
-        const maxStockNumber = Number(maxStock || 2147483646);
-
-        if (isNaN(minStockNumber) || isNaN(maxStockNumber)){
-          return res.status(400).json({
-            "success": false,
-            "message": 'Debes ingresar un número en los campos de stock.'
-          });
-        }
-
-        if(minStockNumber < 0) minStockNumber = 0;
-
-        if(minStockNumber > maxStockNumber) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El stock minimo no puede superar al stock máximo.'
-          });
-        }
-
-        if(maxStockNumber > 2147483647) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El stock máximo excede el límite permitido por el sistema.'
-          });
-        }
-
-        productData.minStock = minStockNumber;
-        productData.maxStock = maxStockNumber;
-        query += ' AND (stock >= :minStock AND stock <= :maxStock)'
-      }
-
-      if(minContent !== undefined || maxContent !== undefined) {
-        let minContentNumber = Number(minContent || 1);
-        const maxContentNumber = Number(maxContent || 2147483646);
-
-        if (isNaN(minContentNumber) || isNaN(maxContentNumber)){
-          return res.status(400).json({
-            "success": false,
-            "message": 'Debes ingresar un número en los campos de contenido neto.'
-          });
-        }
-
-        if(minContentNumber < 0) minContentNumber = 0;
-
-        if(minContentNumber > maxContentNumber) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El contenido neto minimo no puede superar al contenido máximo.'
-          });
-        }
-
-        if(maxContentNumber > 2147483647) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El contenido máximo excede el límite permitido por el sistema.'
-          });
-        }
-
-        if(unit === undefined) {
-          productData.unit = 'ml';
-          query += ' AND (unit = :unit)';
-        }
-
-        productData.minContent = minContentNumber;
-        productData.maxContent = maxContentNumber;
-        query += ' AND (net_content >= :minContent AND net_content <= :maxContent)';
-      }
-
-      if(minPrice !== undefined || maxPrice !== undefined) {
-        let minPriceNumber = Number(minPrice || 0);
-        const maxPriceNumber = Number(maxPrice || 999999999);
-
-        if (isNaN(minPriceNumber) || isNaN(maxPriceNumber)){
-          return res.status(400).json({
-            "success": false,
-            "message": 'Debes ingresar un número en los campos de precio.'
-          });
-        }
-
-        if(minPriceNumber < 0) minPriceNumber = 0;
-
-        if(minPriceNumber > maxPriceNumber) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El precio minimo no puede superar al precio máximo.'
-          });
-        }
-
-        if(maxPriceNumber > 2147483647) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El precio máximo excede el límite permitido por el sistema.'
-          });
-        }
-
-        productData.minPrice = minPriceNumber;
-        productData.maxPrice = maxPriceNumber;
-        query += ' AND (price >= :minPrice AND price <= :maxPrice)'
-      }
-
-      query += " LIMIT :limit OFFSET :offset";
-
-      const result = db.prepare(query).all(productData);
+      const result = repository.findAll(filters);
 
       if(result.length === 0) return res.status(200).json({"success": true, "message": "No se encontraron productos."});
 
       res.status(200).json({
         "success": true,
         "meta": {
-          "limit": productData.limit,
-          "offset": productData.offset,
+          "limit": limitNumber,
+          "offset": offsetNumber,
           "count": result.length
         },
         "data": result
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  updateProduct: async(req: Request<any, {}, UpdateProductDTO>, res: Response) => {
+  updateProduct: async(req: Request<any, {}, UpdateProductDTO>, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const { name, unit, net_content, price } = req.body;
@@ -262,14 +230,34 @@ export const ProductController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      const isProductIDExists = isRecordFieldPresent({table: "products", column: "id", value: idNumber});
+      const isProductIDExists = repository.isProductExist(idNumber);
       if(!isProductIDExists) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
-      const productData: any = { id: idNumber }
+      const productData: any = {}
 
-      if(name !== undefined && name !== '') productData.name = name;
-      if(unit !== undefined) productData.unit = unit;
-      if(net_content !== undefined){
+      if(name) {
+        const nameUse = repository.findNameUse(idNumber, name);
+        if(nameUse) {
+          return res.status(409).json({
+            "success": false,
+            "message": '¡Ese nombre de producto ya esta en uso!'
+          });
+        }
+
+        productData.name = name;
+      }
+      if(unit) {
+        if(!isUnit(unit)) {
+          return res.status(400).json({
+            "success": true,
+            "message": "Has ingresado un tipo de unidad no valido. Por favor usa ('g', 'kg', 'ml' o 'L')."
+          });
+        }
+
+        productData.unit = unit
+      };
+
+      if(net_content != null){
         const contentNumber = Number(net_content);
         if(isNaN(contentNumber)) return res.status(400).json({"success": false, "message": "El valor del contenido neto debe ser un número."});
         if(contentNumber <= 0) {
@@ -281,7 +269,8 @@ export const ProductController = {
         
         productData.net_content = contentNumber;
       }
-      if(price !== undefined){
+
+      if(price != null){
         const priceNumber = Number(price);
         if(isNaN(priceNumber)) return res.status(400).json({"success": false, "message": "El precio del producto debe ser un número."});
         if(priceNumber <= 0) {
@@ -293,23 +282,23 @@ export const ProductController = {
         productData.price = priceNumber;
       }
 
-      if(Object.keys(productData).length < 2) return res.status(400).json({"success": false, "message": "No se ha introducido por lo menos un valor por modificar."});
+      if(Object.keys(productData).length === 0) return res.status(400).json({"success": false, "message": "No se ha introducido por lo menos un valor por modificar."});
 
-      const set_clause = updateHelper(productData, ['id', 'created_at']);
-      const query = `UPDATE products SET ${set_clause} WHERE id = :id`;
+      const result = repository.update(idNumber, productData);
 
-      const result = db.prepare(query).run(productData);
+      if(!result) {
+        return res.status(400).json({
+          "success": false,
+          "message": `Ha ocurrido un error inesperado al trata de actualizar el producto (ID: ${idNumber}).`
+        });
+      }
 
       res.status(200).json({
         "success": true,
         "message": `Actualización exitosa${result.changes === 0 ? ' (No se han hecho cambios)' : ''}.`
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 

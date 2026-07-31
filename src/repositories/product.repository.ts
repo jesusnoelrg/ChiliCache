@@ -1,7 +1,8 @@
 import type { Database, Statement } from 'better-sqlite3';
 import db from '../config/db';
 
-import { CreateProductDTO, SelectStockById} from '../types/product.types';
+import { updateHelper } from '../utils/sql.utils';
+import { CreateProductDTO, SelectStockById, ProductFilterDTO, UpdateProductDTO } from '../types/product.types';
 import { CreateMovement } from '../types/movement.types';
 
 export class ProductRepository {
@@ -10,6 +11,8 @@ export class ProductRepository {
   private selectProductId: Statement;
   private selectIsActiveById: Statement;
   private selectStockById: Statement;
+  private selectNameWithoutId: Statement<[{name: string}], {name: string}>;
+  private selectNameUse: Statement<[{name: string, id: number}], {name:string}>;
   
   private listProducts: Statement;
 
@@ -25,6 +28,8 @@ export class ProductRepository {
     this.selectIdUser = db.prepare('SELECT id FROM users WHERE id = :id_user');
     this.selectProductById = db.prepare("SELECT * FROM products WHERE id = :id");
     this.selectProductId = db.prepare('SELECT id FROM products WHERE id = :id');
+    this.selectNameWithoutId = db.prepare('SELECT name FROM products WHERE name = :name');
+    this.selectNameUse = db.prepare('SELECT name FROM products WHERE name = :name AND id != :id');
     this.selectIsActiveById = db.prepare("SELECT id, is_active FROM products WHERE id = :id");
     this.selectStockById = db.prepare('SELECT id, stock FROM products WHERE id = :id_product');
     this.listProducts = db.prepare('SELECT id, name, price, stock FROM products');
@@ -41,6 +46,14 @@ export class ProductRepository {
     this.deleteProductById = db.prepare("DELETE FROM products WHERE id = :id");
     this.updateIsActive = db.prepare("UPDATE products SET is_active = :is_active WHERE id = :id");
     this.updateRestock = db.prepare('UPDATE products SET stock = stock + :stock WHERE id = :id_product');
+  }
+
+  public findNameUse(id: number, name: string): { name: string } | null {
+    return this.selectNameUse.get({ name, id }) ?? null;
+  }
+
+  public findNameWithoutId(name: string): { name: string } | null {
+    return this.selectNameWithoutId.get({ name }) ?? null;
   }
 
   public get(id: number) {
@@ -65,6 +78,56 @@ export class ProductRepository {
 
   public getIsActive(id: number): { id: number, is_active: 0 | 1 } | undefined {
     return this.selectIsActiveById.get({ id }) as { id: number, is_active: 0 | 1 } | undefined;
+  }
+
+  public update(id: number, values: UpdateProductDTO) {
+    return db.prepare(`UPDATE products SET ${updateHelper(values)} WHERE id = :id`)
+    .run({ id });
+  }
+
+  public findAll(filters: ProductFilterDTO) {
+    const conditions: string[] = [];
+    const params: Record<string, any> = {
+      limit: filters.limit,
+      offset: filters.offset
+    };
+
+    if(filters.name) {
+      params.name = `%${filters.name}%`
+      conditions.push('name LIKE :name')
+    }
+
+    if(filters.unit) {
+      params.unit = filters.unit;
+      conditions.push('unit = :unit')
+    }
+
+    if (filters.minStock !== undefined) {
+      conditions.push("stock >= :minStock");
+      params.minStock = filters.minStock;
+    }
+
+    if (filters.maxStock !== undefined) {
+      conditions.push("stock <= :maxStock");
+      params.maxStock = filters.maxStock;
+    }
+
+    if (filters.minPrice !== undefined) {
+      conditions.push("price >= :minPrice");
+      params.minPrice = filters.minPrice;
+    }
+
+    if (filters.maxPrice !== undefined) {
+      conditions.push("price <= :maxPrice");
+      params.maxPrice = filters.maxPrice;
+    }
+
+    const whereClause = conditions.length > 0 
+    ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const query = `SELECT * FROM products ${whereClause} LIMIT :limit OFFSET :offset`;
+
+    return db.prepare(query).all(params);
   }
 
   public createWithMovement(productData: CreateProductDTO, userId?: number) {

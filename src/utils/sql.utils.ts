@@ -1,3 +1,5 @@
+
+import { Unit } from '../types/product.types';
 /**
  * Takes a data object and generates the columns and placeholders for an INSERT in SQLite.
  * 
@@ -26,6 +28,8 @@ export function updateHelper(data: Record<string, any>, excludeKeys: string[] = 
     .join(', ');
 }
 
+const VALID_UNITS: Unit[] = ['g', 'kg', 'ml', 'L'];
+export const isUnit = (value: string): value is Unit => VALID_UNITS.includes(value as Unit);
 /**
  * Validate the following phone formats are valid:
  * - 5551234567

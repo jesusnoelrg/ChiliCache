@@ -26,7 +26,7 @@ export interface UpdateProductDTO {
   price?: number;
 };
 
-export interface GetProductsDTO {
+export interface ProductFilterDTO {
   name?: string;
   unit?: Unit;
   minStock?: number;
