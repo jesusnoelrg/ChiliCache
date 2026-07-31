@@ -13,7 +13,7 @@ import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { generatePdfReportHandler } from '../utils/pdf.utils';
 
-const salesRepository = new SalesRepository();
+const salesRepository = new SalesRepository(db);
 
 export const SaleController = {
   createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
