@@ -43,8 +43,8 @@ export const ProductController = {
       const contentNumber = Number(net_content);
       const priceNumber = Number(price);
       
-      if(isNaN(contentNumber) || 
-        isNaN(priceNumber)) return res.status(400).json({ "success": false, "message": "Has ingresado datos tipo cadena en datos númericos."});
+      if(isNaN(contentNumber)) return res.status(400).json({ "success": false, "message": "Has ingresado texto en el contenido neto que solo acepta números."});
+      if(isNaN(priceNumber)) return res.status(400).json({ "success": false, "message": "Has ingresado texto en el precio del producto que solo acepta números."});
       if(priceNumber <= 0) return res.status(400).json({"success": false, "message": "El precio NO debe ser menor o igual a 0."})
       if(contentNumber <= 1)  return res.status(400).json({"success": false, "message": "El contenido neto NO puede ser inferior a 1."})
 

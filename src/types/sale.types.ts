@@ -1,3 +1,5 @@
+export type SaleStatus = 'completed' | 'cancelled';
+
 export interface CreateSaleDTO {
   id_client: number;
   invoice: number;
@@ -56,10 +58,6 @@ export interface SaleReportItem {
   total: number;
   invoice: string;
   date: string;
-}
-
-export interface SaleStatus {
-  status: 'completed' | 'cancelled'
 }
 
 export interface DataCreateSale {
