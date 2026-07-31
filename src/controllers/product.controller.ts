@@ -18,6 +18,14 @@ export const ProductController = {
   createProduct: async (req: Request<{}, {}, CreateProductDTO>, res: Response, next: NextFunction) => {
     try{
       const { name, unit, net_content, price, stock } = req.body;
+      const userId = req.user?.id;
+
+      if(!userId) {
+        return res.status(401).json({
+          "success": false,
+          "message": 'Usuario no autenticado'
+        });
+      }
 
       if(!name || !net_content || !price || !stock){
         return res.status(400).json({
@@ -56,7 +64,7 @@ export const ProductController = {
         stock: stockNumber
       }
 
-      const result = repository.createWithMovement(productData, req.user?.id);
+      const result = repository.createWithMovement(productData, userId);
 
       res.status(201).json({
         "success": true,

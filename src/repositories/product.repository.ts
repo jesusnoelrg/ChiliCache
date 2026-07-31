@@ -2,15 +2,15 @@ import type { Database, Statement } from 'better-sqlite3';
 import db from '../config/db';
 
 import { updateHelper } from '../utils/sql.utils';
-import { CreateProductDTO, SelectStockById, ProductFilterDTO, UpdateProductDTO } from '../types/product.types';
+import { CreateProductDTO, SelectStockById, ProductFilterDTO, UpdateProductDTO, Product } from '../types/product.types';
 import { CreateMovement } from '../types/movement.types';
 
 export class ProductRepository {
   private selectIdUser: Statement<[{id_user: number}], {id: number}>;
-  private selectProductById: Statement;
-  private selectProductId: Statement;
-  private selectIsActiveById: Statement;
-  private selectStockById: Statement;
+  private selectProductById: Statement<[{id: number}], Product>;
+  private selectProductId: Statement<[{id: number}], {id: number}>;
+  private selectIsActiveById: Statement<[{id: number}], {id: number, is_active: 0 | 1}>;
+  private selectStockById: Statement<[{id_product: number}], {id: number, stock: number}>;
   private selectNameWithoutId: Statement<[{name: string}], {name: string}>;
   private selectNameUse: Statement<[{name: string, id: number}], {name:string}>;
   
