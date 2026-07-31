@@ -9,10 +9,12 @@ export class ClientRepository {
   private selectClientById: Statement;
   private selectLikeName: Statement;
   private selectCheckName: Statement;
+  private selectId: Statement<[{id: number}], {id: number}>;
   private updateClientStmt: Statement;
   private deleteClientStmt: Statement;
 
   constructor(private db: Database) {
+    this.selectId = db.prepare('SELECT id FROM clients WHERE id = :id');
     this.selectNameById = db.prepare('SELECT name FROM clients WHERE id = :id');
     this.insertClientStmt = db.prepare(`
       INSERT INTO clients (name, rfc, address, phone, email) VALUES 
@@ -38,6 +40,10 @@ export class ClientRepository {
     const result = this.selectNameById.get({id: id}) as { name: string } || undefined;
 
     return result ? result.name : null;
+  }
+
+  public isExist(id: number): { id: number } | null {
+    return this.selectId.get({ id }) ?? null;
   }
 
   public create(data: CreateClientDTO) {

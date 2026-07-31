@@ -13,6 +13,7 @@ export class UserRepository {
   private selectById: Statement;
   private selectRole: Statement;
   private selectSessionUser: Statement;
+  private selectId: Statement<[{id: number}], {id: number}>;
 
   private insertUser: Statement;
   
@@ -23,6 +24,7 @@ export class UserRepository {
   constructor(private db: Database) {
     this.selectName = db.prepare('SELECT id, username FROM users WHERE username = :username AND id != :id');
     this.selectPassword = db.prepare('SELECT password FROM users WHERE id = :id');
+    this.selectId = db.prepare('SELECT id FROM users WHERE id = :id');
     this.selectRole = db.prepare('SELECT id, role FROM users WHERE id = :id');
     this.insertUser = db.prepare(`
       INSERT INTO users (username, password, full_name, role)
@@ -68,6 +70,10 @@ export class UserRepository {
 
   public getById (id: number) {
     return this.selectById.get({ id });
+  }
+
+  public isExist(id: number): { id: number } | null {
+    return this.selectId.get({ id }) ?? null;
   }
 
   public getRoleAndId (id: number) {
