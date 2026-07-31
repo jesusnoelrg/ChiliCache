@@ -2,7 +2,7 @@ import type { Database, Statement } from 'better-sqlite3';
 import db from '../config/db';
 
 import { updateHelper } from '../utils/sql.utils';
-import { CreateProductDTO, SelectStockById, ProductFilterDTO, UpdateProductDTO, Product } from '../types/product.types';
+import { CreateProductDTO, ListProduct, SelectStockById, ProductFilterDTO, UpdateProductDTO, Product } from '../types/product.types';
 import { CreateMovement } from '../types/movement.types';
 
 export class ProductRepository {
@@ -14,7 +14,7 @@ export class ProductRepository {
   private selectNameWithoutId: Statement<[{name: string}], {name: string}>;
   private selectNameUse: Statement<[{name: string, id: number}], {name:string}>;
   
-  private listProducts: Statement;
+  private listProducts: Statement<[], ListProduct>;
 
   private insertProduct: Statement;
   private insertMovement: Statement;
@@ -56,19 +56,19 @@ export class ProductRepository {
     return this.selectNameWithoutId.get({ name }) ?? null;
   }
 
-  public get(id: number) {
-    return this.selectProductById.get({ id })
+  public get(id: number): Product | null {
+    return this.selectProductById.get({ id }) ?? null;
   }
 
-  public isProductExist(id: number) {
-    return this.selectProductId.get({ id });
+  public isProductExist(id: number): { id: number } | null {
+    return this.selectProductId.get({ id }) ?? null;
   }
 
   public delete(id: number) {
     return this.deleteProductById.run({ id });
   }
 
-  public list() {
+  public list(): ListProduct[] {
     return this.listProducts.all();
   }
 
@@ -76,8 +76,8 @@ export class ProductRepository {
     return this.updateIsActive.run({id, is_active});
   }
 
-  public getIsActive(id: number): { id: number, is_active: 0 | 1 } | undefined {
-    return this.selectIsActiveById.get({ id }) as { id: number, is_active: 0 | 1 } | undefined;
+  public getIsActive(id: number): { id: number, is_active: 0 | 1 } | null {
+    return this.selectIsActiveById.get({ id }) ?? null;
   }
 
   public update(id: number, values: UpdateProductDTO) {

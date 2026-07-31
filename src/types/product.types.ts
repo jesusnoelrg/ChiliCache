@@ -43,3 +43,10 @@ export interface SelectStockById {
   id: number;
   stock: number;
 }
+
+export interface listProduct {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+}
