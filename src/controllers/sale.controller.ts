@@ -107,7 +107,7 @@ export const SaleController = {
     }
   },
 
-  getSales: async (req: Request, res: Response) => {
+  getSales: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { 
         seller_name,
@@ -225,15 +225,11 @@ export const SaleController = {
         "data": result
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getSaleById: async (req: Request, res: Response) => {
+  getSaleById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
@@ -286,15 +282,11 @@ export const SaleController = {
         }
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  cancelSaleById: async (req: Request, res: Response) => {
+  cancelSaleById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const idUserNumber = req.user?.id;
@@ -359,15 +351,11 @@ export const SaleController = {
         });
       }
 
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  generateReportPDF: async (req: Request, res: Response) => {
+  generateReportPDF: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { 
         start_timestamp, end_timestamp,
@@ -445,11 +433,7 @@ export const SaleController = {
 
       generatePdfReportHandler(dataSale, res);
     } catch (err: any) {
-      console.log(err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   }
 }
