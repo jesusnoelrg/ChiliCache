@@ -6,7 +6,7 @@ import { CreateProductDTO, SelectStockById, ProductFilterDTO, UpdateProductDTO }
 import { CreateMovement } from '../types/movement.types';
 
 export class ProductRepository {
-  private selectIdUser: Statement;
+  private selectIdUser: Statement<[{id_user: number}], {id: number}>;
   private selectProductById: Statement;
   private selectProductId: Statement;
   private selectIsActiveById: Statement;
@@ -130,7 +130,7 @@ export class ProductRepository {
     return db.prepare(query).all(params);
   }
 
-  public createWithMovement(productData: CreateProductDTO, userId?: number) {
+  public createWithMovement(productData: CreateProductDTO, userId: number) {
     const transaction = db.transaction(() => {
       const id_user = this.selectIdUser.get({ id_user: userId }) as { id: number } || undefined;
       if (!id_user) throw new Error(`USER_NOT_FOUND:${userId}`);
