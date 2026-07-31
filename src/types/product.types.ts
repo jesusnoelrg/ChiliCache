@@ -1,9 +1,22 @@
+export type Unit = 'g' | 'kg' | 'ml' | 'L';
+
+export interface Product {
+  id: number;
+  name: string;
+  unit: Unit;
+  net_content: number;
+  price: number;
+  stock: number;
+  is_active: 0 | 1;
+  created_at: string;
+}
+
 export interface CreateProductDTO {
   name: string;
   unit?: Unit;
   net_content: number;
   price: number;
-  stock?: number;
+  stock: number;
 };
 
 export interface UpdateProductDTO {
@@ -26,23 +39,7 @@ export interface GetProductsDTO {
   offset?: number;
 }
 
-export interface Unit {
-  unit: 'g' | 'kg' | 'ml' | 'L';
-}
-
 export interface SelectStockById {
   id: number;
   stock: number;
-}
-
-export interface CreateMovement {
-  type: TypeMovement;
-  old_stock: number;
-  new_stock: number;
-  id_product: number;
-  id_user: number;
-}
-
-export interface TypeMovement {
-  type: 'created' | 'restock' | 'sale';
 }

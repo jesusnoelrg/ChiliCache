@@ -1,10 +1,11 @@
-import type {Request, Response} from 'express';
-import { generateInsertHelper, updateHelper } from "../utils/sql.utils";
+import type { Request, Response, NextFunction } from 'express';
+import { updateHelper } from "../utils/sql.utils";
 import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { ProductRepository } from '../repositories/product.repository';
 
 import {
+  Product,
   CreateProductDTO,
   UpdateProductDTO,
   GetProductsDTO
@@ -12,10 +13,10 @@ import {
 
 import db from '../config/db';
 
-const repository = new ProductRepository();
+const repository = new ProductRepository(db);
 
 export const ProductController = {
-  createProduct: async (req: Request<{}, {}, CreateProductDTO>, res: Response) => {
+  createProduct: async (req: Request<{}, {}, CreateProductDTO>, res: Response, next: NextFunction) => {
     try{
       const { name, unit, net_content, price, stock } = req.body;
 
@@ -40,7 +41,7 @@ export const ProductController = {
       if(priceNumber <= 0) return res.status(400).json({"success": false, "message": "El precio NO debe ser menor o igual a 0."})
       if(contentNumber <= 1)  return res.status(400).json({"success": false, "message": "El contenido neto NO puede ser inferior a 1."})
 
-      const stockNumber = Number(stock);
+      const stockNumber: number = Number(stock ?? 0);
 
       if(isNaN(stockNumber)) return res.status(400).json({"success": false, "message": "El stock debe ser un número valido."});
       if(stockNumber < 0) return res.status(400).json({"success": false, "message": "El stock debe ser un número positivo."});
@@ -48,9 +49,9 @@ export const ProductController = {
       const isProductNameUse = isRecordFieldPresent({table: "products", column: "name", value: name});
       if(isProductNameUse) return res.status(409).json({"success": false, "message": "¡El nombre del producto ya esta en uso!"});
 
-      const productData: any = {
+      const productData: CreateProductDTO = {
         name: name,
-        unit: unit ?? null,
+        unit: unit || undefined,
         net_content: contentNumber,
         price: priceNumber,
         stock: stockNumber
@@ -66,28 +67,22 @@ export const ProductController = {
         "data": productData
       })
     }catch(err: any){
-      console.log("Error: " + err);
-
       if (err.message?.startsWith('USER_NOT_FOUND')) {
         return res.status(404).json({ success: false, message: "Usuario no encontrado." });
       }
 
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getProductById: async (req: Request, res: Response) => {
+  getProductById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      const product = repository.selectProductById.get({id: idNumber});
-
+      const product = repository.get(idNumber);
       if(!product) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
       res.status(200).json({
@@ -95,11 +90,7 @@ export const ProductController = {
         "data": product
       });
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
@@ -322,33 +313,35 @@ export const ProductController = {
     }
   },
 
-  listProducts: async (req: Request, res: Response) => {
+  listProducts: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = repository.listProducts.all();
+      const result = repository.list();
 
       return res.status(200).json({
         'data': result
       });
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  toggleProduct: async (req: Request, res: Response) => {
+  toggleProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const { is_active } = req.body;
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
-      const isActiveNumber = is_active;
-      if(isNaN(isActiveNumber)) return res.status(400).json({"success": false, "message": "Debes especificar con (0 o 1) para alternar si se activa el producto."})
+      
+      const isActiveNumber = Number(is_active);
+      if(isNaN(isActiveNumber) || (isActiveNumber !== 0 && isActiveNumber !== 1)) {
+        return res.status(400).json({
+          "success": false, 
+          "message": "Debes especificar con (0 o 1) para alternar si se activa el producto."})
+      }
+      
 
-      const product = repository.selectProductById.get({id: idNumber}) as {id: number, is_active: number} || undefined;
+      const product = repository.getIsActive(idNumber);
 
       if(!product) {
         return res.status(404).json({
@@ -366,10 +359,7 @@ export const ProductController = {
         });
       }
 
-      const result = repository.updateIsActive.run({
-        id: idNumber,
-        is_active: isActiveNumber
-      });
+      const result = repository.setIsActive(idNumber, isActiveNumber);
 
       if(result.changes === 0) {
         res.status(200).json({
@@ -383,25 +373,21 @@ export const ProductController = {
         "message": `¡El producto (ID: ${idNumber}) ha sido ${msgToggle}!`
       })
     } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  deleteProduct: async(req: Request, res: Response) => {
+  deleteProduct: async(req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({ "success": false, "message": "ID inválido." });
 
-      const isProductIDExists = isRecordFieldPresent({table: "products", column: "id", value: idNumber});
+      const isProductIDExists = repository.isProductExist(idNumber);
       if(!isProductIDExists) return res.status(404).json({"success": false, "message": "¡Ese producto no existe!"});
 
-      const result = repository.deleteProductById.run({id: idNumber});
+      const result = repository.delete(idNumber);
 
       if(result.changes === 0) return res.status(400).json({"success": false, "message": "No se pudo eliminar el producto."});
 
@@ -410,15 +396,11 @@ export const ProductController = {
         "message": "Producto eliminado exitosamente."
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  restockProduct: async (req: Request, res: Response) => {
+  restockProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const { stock } = req.body;
@@ -442,9 +424,9 @@ export const ProductController = {
         });
       }
 
-      const idProductNumber = Number(id);
+      const idProduct = Number(id);
 
-      if(isNaN(idProductNumber)) {
+      if(isNaN(idProduct) || !repository.isProductExist(idProduct)) {
         return res.status(400).json({
           "success": false,
           "message": "ID inválido del producto."
@@ -467,21 +449,17 @@ export const ProductController = {
         });
       }
 
-      const result = repository.restockWithMovement(idProductNumber, id_user, stockNumber);
+      const result = repository.restockWithMovement(idProduct, id_user, stockNumber);
 
       return res.status(200).json({
         "success": true,
-        "id_product": idProductNumber,
+        "id_product": idProduct,
         "old_stock": result.old_stock,
         "new_stock": result.new_stock,
         "movement": result.movement
       });
     } catch (err: any) {
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   }
 }

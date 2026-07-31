@@ -1,23 +1,71 @@
+import type { Database, Statement } from 'better-sqlite3';
 import db from '../config/db';
-import { 
-  CreateProductDTO,
-  SelectStockById,
-  CreateMovement,
-  TypeMovement
- } from '../types/product.types';
+
+import { CreateProductDTO, SelectStockById} from '../types/product.types';
+import { CreateMovement } from '../types/movement.types';
 
 export class ProductRepository {
-  private selectIdUser = db.prepare('SELECT id FROM users WHERE id = :id_user');
-  private insertProduct = db.prepare(`
+  private selectIdUser: Statement;
+  private selectProductById: Statement;
+  private selectProductId: Statement;
+  private selectIsActiveById: Statement;
+  private selectStockById: Statement;
+  
+  private listProducts: Statement;
+
+  private insertProduct: Statement;
+  private insertMovement: Statement;
+
+  private deleteProductById: Statement;
+
+  private updateIsActive: Statement;
+  private updateRestock: Statement;
+
+  constructor(private db: Database) {
+    this.selectIdUser = db.prepare('SELECT id FROM users WHERE id = :id_user');
+    this.selectProductById = db.prepare("SELECT * FROM products WHERE id = :id");
+    this.selectProductId = db.prepare('SELECT id FROM products WHERE id = :id');
+    this.selectIsActiveById = db.prepare("SELECT id, is_active FROM products WHERE id = :id");
+    this.selectStockById = db.prepare('SELECT id, stock FROM products WHERE id = :id_product');
+    this.listProducts = db.prepare('SELECT id, name, price, stock FROM products');
+    this.insertProduct = db.prepare(`
     INSERT INTO products 
     (name, unit, net_content, price, stock) 
     VALUES 
     (:name, :unit, :net_content, :price, :stock)`);
-  private insertMovement = db.prepare(`
+    this.insertMovement = db.prepare(`
     INSERT INTO movements 
     (type, old_stock, new_stock, id_product, id_user) VALUES
     (:type, :old_stock, :new_stock, :id_product, :id_user)
-  `);
+    `);
+    this.deleteProductById = db.prepare("DELETE FROM products WHERE id = :id");
+    this.updateIsActive = db.prepare("UPDATE products SET is_active = :is_active WHERE id = :id");
+    this.updateRestock = db.prepare('UPDATE products SET stock = stock + :stock WHERE id = :id_product');
+  }
+
+  public get(id: number) {
+    return this.selectProductById.get({ id })
+  }
+
+  public isProductExist(id: number) {
+    return this.selectProductId.get({ id });
+  }
+
+  public delete(id: number) {
+    return this.deleteProductById.run({ id });
+  }
+
+  public list() {
+    return this.listProducts.all();
+  }
+
+  public setIsActive(id: number, is_active: 0 | 1) {
+    return this.updateIsActive.run({id, is_active});
+  }
+
+  public getIsActive(id: number): { id: number, is_active: 0 | 1 } | undefined {
+    return this.selectIsActiveById.get({ id }) as { id: number, is_active: 0 | 1 } | undefined;
+  }
 
   public createWithMovement(productData: CreateProductDTO, userId?: number) {
     const transaction = db.transaction(() => {
@@ -27,9 +75,9 @@ export class ProductRepository {
       const product = this.insertProduct.run(productData);
       if (!product) throw new Error(`PRODUCT_ERROR_CREATED`);
 
-      const id_product = product.lastInsertRowid;
+      const id_product = product.lastInsertRowid as number;
 
-      const movementData: any = {
+      const movementData: CreateMovement = {
         type: 'created',
         old_stock: 0,
         new_stock: productData.stock,
@@ -47,9 +95,6 @@ export class ProductRepository {
 
     return transaction();
   }
-
-  private selectStockById = db.prepare('SELECT id, stock FROM products WHERE id = :id_product');
-  private updateRestock = db.prepare('UPDATE products SET stock = stock + :stock WHERE id = :id_product');
 
   public restockWithMovement (id_product: number, id_user: number, stock: number) {
     const transaction = db.transaction(() => {
@@ -81,11 +126,4 @@ export class ProductRepository {
 
     return transaction();
   }
-
-  public selectProductById = db.prepare("SELECT * FROM products WHERE id = :id");
-  public listProducts = db.prepare('SELECT id, name, price, stock FROM products');
-  public deleteProductById = db.prepare("DELETE FROM products WHERE id = :id")
-
-  public selectIsActiveById = db.prepare("SELECT id, is_active FROM products WHERE id = :id");
-  public updateIsActive = db.prepare("UPDATE products SET is_active = :is_active WHERE id = :id");
 }
