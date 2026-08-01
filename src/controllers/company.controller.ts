@@ -1,4 +1,4 @@
-import { response, type Request, type Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs/promises';
 import ejs from 'ejs';
 import redisClient from '../config/redis.ts';
@@ -11,8 +11,12 @@ import db from '../config/db'
 
 const repository = new CompanyRepository(db);
 
+export interface RequestWithFile extends Request {
+  file?: Express.Multer.File;
+}
+
 export const CompanyController = {
-  getInfo: async (req: Request, res: Response) => {
+  getInfo: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const cached = await redisClient.get('company:info');
 
@@ -53,15 +57,11 @@ export const CompanyController = {
         ...result,
       });
     } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  updateInfo: async (req: Request, res: Response) => {
+  updateInfo: async (req: RequestWithFile, res: Response, next: NextFunction) => {
     try {
       const {
         name, tax_id,
@@ -126,11 +126,7 @@ export const CompanyController = {
         "message": "¡Datos de la empresa actualizados exitosamente!"
       })
     } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   }
 }
