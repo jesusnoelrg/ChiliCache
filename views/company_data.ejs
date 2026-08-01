@@ -20,15 +20,15 @@
     }
   </style>
   <!--Logo-->
-  <link rel="shortcut icon" href="/<%= company.logo %>" type="image/x-icon">
+  <link rel="shortcut icon" href="<%= company.logo_path %>?v=<%= Date.now() %>" type="image/x-icon">
 </head>
 
 <body class="d-flex">
   <aside id="mainAside" class="aside-background">
     <div class="d-flex flex-column">
       <div class="aside-header d-flex justify-content-center align-items-center mt-3">
-        <img src="/<%= company.logo %>" alt="Logo" width="70px" height="60px">
-        <h5 class="aside-title-logo ps-3 text-white"><%= company.name %></h5>
+        <img id="asideLogo" src="/<%= company.logo_path %>" alt="Logo" width="70px" height="60px">
+        <h5 id="asideTitle" class="aside-title-logo ps-3 text-white"><%= company.name %></h5>
       </div>
       <nav class="mt-3">
         <hr class="text-white">

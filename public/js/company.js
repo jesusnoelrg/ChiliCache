@@ -1,3 +1,5 @@
+const API_COMPANY = 'http://localhost:3000/api/company'
+
 const previewLogo = document.getElementById('previewLogo');
 
 const companyLogo = document.getElementById('companyLogo');
@@ -11,6 +13,9 @@ const companyPrimaryColor = document.getElementById('primaryColor');
 const primaryColorText = document.getElementById('primaryColorText');
 const companySecondaryColor = document.getElementById('secondaryColor');
 const secondaryColorText = document.getElementById('secondaryColorText');
+
+const asideLogo = document.getElementById('asideLogo');
+const asideTitle = document.getElementById('asideTitle');
 
 companyLogo.addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -137,7 +142,7 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
 
     if(result.success) {
       showAlert(result.message, 'success');
-      fetchCompany();
+      fetchAllData();
     }
   } catch (err) {
     console.error(err);
@@ -174,17 +179,49 @@ const fetchAllData = async () => {
 const fillForm = (data) => {
   if(!data) return;
 
-  previewLogo.src = cleanStaticUrl(data.logo);
+  applyTheme(data.primary_color, data.secondary_color);
+  updateFavicon(cleanStaticUrl(data.logo_path));
+  asideLogo.src = cleanStaticUrl(data.logo_path);
+  asideTitle.textContent = data.name;
+  previewLogo.src = cleanStaticUrl(data.logo_path);
   companyPrimaryColor.value = data.primary_color;
   companySecondaryColor.value = data.secondary_color;
   primaryColorText.value = data.primary_color;
   secondaryColorText.value = data.secondary_color;
   companyName.value = data.name;
-  companyRfc.value = data.tax_id;
-  companyAddress.value = data.address;
-  companyEmail.value = data.email;
-  companyPhone.value = data.phone;
+  companyRfc.value = data.tax_id ?? '';
+  companyAddress.value = data.address ?? '';
+  companyEmail.value = data.email ?? '';
+  companyPhone.value = data.phone ?? '';
 }
+
+const updateFavicon = (logoPath) => {
+  let favicon = document.querySelector("link[rel*='icon']");
+  if (!favicon) {
+    favicon = document.createElement('link');
+    favicon.rel = 'shortcut icon';
+    document.head.appendChild(favicon);
+  }
+  favicon.href = `${cleanStaticUrl(logoPath)}?t=${Date.now()}`;
+};
+
+const applyTheme = (primaryColor, secondaryColor) => {
+  const root = document.documentElement;
+  if (primaryColor) root.style.setProperty('--color-primario', primaryColor);
+  if (secondaryColor) root.style.setProperty('--color-secundario', secondaryColor);
+};
+
+const cleanStaticUrl = (path) => {
+  if (!path) return '/img/logo.png';
+
+  let clean = path.replace(/\\/g, '/');
+  
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean;
+  }
+  
+  return clean;
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchAllData();

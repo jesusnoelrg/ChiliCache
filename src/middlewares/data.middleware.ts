@@ -14,7 +14,7 @@ export const loadPublicData = async (req: Request, res: Response, next: NextFunc
       const { name, logo_path, primary_color, secondary_color } = JSON.parse(cached);
       data = {
         name,
-        logo: logo_path,
+        logo_path,
         primary_color,
         secondary_color
       }
@@ -24,7 +24,7 @@ export const loadPublicData = async (req: Request, res: Response, next: NextFunc
       if(result) {
         data = {
           name: result.name,
-          logo: result.logo_path,
+          logo_path: result.logo_path,
           primary_color: result.primary_color,
           secondary_color: result.secondary_color
         }
@@ -33,9 +33,25 @@ export const loadPublicData = async (req: Request, res: Response, next: NextFunc
       }
     }
 
+    if (data) {
+      const version = Date.now();
+
+      res.locals.company = {
+        ...data,
+        logo_path: data.logo_path ? `${data.logo_path}?v=${version}` : '/img/logo.png'
+      }
+    } else {
+      res.locals.company = {
+        name: 'ChiliCache',
+        logo_path: '',
+        primary_color: '#bf2121',
+        secondary_color: '#893030'
+      }
+    }
+
     res.locals.company = data || {
       name: 'ChiliCache',
-      logo: '',
+      logo_path: '',
       primary_color: '#bf2121',
       secondary_color: '#893030'
     }
@@ -44,7 +60,7 @@ export const loadPublicData = async (req: Request, res: Response, next: NextFunc
 
     res.locals.company = {
       name: 'ChiliCache',
-      logo: '',
+      logo_path: '',
       primary_color: '#bf2121',
       secondary_color: '#893030'
     }
