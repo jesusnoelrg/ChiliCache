@@ -286,6 +286,7 @@ const fetchClients = async () => {
       }
 
       showAlert(errorMsg, 'error');
+      return;
     }
 
     const result = await response.json();
@@ -305,8 +306,10 @@ const renderTableClients = (clients) => {
   let table = document.getElementById('clientsTableBody');
   table.innerHTML = '';
 
+  console.log(clients.length);
+
   if(!clients || !Array.isArray(clients) || clients.length === 0){
-    table.innerHTML = `<tr><td colspan="5" class="text-center">No se han encontrado clientes.</td></tr>`;
+    table.innerHTML = `<tr><td colspan="12" class="text-center">No se han encontrado clientes.</td></tr>`;
     return;
   }
 

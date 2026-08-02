@@ -103,7 +103,19 @@ export const ClientController = {
       const filters = req.query;
       const result = clientRepository.findAll(filters);
 
-      if(result.length === 0) return res.status(204).json({"success": true, "message": "No se han encontrado clientes."});
+      console.log(result)
+
+      if(result.length === 0) {
+        return res.status(200).json({
+          "success": true, 
+          "metadata": {
+            limit: Number(filters.limit || 10),
+            offset: Number(filters.offset || 0),
+            count: result.length
+          },
+          "data": []
+        });
+      }
       
       return res.status(200).json({
         "success": true,
