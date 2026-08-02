@@ -56,6 +56,7 @@ export interface SaleReportItem {
   client_name: string;
   seller_name: string;
   total: number;
+  customer_payment: number;
   invoice: string;
   date: string;
 }

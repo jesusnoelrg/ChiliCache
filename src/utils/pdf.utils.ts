@@ -52,6 +52,7 @@ export const generatePdfReportHandler = (report: DataSaleReport, res: Response) 
     },
     s.client_name,
     s.seller_name,
+    `$${s.customer_payment.toString()}`,
     `$${s.total.toString()}`,
     {
       textColor: (s.invoice === 'Sí') ? 'green' : 'red',
@@ -64,7 +65,7 @@ export const generatePdfReportHandler = (report: DataSaleReport, res: Response) 
   doc.fontSize(8);
 
   doc.table({
-    columnStyles: [30, '*', '*', 75, 50, 75],
+    columnStyles: [30, '*', '*', 60, 60, 40, 75],
     rowStyles: (i) => {
       if (i === 0) return { 
         backgroundColor: 'red', 
@@ -72,7 +73,7 @@ export const generatePdfReportHandler = (report: DataSaleReport, res: Response) 
       }
     },
     data: [
-      ['ID', 'Cliente', 'Vendedor', 'Total', 'Factura', 'Fecha'],
+      ['ID', 'Cliente', 'Vendedor', 'Pago', 'Total', 'Factura', 'Fecha'],
       ...rows
     ],
   });

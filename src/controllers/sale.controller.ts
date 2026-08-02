@@ -46,7 +46,7 @@ export const SaleController = {
       if(isNaN(invoiceNumber) || (invoice !== 0 && invoice !== 1)) return res.status(400).json({"success": false, "message": "Debe especificar si hay factura."});
 
       const paymentNumber = Number(customer_payment);
-      if(isNaN(paymentNumber) || !customer_payment) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
+      if(!customer_payment || isNaN(paymentNumber)) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
 
       const isUserExist = userRepositroy.isExist(idUserNumber);
       if(isUserExist == null) return res.status(404).json({"success": false, "message": `El usuario con el (ID: ${idUserNumber}) no existe.`});
@@ -385,6 +385,7 @@ export const SaleController = {
           s.id,
           c.name AS client_name,
           u.full_name AS seller_name,
+          s.customer_payment,
           s.total,
           CASE
             WHEN s.invoice = 1 THEN 'Sí'
