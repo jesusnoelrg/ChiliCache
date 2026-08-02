@@ -257,94 +257,106 @@
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content">
         <div class="modal-body p-0">
-          <div class="row g-0">
-            
-            <!-- Side panel: Sale data -->
-            <div class="col-4 p-4 background-datos-venta">
-              <h4 class="text-main mb-4 fw-bold">NUEVA VENTA</h4>
-              <hr>
+          <!-- Global sales form -->
+          <form id="formSale" class="needs-validation" novalidate>
+            <div class="row g-0">
               
-              <!-- Client -->
-              <div class="mb-3">
-                <div class="autocomplete-container col">
-                  <label class="form-label fw-bold">Buscar cliente:</label>
-                  <input id="inputSearchClient" type="text" class="form-control w-100" value="" autocomplete="off" placeholder="Nombre del cliente">
-                  <ul id="listClients" class="autocomplete-list" ></ul>
-                </div>
-                <div class="mt-2">
-                  <small class="d-flex"><b>Cliente: </b> <p id="clientValue" class="mb-0 ms-1">N/A</p></small>
-                </div>
-              </div>
-              <hr>
-              
-              <!-- Pay -->
-              <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="inputPay" placeholder="Pago del cliente" value="0">
-                <label for="inputPay">Pago del cliente</label>
-              </div>
-              
-              <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" id="switchInvoice" checked>
-                <label class="form-check-label" for="switchFactura">Requiere factura</label>
-              </div>
-              <hr>
-              
-              <!-- Totals -->
-              <div class="my-4">
-                <h5 class="fw-bold d-flex justify-content-between">
-                  Cambio: <span class="badge bg-success"><i class="bi bi-cash"></i> $<b id="lblChange">0.00</b></span>
-                </h5>
-                <h5 class="fw-bold d-flex justify-content-between mt-2">
-                  Total: <span class="badge bg-success"><i class="bi bi-cash"></i> $<b id="lblTotal">0.00</b></span>
-                </h5>
-              </div>
-              
-              <button id="btnRegisterSale" class="btn btn-dark w-100">
-                <i class="bi bi-cart-check-fill"></i> Registrar Venta
-              </button>
-            </div>
-
-            <!-- Main side: Product management -->
-            <div class="col-8 p-4">
-              <form class="row g-2 mb-4 align-items-end">
-                <div class="col">
-                  <div class="form-floating">
-                    <select class="form-select" id="selectProducts">
-                      <option value="none" selected>Seleccionar...</option>
-                    </select>
-                    <label for="selectProducts">Elige un producto</label>
+              <!-- Left panel: Payment and customer details -->
+              <div class="col-4 p-4 background-datos-venta">
+                <h4 class="text-main mb-4 fw-bold">NUEVA VENTA</h4>
+                <hr>
+                
+                <!-- Client -->
+                <div class="mb-3">
+                  <div class="autocomplete-container col">
+                    <label class="form-label fw-bold">Buscar cliente:</label>
+                    <input id="inputSearchClient" type="text" class="form-control w-100" autocomplete="off" placeholder="Nombre del cliente" required>
+                    <div class="invalid-feedback">Debes seleccionar un cliente válido.</div>
+                    <ul id="listClients" class="autocomplete-list"></ul>
+                  </div>
+                  <div class="mt-2">
+                    <small class="d-flex"><b>Cliente: </b> <p id="clientValue" class="mb-0 ms-1">N/A</p></small>
                   </div>
                 </div>
-                <div class="col-3">
-                  <div class="form-floating">
-                    <input type="number" class="form-control" id="inputAmount" placeholder="Cantidad">
-                    <label for="inputAmount">Cantidad</label>
+                <hr>
+                
+                <!-- Pay -->
+                <div class="form-floating mb-3">
+                  <input type="number" class="form-control" id="inputPay" placeholder="Pago del cliente" value="0" min="0" step="0.01" required>
+                  <label for="inputPay">Pago del cliente</label>
+                  <div class="invalid-feedback" id="payFeedback">El pago debe ser mayor o igual al total.</div>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="switchInvoice" checked>
+                  <label class="form-check-label" for="switchInvoice">Requiere factura</label>
+                </div>
+                <hr>
+                
+                <!-- Total -->
+                <div class="my-4">
+                  <h5 class="fw-bold d-flex justify-content-between">
+                    Cambio: <span class="badge bg-success"><i class="bi bi-cash"></i> $<b id="lblChange">0.00</b></span>
+                  </h5>
+                  <h5 class="fw-bold d-flex justify-content-between mt-2">
+                    Total: <span class="badge bg-success"><i class="bi bi-cash"></i> $<b id="lblTotal">0.00</b></span>
+                  </h5>
+                </div>
+                
+                <button type="submit" id="btnRegisterSale" class="btn btn-dark w-100">
+                  <i class="bi bi-cart-check-fill"></i> Registrar Venta
+                </button>
+              </div>
+
+              <!-- Right panel: Add products and table -->
+              <div class="col-8 p-4">
+                <div class="row g-2 mb-4 align-items-end">
+                  <div class="col">
+                    <div class="form-floating">
+                      <select class="form-select" id="selectProducts">
+                        <option value="none" selected disabled>Seleccionar...</option>
+                      </select>
+                      <label for="selectProducts">Elige un producto</label>
+                      <div class="invalid-feedback">Selecciona un producto.</div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-floating">
+                      <input type="number" class="form-control" id="inputAmount" placeholder="Cantidad" min="1" value="1">
+                      <label for="inputAmount">Cantidad</label>
+                      <div class="invalid-feedback">Cantidad inválida.</div>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <button id="btnAddProduct" type="button" class="btn btn-success h-100">
+                      <i class="bi bi-plus-circle"></i> Añadir
+                    </button>
                   </div>
                 </div>
-                <div class="col-auto">
-                  <button id="btnAddProduct" type="button" class="btn btn-success h-100">
-                    <i class="bi bi-plus-circle"></i> Añadir
-                  </button>
-                </div>
-              </form>
 
-              <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                  <thead class="table-dark">
-                    <tr>
-                      <th>Producto</th>
-                      <th>Precio</th>
-                      <th style="width: 120px;">Cantidad</th>
-                      <th class="text-center">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tableProduct">
-                    <!-- Product list-->
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th style="width: 120px;">Cantidad</th>
+                        <th class="text-center">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tableProduct">
+                      <!-- List of added products -->
+                    </tbody>
+                  </table>
+                  <!-- Alert if the table is empty -->
+                  <div id="emptyTableFeedback" class="text-danger small d-none mt-2">
+                    <i class="bi bi-exclamation-triangle"></i> Debes agregar al menos un producto a la lista.
+                  </div>
+                </div>
               </div>
+
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

@@ -103,8 +103,6 @@ export const ClientController = {
       const filters = req.query;
       const result = clientRepository.findAll(filters);
 
-      console.log(result)
-
       if(result.length === 0) {
         return res.status(200).json({
           "success": true, 

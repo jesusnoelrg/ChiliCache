@@ -224,10 +224,10 @@
         </div>
 
         <div class="modal-body bg-main">
-          <form id="formCreateProduct" class="p-4 pb-3">
+          <form id="formCreateProduct" class="needs-validation p-4 pb-3" novalidate>
             <!-- Product name -->
             <div class="form-floating mb-2">
-              <input type="text" class="form-control" id="createName" placeholder="Nombre del producto">
+              <input type="text" class="form-control" id="createName" placeholder="Nombre del producto" required>
               <label for="createName" class="text-gray">
                 <i class="bi bi-box-fill"></i> Nombre del producto
               </label>
@@ -237,7 +237,7 @@
             <div class="row">
               <div class="col-6">
                 <div class="form-floating mb-2">
-                  <input type="number" class="form-control" id="createPrice" placeholder="Precio">
+                  <input type="number" class="form-control" id="createPrice" placeholder="Precio" required>
                   <label for="createPrice" class="text-gray">
                     <i class="bi bi-cash"></i> Precio unitario
                   </label>
@@ -245,7 +245,7 @@
               </div>
               <div class="col-6">
                 <div class="form-floating mb-2">
-                  <input type="number" class="form-control" id="createNetContent" placeholder="Contenido neto">
+                  <input type="number" class="form-control" id="createNetContent" placeholder="Contenido neto" required>
                   <label for="createNetContent" class="text-gray">
                     <i class="bi bi-collection-fill"></i> Contenido neto
                   </label>
@@ -270,7 +270,7 @@
               </div>
               <div class="col-6">
                 <div class="form-floating mb-2">
-                  <input type="number" class="form-control" id="createStock" placeholder="Stock">
+                  <input type="number" class="form-control" id="createStock" placeholder="Stock" required>
                   <label for="createStock" class="text-gray">
                     <i class="bi bi-boxes"></i> Stock
                   </label>

@@ -20,7 +20,7 @@ export class SalesRepository {
     this.selectSaleStatus = db.prepare("SELECT status FROM sales WHERE id = :id");
     this.selectCancelProduct = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
     this.selectStock = db.prepare('SELECT stock FROM products WHERE id = :id_product');
-    this.insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
+    this.insertSale = db.prepare("INSERT INTO sales (total, invoice, customer_payment, id_client, id_user) VALUES (:total, :invoice, :customer_payment, :id_client, :id_user)");
     this.insertDetails = db.prepare("INSERT INTO sales_detail (price, amount, id_sale, id_product) VALUES (:price, :amount, :id_sale, :id_product)");
     this.insertMovementSale = db.prepare(`
     INSERT INTO movements (type, old_stock, new_stock, id_product, id_user)
@@ -61,6 +61,8 @@ export class SalesRepository {
           id_user: data_sale.id_user
         });
       }
+
+      console.log('iiiiiiiinvoice' + data_sale.invoice);
 
       const saleRes = this.insertSale.run({
         total: totalAcum, 

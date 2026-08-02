@@ -14,7 +14,7 @@ export const generatePdfReportHandler = (report: DataSaleReport, res: Response) 
 
   doc.pipe(res);
 
-  const logoPath = path.join(__dirname, '..', '..', 'public', 'img', 'logo.png')
+  const logoPath = path.join(__dirname, '..', '..', 'public', 'img', 'brand', 'logo.png')
   doc.image(logoPath, 50, 30, {width: 100})
 
   doc

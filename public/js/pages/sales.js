@@ -581,11 +581,14 @@ const cleanCreateSale = () => {
 }
 
 document.getElementById('btnRegisterSale')
-  .addEventListener('click', async  () => {
+  .addEventListener('click', async  (e) => {
+    e.preventDefault();
     const clientId = inputSearchClient.getAttribute('client-id');
     
     if(!clientId || clientId === undefined) {
-      showAlert('Ingresa un cliente en el buscador de clientes.', 'info');
+      inputSearchClient.classList.add('is-invalid');
+      modalCreateSale.hide();
+      showAlert('Ingresa un cliente en el buscador de clientes.', 'info', () => modalCreateSale.show());
       return;
     }
 
@@ -593,8 +596,15 @@ document.getElementById('btnRegisterSale')
 
     if(document.getElementById('switchInvoice').checked) invoice = 1;
 
+    if(productsAdded.length === 0) {
+      modalCreateSale.hide();
+      showAlert('¡Debes ingresar por lo menos un producto!', 'info', () => modalCreateSale.show());
+      return;
+    }
+
+    let total = 0;
+
     productsAdded.forEach((product) => {
-      console.log(product);
       if(product.amount <= 0) {
         showAlert(`Revisa la cantidad de '${product.name}' no puede ser menor o igual a 0`, 'info');
         return;
@@ -604,12 +614,29 @@ document.getElementById('btnRegisterSale')
         showAlert(`'${product.name}' no tiene suficientes unidades en el stock (${product.stock})`, 'info');
         return;
       }
+
+      total += (product.price * product.amount);
     });
+
+    const customer_payment = Number(inputPay.value);
+
+    if(isNaN(customer_payment)) {
+      modalCreateSale.hide();
+      showAlert(`Debes ingresar un número en el pago del cliente.`, 'info', () => modalCreateSale.show());
+      return;
+    }
+
+    if(customer_payment < total) {
+      modalCreateSale.hide();
+      showAlert(`El pago del cliente no debe ser menor al total faltan $${total - customer_payment}.`, 'info', () => modalCreateSale.show());
+      return;
+    }
 
     const payload = {
       id_client: clientId,
       invoice: invoice,
-      products: productsAdded
+      products: productsAdded,
+      customer_payment: customer_payment
     };
 
     try {

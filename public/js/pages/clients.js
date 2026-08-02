@@ -58,7 +58,7 @@ formCreateClient.addEventListener('submit', async (e) => {
       }
 
       modalCreateClient.hide();
-      showAlert(errorMsg, 'error');
+      showAlert(errorMsg, 'error', () => modalCreateClient.show());
       return;
     }
 
@@ -67,6 +67,7 @@ formCreateClient.addEventListener('submit', async (e) => {
     fetchClients();
     modalCreateClient.hide();
     formCreateClient.reset();
+    formCreateClient.classList.remove('was-validated');
     showAlert(result.message, 'success');
   } catch (err) {
     console.error(err);

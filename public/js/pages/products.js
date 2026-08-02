@@ -65,6 +65,7 @@ formCreateProduct.addEventListener('submit', async (e) => {
 
     modalCreateProduct.hide();
     formCreateProduct.reset();
+    formCreateProduct.classList.remove('was-validated');
     showAlert(result.message, 'success');
     fetchProducts();
   } catch (err) {
