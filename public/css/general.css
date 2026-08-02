@@ -57,3 +57,7 @@ aside > div > nav > ul > li a:hover{
     color: white;
     z-index: 1;
 }
+
+.logo-invert {
+    filter: invert(100%);
+}
