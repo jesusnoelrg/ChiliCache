@@ -66,8 +66,10 @@ const getFiveMovements = async () => {
 const movTable = document.getElementById('movementsList');
 
 const fillMovements = (movements) => {
+  movTable.innerHTML = '';
+   
   if(!movements || !Array.isArray(movements) || movements.length === 0){
-    table.innerHTML = `<tr><td colspan="12" class="text-center">No se han hecho movimientos recientemente.</td></tr>`;
+    movTable.innerHTML = `<tr><td colspan="12" class="text-center">No se han hecho movimientos recientemente.</td></tr>`;
     return;
   }
 

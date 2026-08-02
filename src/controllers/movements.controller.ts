@@ -39,7 +39,17 @@ export const MovementController = {
 
       const result = repository.findAll(filters);
 
-      if(result.length === 0) return res.status(200).json({success: true, message: "No se han encontrado movimientos en el stock."});
+      if(result.length === 0) {
+        return res.status(200).json({
+          success: true,
+          metadata: {
+            limit: limitNumber,
+            offset: offsetNumber,
+            count: result.length
+          },
+          data: result
+        });
+      } 
 
       return res.status(200).json({
         success: true,
