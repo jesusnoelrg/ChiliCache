@@ -77,7 +77,7 @@ const fillSaleDetail = (data) => {
     fillTable += `
     <tr>
       <th class='scope'>${p.product_name}</th>
-      <td>${p.price}</td>
+      <td>$${p.price}</td>
       <td>${p.amount}</td>
       <td>$${subtotal}</td>
     </tr>
@@ -956,7 +956,7 @@ const renderTableSales = (sales) => {
         <td>$${s.customer_payment}</td>
         <td>$${s.total}</td>
         <td>
-          <button class="btn btn-info" sale-action='view' data-sale-id="${s.id}">
+          <button class="btn btn-view text-white" sale-action='view' data-sale-id="${s.id}">
             <i class="bi bi-eye-fill"></i>
           </button>
           <button class="btn btn-danger" sale-action='cancel'  data-sale-id="${s.id}">

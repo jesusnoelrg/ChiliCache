@@ -7,7 +7,7 @@
   <title>Inicio de sesión</title>
 
   <!-- Bootstrap -->
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/vendor/bootstrap.min.css">
   <!--CSS my styles -->
   <link rel="stylesheet" href="/css/general.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -27,7 +27,7 @@
   <div class="container-fluid d-flex justify-content-center align-items-center h-100 login-background">
     <div class="login-card bg-white shadow rounded-10">
       <div class="p-5 d-flex flex-column justify-content-center align-items-center">
-        <img src="<%= company.logo_path %>" width="185px" height="150px" alt="Logo">
+        <img src="<%= company.logo_path %>" class="logo-invert" width="185px" height="150px" alt="Logo">
         <h2 class="text-center fw-bold my-4">Inicio de sesión</h2>
         <form id="loginForm" class="container px-3">
           <p id="errorMsg" class="text-center form-message-error"></p>
@@ -47,8 +47,7 @@
       </div>
     </div>
   </div>
-  <script src="/js/utils/auth-global.js"></script>
-  <script src="/js/company-data.js"></script>
+  <script src="/js/global/auth.js"></script>
 </body>
 
 </html>

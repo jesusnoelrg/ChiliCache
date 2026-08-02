@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3000'
+const AUTH_URL = 'http://localhost:3000/api/auth'
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('floatingPassword')?.value || '';
 
     try {
-      const response = await fetch(`${URL_API}/api/auth/login`, {
+      const response = await fetch(`${AUTH_URL}/login`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const logout = async () => {
   try{
-    const response = await fetch(`${URL_API}/api/auth/logout`, {
+    const response = await fetch(`${AUTH_URL}/logout`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       credentials: 'include'

@@ -49,6 +49,14 @@
     background-color: #9abf212d;
 }
 
+.btn-view {
+    background-color: rgb(224, 141, 64);
+    transition: background-color .4s;
+}
+
+.btn-view:hover{
+    background-color: rgb(168, 120, 48);
+}
 /*Bordes
 ---------------------------------------------------------------------*/
 
