@@ -20,14 +20,14 @@
     }
   </style>
   <!--Logo-->
-  <link rel="shortcut icon" href="<%= company.logo %>" type="image/x-icon">
+  <link rel="shortcut icon" href="<%= company.logo_path %>" type="image/x-icon">
 </head>
 
 <body>
   <div class="container-fluid d-flex justify-content-center align-items-center h-100 login-background">
     <div class="login-card bg-white shadow rounded-10">
       <div class="p-5 d-flex flex-column justify-content-center align-items-center">
-        <img src="<%= company.logo %>" width="185px" height="150px" alt="Logo">
+        <img src="<%= company.logo_path %>" width="185px" height="150px" alt="Logo">
         <h2 class="text-center fw-bold my-4">Inicio de sesión</h2>
         <form id="loginForm" class="container px-3">
           <p id="errorMsg" class="text-center form-message-error"></p>
