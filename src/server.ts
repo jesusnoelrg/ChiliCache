@@ -2,6 +2,7 @@ import express, {type Express, type Request, type Response} from 'express';
 import cookieParser from 'cookie-parser';
 
 import db from './config/db.ts';
+import { seedAdmin } from './config/seed.ts';
 
 import CompanyRoutes from './routes/company.routes.ts';
 import UserRoutes from './routes/user.routes.ts';
@@ -69,6 +70,14 @@ app.use(errorNotFound);
 app.use(handleErrorGlobal);
 
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en ${API_URL}:${PORT}`);
-});
+seedAdmin()
+  .then(() => {
+    app.listen(PORT, () => {
+    console.log(`Servidor corriendo en ${API_URL}:${PORT}`);
+  });
+  })
+  .catch(() => {
+    console.error('Hubo un error al intentar inicializar la base de datos')
+  });
+
+
