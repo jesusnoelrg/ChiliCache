@@ -90,8 +90,8 @@ db.exec(`
     address TEXT,
     phone TEXT,
     email TEXT,
-    primary_color VARCHAR(7) DEFAULT '#563d7c',
-    secondary_color VARCHAR(7) DEFAULT '#6c757d',
+    primary_color VARCHAR(7) DEFAULT '#bf2121',
+    secondary_color VARCHAR(7) DEFAULT '#893030',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 

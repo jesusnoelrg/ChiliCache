@@ -25,6 +25,9 @@ import helmet from 'helmet';
 dotenv.config();
 const app: Express = express();
 
+const PORT = process.env.PORT || 3000;
+const API_URL = process.env.API_URL || 'http://localhost';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -41,7 +44,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", "http://localhost:3000"],
+      connectSrc: ["'self'", `${API_URL}:${PORT}`],
       fontSrc: ["'self'"]
     },
   },
@@ -65,7 +68,7 @@ app.use('/', ViewRoutes);
 app.use(errorNotFound);
 app.use(handleErrorGlobal);
 
-const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en ${API_URL}:${PORT}`);
 });
