@@ -1,4 +1,5 @@
-import { response, type Request, type Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import 'multer';
 import fs from 'fs/promises';
 import ejs from 'ejs';
 import redisClient from '../config/redis.ts';
@@ -11,31 +12,21 @@ import db from '../config/db'
 
 const repository = new CompanyRepository(db);
 
+export interface RequestWithFile extends Request {
+  file?: Express.Multer.File;
+}
+
 export const CompanyController = {
-  getInfo: async (req: Request, res: Response) => {
+  getInfo: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const cached = await redisClient.get('company:info');
 
       if(cached) {
-        const { 
-          name, logo_path,
-          tax_id, address,
-          phone, email, 
-          primary_color, secondary_color,
-          updated_at
-        } = JSON.parse(cached);
+        const companyData = JSON.parse(cached) as CompanyInfo;
 
         return res.status(200).json({
           "success": true,
-          name,
-          logo: logo_path,
-          tax_id,
-          address,
-          phone,
-          email,
-          primary_color,
-          secondary_color,
-          updated_at
+          ...companyData
         });
       }
 
@@ -48,20 +39,21 @@ export const CompanyController = {
 
       await redisClient.set('company:info', JSON.stringify(result));
 
+      const responseData = {
+        ...result,
+        logo_path: result.logo_path ? result.logo_path.replace(/\\/g, '/') : null
+      };
+
       return res.status(200).json({
         "success": true,
-        ...result,
+        ...responseData,
       });
     } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  updateInfo: async (req: Request, res: Response) => {
+  updateInfo: async (req: RequestWithFile, res: Response, next: NextFunction) => {
     try {
       const {
         name, tax_id,
@@ -69,7 +61,8 @@ export const CompanyController = {
         primary_color, secondary_color
       } = req.body;
 
-      const newLogoPath = req.file?.path;
+      const rawPath = req.file?.path;
+      const newLogoPath = rawPath ? rawPath.replace(/\\/g, '/') : null;
 
       if(name && (name.length <= 3 || name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
@@ -126,11 +119,7 @@ export const CompanyController = {
         "message": "¡Datos de la empresa actualizados exitosamente!"
       })
     } catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   }
 }

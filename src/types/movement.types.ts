@@ -9,6 +9,12 @@ export interface MovementsFilters {
   order: 'ASC' | 'DESC';
 }
 
-export interface MovementType {
-  type: 'created' | 'restock' | 'sale' | 'cancel';
+export interface CreateMovement {
+  type: MovementType;
+  old_stock: number;
+  new_stock: number;
+  id_product: number;
+  id_user: number;
 }
+
+export type MovementType = 'created' | 'restock' | 'sale' | 'cancel';

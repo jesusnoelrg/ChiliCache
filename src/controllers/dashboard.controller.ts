@@ -1,27 +1,18 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import db from '../config/db';
 
+import { DashboardRepository } from '../repositories/dashboard.repository';
+
+const dashboardRepository = new DashboardRepository(db);
 
 export const DashboardController = {
-  getStats: async (req: Request, res: Response) => {
+  getStats: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let query = `
-      SELECT
-        (SELECT COUNT(*) FROM clients) AS clients,
-        (SELECT COUNT(*) FROM users) AS users,
-        (SELECT COUNT(*) FROM products) as products,
-        (SELECT COUNT(*) FROM sales) as sales
-      `
+      const result  = dashboardRepository.getAllCounts();
 
-      const result  = db.prepare(query).all();
-
-      return res.status(200).json({"success": true, "stats": result[0]});
+      return res.status(200).json({success: true, stats: result[0]});
     } catch (err: any) {
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   }
 }

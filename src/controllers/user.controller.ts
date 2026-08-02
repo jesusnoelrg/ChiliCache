@@ -1,23 +1,24 @@
-import { response, type Request, type Response } from 'express';
-import type { 
-  LoginUser, 
-  CreateUserDTO, 
-  GetUsersDTO, 
-  UpdateUserDTO, 
-  UserRole, 
-  SessionUser } from '../types/user.types.ts'
-import { generateInsertHelper, updateHelper } from '../utils/sql.utils.ts';
-import { isRecordFieldPresent } from '../utils/db.utils'
-import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
-import { isAuthenticated, logout } from '../middlewares/auth.middleware.ts'
-
-import { randomUUID } from 'crypto';
+import type { Request, Response, NextFunction } from 'express';
 import redisClient from '../config/redis.ts';
 import db from '../config/db.ts';
 
+import type { 
+  LoginUser,
+  UserLogged,
+  CreateUserDTO, 
+  GetUsersDTO, 
+  UpdateUserDTO, UpdateUserRepositoryParams,
+  UserRoleAndId, 
+  SessionUser 
+} from '../types/user.types.ts'
+
+import { UserRepository } from '../repositories/user.repository.ts';
+import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
+
+const userRepository = new UserRepository(db);
+
 export const UserController = {
-  // Request<Params, ResBody, Body, Query>
-  createUser: async (req: Request<{}, {}, CreateUserDTO>, res: Response) => {
+  createUser: async (req: Request<{}, {}, CreateUserDTO>, res: Response, next: NextFunction) => {
     try {
       const { username, password, full_name, role } = req.body;
 
@@ -33,322 +34,323 @@ export const UserController = {
         })
       }
 
-      let checkUsername = checkUsernameAvailable(username as string);
-      if(!checkUsername.success) return res.status(409).json(checkUsername);
+      const checkUsername = userRepository.checkUsername(username);
+      if(checkUsername !== null) return res.status(409).json(checkUsername);
 
       const encryptedPassword = await hashPassword(password);
-      const userData: any = {
+      const userData: CreateUserDTO = {
         username,
         full_name,
         password: encryptedPassword,
         role: role || 'seller'
       };
 
-      const {columns, placeholders} = generateInsertHelper(userData);
-
-      let query = `
-        INSERT INTO users
-        (${columns})
-        VALUES
-        (${placeholders});
-      `
-      const result = db.prepare(query).run(userData);
-      delete userData.password;
+      const result = userRepository.createUser(userData);
 
       res.status(201).json({
-        "success": true,
-        "message": "¡Usuario creado con éxito!",
-        "data": {id: result.lastInsertRowid, ...userData}
+        success: true,
+        message: "¡Usuario creado con éxito!",
+        data: {
+          id: result.lastInsertRowid,
+          username: userData.username,
+          full_name: userData.full_name,
+          role: userData.role
+        }
       });
 
     }catch(err: any){
-      //Debug
-      console.log(err);
-      res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getUsers: async (req: Request<{}, {}, {}, GetUsersDTO>, res: Response) => {
+  getUsers: async (req: Request<{}, {}, {}, GetUsersDTO>, res: Response, next: NextFunction) => {
     try {
       const { username, full_name, role, limit, offset } = req.query;
 
-      let query = `
-        SELECT 
-          id, 
-          username, 
-          full_name, 
-          role 
-        FROM users
-        WHERE 1 = 1
-      `
+      const limitNumber = Number(limit || 10);
+      const offsetNumber = Number(offset || 0);
 
-      const userData: any = {
-        limit: Number(limit || 10),
-        offset: Number(offset || 0)
+      if (isNaN(limitNumber) || limitNumber < 1) {
+        return res.status(400).json({
+          success: false,
+          message: "El parámetro 'limit' debe ser un número entero mayor a 0."
+        });
+      }
+
+      if (isNaN(offsetNumber) || offsetNumber < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El parámetro 'offset' debe ser un número entero mayor o igual a 0."
+        });
+      }
+
+      if(role && !['seller', 'admin'].includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: "Solo se admiten los roles 'seller' y 'admin' en el sistema."
+        });
+      }
+
+      const filters: GetUsersDTO = {
+        username,
+        full_name,
+        role,
+        limit: limitNumber,
+        offset: offsetNumber
       };
 
-      if(username){
-        userData.username = `%${username}%`;
-        query += " AND username LIKE :username";
-      }
-
-      if(full_name){
-        userData.full_name = `%${full_name}%`;
-        query += " AND full_name LIKE :full_name";
-      }
-
-      if(role){
-        userData.role = role;
-        query += " AND role = :role";
-      }
-
-      query += " LIMIT :limit OFFSET :offset";
-
-      const result = db.prepare(query).all(userData);
-
-      if(result.length === 0){
-        return res.status(200).json({
-          "success": true,
-          "message": "No se encontraron usuarios."
-        })
-      }
+      const result = userRepository.findAll(filters);
 
       res.json({
-        "success": true,
-        "meta": {
-          "limit": userData.limit,
-          "offset": userData.offset,
-          "count": result.length
+        success: true,
+        meta: {
+          limit: limitNumber,
+          offset: offsetNumber,
+          count: result.length
         },
-        "data": result
+        data: result
       })
     }catch(err: any){
-      //Debug
-      console.log(err);
-      res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getUsersName: async (req: Request, res:Response) => {
+  getUsersName: async (req: Request, res:Response, next: NextFunction) => {
     try {
-       const query = "SELECT full_name FROM users";
-       const result = db.prepare(query).all() as { full_name: string }[];
-
+       const result = userRepository.getAllNames() as { full_name: string }[];
        const names = result.map(n => n.full_name);
 
-       return res.status(200).json({'success': true, names});
+       return res.status(200).json({success: true, names});
     } catch(err: any) {
-      console.log("ERROR:" + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  getUserById: async (req: Request, res: Response) => {
+  getUserById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
       const idNumber = Number(id);
-      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+      if(isNaN(idNumber)){
+        return res.status(400).json({
+          success: false,
+          message: "ID inválido."
+        });
+      }
 
-      const result = db.prepare("SELECT username, password, full_name, role, created_at FROM users WHERE id = :id").get({id: idNumber});
+      const result = userRepository.getById(idNumber);
 
-      if(!result) return res.status(404).json({ "success": false, "message": "Usuario no encontrado." });
+      if(!result){
+        return res.status(404).json({ 
+          success: false,
+          message: "Usuario no encontrado." }
+        );
+      }
 
-      res.status(200).json({ "success": true, "data": result })
+      res.status(200).json({ success: true, data: result });
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERRROR 500] Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  updateUser: async (req: Request<any, {}, UpdateUserDTO>, res: Response) => {
+  updateUser: async (req: Request<{ id: string }, {}, UpdateUserDTO>, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const {username, password, old_password, full_name, role} = req.body;
 
-      const idNumber = Number(id);
+      const idNumber: number = Number(id);
 
-      if(isNaN(idNumber)){
+      if (isNaN(idNumber)){
         return res.status(400).json({
-          "success": false,
-          "message": "ID inválido."
+          success: false,
+          message: "ID inválido."
         })
       }
 
-      const checkId = isRecordFieldPresent({table: "users", column: "id", value: idNumber});
-      if(!checkId) {
-        return res.status(404).json({
-          "success": false,
-          "message": `¡El usuario con el (ID: ${idNumber}) no existe!`
-        });
-      }
+      const currentUser: UserLogged | undefined = req.user;
 
-      const currentUser = req.user;
-      console.log(currentUser?.id);
-      if(currentUser?.role !== 'admin' && currentUser?.id !== idNumber){
+      if (currentUser?.role !== 'admin' && currentUser?.id !== idNumber){
         return res.status(403).json({
-          "success": false,
-          "message": "¡No tienes permisos para editar a otros usuarios!"
+          success: false,
+          message: "¡No tienes permisos para editar a otros usuarios!"
         });
       }
 
-      const checkUsername = checkUsernameAvailable(username as string, idNumber);
-      if(!checkUsername.success) return res.status(409).json(checkUsername);
-
-      const userData: any = {
-        id: idNumber
+      const checkId = userRepository.getById(idNumber) as { id: number, username: string} | null;
+      if (!checkId) {
+        return res.status(404).json({
+          success: false,
+          message: `¡El usuario con el (ID: ${idNumber}) no existe!`
+        });
       }
 
-      if(username) userData.username = username;
+      if (role && currentUser?.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: "No tienes permiso para editar el rol de un usuario."
+        })
+      }
+
+      if (username) {
+        if (username.length < 3 || username.length > 30) {
+          return res.status(400).json({
+            success: false,
+            message: "Solo se permiten entre 3 y 30 caracteres en el nombre de usuario."
+          });
+        }
+
+        if (userRepository.checkUsername(username, idNumber)) {
+          return res.status(409).json({
+            success: false,
+            message: "¡Ese nombre de usuario ya se encuentra en uso!"
+          });
+        }
+      }
+
+      if (full_name && (full_name.length < 3 || full_name.length > 80)){
+        return res.status(400).json({
+          success: false,
+          message: "Solo se permiten entre 3 y 80 caracteres en el nombre completo."
+        });
+      }
+
+      if (role && !['seller', 'admin'].includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: "Solo se admiten los roles 'seller' y 'admin' en el sistema."
+        });
+      }
+
+      let encryptedPassword: string | undefined = undefined;
+
       if(password) {
         if(currentUser?.role === 'seller'){
           if(!old_password){
             return res.status(400).json({
-              "success": false,
-              "message": "Por favor, proporciona tu antigua contraseña."
+              success: false,
+              message: "Por favor, proporciona tu antigua contraseña."
             });
           }
 
-          
-          const hashOldPsw = db.prepare('SELECT password FROM users WHERE id = :id').get({id: id}) as any;
+          const hashOldPsw = userRepository.getPassword(idNumber) as string | null;
           
           if(!hashOldPsw){
             return res.status(404).json({
-              "success": false,
-              "message": "El usuario solicitado no existe o fue dado de baja."
+              success: false,
+              message: "El usuario solicitado no existe o fue dado de baja."
             });
           }
 
-          const resultPsw = await verifyPassword(old_password, hashOldPsw.password as string)
+          const resultPsw = await verifyPassword(old_password, hashOldPsw);
 
           if(!resultPsw){
             return res.status(400).json({
-              "success": false,
-              "message": "¡La contraseña que has ingresado no coincide con la antigua!"
+              success: false,
+              message: "¡La contraseña que has ingresado no coincide con la antigua!"
             });
           }
         }
 
-        const encryptedPassword = await hashPassword(password);
-        userData.password = encryptedPassword;
+        encryptedPassword = await hashPassword(password) as string;
       };
-      if(full_name) userData.full_name = full_name;
-      if(role) userData.role = role;
 
-      const placeholders = updateHelper(userData, ['id', 'created_at']);
-      let query = `UPDATE users SET ${placeholders} WHERE id = :id`
-      let result = db.prepare(query).run(userData);
-
-      let successMsg = "";
-
-      if(password && old_password){
-        successMsg = "¡Has cambiado tu contraseña exitosamente!";
-      } else {
-        successMsg = `Actualización exitosa${(result.changes === 0) ? '(No se han hecho cambios)' : ''}.`
+      const data: UpdateUserRepositoryParams = {
+        id: idNumber,
+        username,
+        password: encryptedPassword,
+        full_name,
+        role: currentUser?.role === 'admin' ? role : undefined
       }
 
+      let result = userRepository.update(data);
+      
+      const successMsg = (password && old_password)
+      ? "¡Has cambiado tu contraseña exitosamente!"
+      : `Actualización exitosa${result.changes === 0 ? ' (No se realizaron cambios)' : ''}.`;
+
       return res.status(200).json({
-        "success": true,
-        "message": successMsg
+        success: true,
+        message: successMsg
       })
     }catch(err: any){
-      res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  deleteUser: async (req: Request, res: Response) => {
+  deleteUser: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const idNumber = Number(id);
 
-      if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
+      if(isNaN(idNumber)) return res.status(400).json({success: false, message: "ID inválido."});
 
-      const checkId = isRecordFieldPresent({table: "users", column: "id", value: idNumber});
-      if(!checkId) {
+      const userTarget = userRepository.getRoleAndId(idNumber) as UserRoleAndId | undefined;
+
+      if(!userTarget) {
         return res.status(404).json({
-          "success": false,
-          "message": `¡El usuario con el (ID: ${idNumber}) no existe!`
+          success: false,
+          message: `¡El usuario con el (ID: ${idNumber}) no existe!`
         });
       }
 
-      //TODO: Logic to verify that the user does not delete himself
-
-      const checkRoleAdmin = db.prepare(`SELECT role FROM users WHERE id = :id`).get({id: idNumber}) as UserRole || undefined;
-
-      if(checkRoleAdmin && checkRoleAdmin.role === 'admin') {
+      if(userTarget.role === 'admin') {
         return res.status(403).json({
-          "success": false,
-          "message": "¡No puedes eliminar a un Administrador!"
+          success: false,
+          message: "¡No puedes eliminar a un Administrador!"
         });
       }
 
-      const result = db.prepare("DELETE FROM users WHERE id = :id").run({id: idNumber});
+      const result = userRepository.delete(userTarget.id);
 
       if(result.changes === 0){
         return res.status(400).json({
-          "success": true,
-          "message": "No se ha podido eliminar al usuario."
+          success: true,
+          message: "No se ha podido eliminar al usuario."
         });
       }
 
       res.status(200).json({
-        "success": true,
-        "message": "¡Usuario eliminado exitosamente!"
+        success: true,
+        message: "¡Usuario eliminado exitosamente!"
       })
     }catch(err: any){
-      console.error(err);
-
       if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+        console.error(err);
         return res.status(409).json({
           success: false,
           message: "No se puede eliminar el usuario porque tiene historial de ventas o registros asociados en el sistema."
         });
       }
 
-      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+      next(err);
     }
   },
 
-  loginUser: async (req: Request<{}, {}, LoginUser>, res: Response) => {
+  loginUser: async (req: Request<{}, {}, LoginUser>, res: Response, next: NextFunction) => {
     try{
       const { username, password } = req.body;
 
       if(!username || !password || typeof username !== 'string' || typeof password !== 'string'){
         return res.status(400).json({
-          "success": false,
-          "message": "¡Campo inválidos o vacíos!"
+          success: false,
+          message: "¡Campo inválidos o vacíos!"
         })
       }
 
-      const query = "SELECT id, username, password, role, full_name FROM users WHERE username = :username"
-      const user = db.prepare(query).get({username: username}) as SessionUser;
+      const user = userRepository.getSessionUser(username) as SessionUser | undefined;
+
       if(!user){
         return res.status(401).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
       const hashedPassword = user.password;
       if(!hashedPassword) {
         return res.status(404).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
@@ -356,8 +358,8 @@ export const UserController = {
 
       if(!verifyPsw){
         return res.status(404).json({
-          "success": false,
-          "message": "¡Credenciales incorrectas!"
+          success: false,
+          message: "¡Credenciales incorrectas!"
         });
       }
 
@@ -382,41 +384,17 @@ export const UserController = {
       })
 
       return res.status(200).json({
-        "success": true,
-        "message": "¡Inicio de sesión exitoso!",
-        "user": {
-          "id": user.id,
-          "username": user.username,
-          "full_name": user.full_name,
-          "role": user.role
+        success: true,
+        message: "¡Inicio de sesión exitoso!",
+        user: {
+          id: user.id,
+          username: user.username,
+          full_name: user.full_name,
+          role: user.role
         }
       });
     }catch(err: any){
-      console.error(err);
-      return res.status(500).json({ success: false, message: "[ERROR 500]: Error en la base de datos." });
+      next(err);
     }
   }
 };
-
-const checkUsernameAvailable = (username: string, id?: number): Record<string, any> => {
-  if(!username) return { "success": true };
-
-  let data: any = { username };
-  let query = `SELECT username FROM users WHERE username = :username`;
-
-  if(id !== undefined && id){
-    query += " AND id != :id";
-    data.id = id;
-  }
-
-  const validate = db.prepare(query).get(data);
-
-  if(validate){
-    return {
-      "success": false,
-      "message": "¡Ese nombre de usuario ya esta en uso!"
-    };
-  }
-
-  return { "success": true};
-}  

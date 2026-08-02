@@ -1,22 +1,25 @@
 import db from "../config/db";
-import { SalesRepository } from "../repositories/sales.repository";
-import type { Request, Response } from "express";
+
+import type { Request, Response, NextFunction } from "express";
 import { 
   CreateSaleDTO, 
   GetSalesDTO, 
-  ProductRow, 
   FiltersSaleReport,
   DataSaleReport,
   DataCreateSale,
   SaleReportItem } from "../types/sale.types";
-import { isRecordFieldPresent } from "../utils/db.utils";
 
 import { generatePdfReportHandler } from '../utils/pdf.utils';
+import { SalesRepository } from "../repositories/sales.repository";
+import { UserRepository } from '../repositories/user.repository';
+import { ClientRepository } from '../repositories/client.repository';
 
-const salesRepository = new SalesRepository();
+const salesRepository = new SalesRepository(db);
+const userRepositroy = new UserRepository(db);
+const clientRepository = new ClientRepository(db);
 
 export const SaleController = {
-  createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response) => {
+  createSale: async (req: Request<{}, {}, CreateSaleDTO>, res: Response, next: NextFunction) => {
     try{
       const { id_client, invoice, customer_payment, products } = req.body;
       const idUserNumber = req.user?.id;
@@ -45,10 +48,10 @@ export const SaleController = {
       const paymentNumber = Number(customer_payment);
       if(isNaN(paymentNumber) || !customer_payment) return res.status(400).json({"success": false, "message": "¡Debe especificar el pago del cliente!"});
 
-      const isUserExist = isRecordFieldPresent({table: "users", column: "id", value: idUserNumber});
-      if(!isUserExist) return res.status(404).json({"success": false, "message": `El usuario con el (ID: ${idUserNumber}) no existe.`});
+      const isUserExist = userRepositroy.isExist(idUserNumber);
+      if(isUserExist == null) return res.status(404).json({"success": false, "message": `El usuario con el (ID: ${idUserNumber}) no existe.`});
       
-      const isClientExist = isRecordFieldPresent({table: "clients", column: "id", value: idClientNumber});
+      const isClientExist = clientRepository.isExist(idClientNumber);
       if(!isClientExist) return res.status(404).json({"success": false, "message": `El cliente con el (ID: ${idUserNumber}) no existe.`});
 
       const dataTransaction: DataCreateSale = {
@@ -63,7 +66,7 @@ export const SaleController = {
       if(!result.success){
         return res.status(400).json({
           "success": false,
-            "message": "Ha ocurrido un error en la transación."
+          "message": "Ha ocurrido un error en la transación."
         });
       }
 
@@ -100,14 +103,11 @@ export const SaleController = {
         })
       }
 
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getSales: async (req: Request, res: Response) => {
+  getSales: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { 
         seller_name,
@@ -225,15 +225,11 @@ export const SaleController = {
         "data": result
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      })
+      next(err);
     }
   },
 
-  getSaleById: async (req: Request, res: Response) => {
+  getSaleById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
 
@@ -286,15 +282,11 @@ export const SaleController = {
         }
       })
     }catch(err: any){
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  cancelSaleById: async (req: Request, res: Response) => {
+  cancelSaleById: async (req: Request, res: Response, next: NextFunction) => {
     try{
       const { id } = req.params;
       const idUserNumber = req.user?.id;
@@ -359,15 +351,11 @@ export const SaleController = {
         });
       }
 
-      console.log("Error: " + err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   },
 
-  generateReportPDF: async (req: Request, res: Response) => {
+  generateReportPDF: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { 
         start_timestamp, end_timestamp,
@@ -445,11 +433,7 @@ export const SaleController = {
 
       generatePdfReportHandler(dataSale, res);
     } catch (err: any) {
-      console.log(err);
-      return res.status(500).json({
-        "success": false,
-        "message": "[ERROR 500]: Error en la base de datos."
-      });
+      next(err);
     }
   }
 }

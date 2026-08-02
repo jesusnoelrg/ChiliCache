@@ -1,24 +1,44 @@
-import db from "../config/db";
+import type { Database, Statement } from 'better-sqlite3';
 import { ProductRow, SaleDetailItem, DataCreateSale, SaleStatus } from "../types/sale.types";
 
 export class SalesRepository {
-  private selectProduct = db.prepare("SELECT id, name, price, stock, is_active FROM products WHERE id = :id");
-  private insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
-  private insertDetails = db.prepare("INSERT INTO sales_detail (price, amount, id_sale, id_product) VALUES (:price, :amount, :id_sale, :id_product)");
-  private updateStock = db.prepare("UPDATE products SET stock = stock - :amount WHERE id = :id AND stock >= :amount");
-  private insertMovementSale = db.prepare(`
+  private selectProduct: Statement<[{id: number}], ProductRow>;
+  private selectSaleStatus: Statement<[{id: number}], { status: SaleStatus } | undefined>;
+  private selectCancelProduct: Statement;
+  private selectStock: Statement;
+
+  private insertSale: Statement;
+  private insertDetails: Statement;
+  private insertMovementSale: Statement;
+
+  private updateStock: Statement;
+  private updateStockCancel: Statement;
+  private updateSaleStatus: Statement;
+
+  constructor(private db: Database) {
+    this.selectProduct = db.prepare("SELECT id, name, price, stock, is_active FROM products WHERE id = :id");
+    this.selectSaleStatus = db.prepare("SELECT status FROM sales WHERE id = :id");
+    this.selectCancelProduct = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
+    this.selectStock = db.prepare('SELECT stock FROM products WHERE id = :id_product');
+    this.insertSale = db.prepare("INSERT INTO sales (total, invoice, id_client, id_user) VALUES (:total, :invoice, :id_client, :id_user)");
+    this.insertDetails = db.prepare("INSERT INTO sales_detail (price, amount, id_sale, id_product) VALUES (:price, :amount, :id_sale, :id_product)");
+    this.insertMovementSale = db.prepare(`
     INSERT INTO movements (type, old_stock, new_stock, id_product, id_user)
     VALUES (:type, :old_stock, :new_stock, :id_product, :id_user)  
-  `);
+    `);
+    this.updateStock = db.prepare("UPDATE products SET stock = stock - :amount WHERE id = :id AND stock >= :amount");
+    this.updateStockCancel = db.prepare("UPDATE products SET stock = stock + :amount WHERE id = :id");
+    this.updateSaleStatus = db.prepare("UPDATE sales SET status = 'cancelled' WHERE id = :id");
+  }
   
   public createSaleWithMovement (products: SaleDetailItem[], data_sale: DataCreateSale) {
-    const transaction = db.transaction(() => {
+    const transaction = this.db.transaction(() => {
       let totalAcum: number = 0;
       let itemsAdded: SaleDetailItem[] = [];
 
       for (const p of products) {
-        const product = this.selectProduct.get({id: p.id}) as ProductRow || undefined;
-        if (!product) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
+        const product = this.selectProduct.get({id: p.id}) ?? null;
+        if (product == null) throw new Error(`PRODUCT_NOT_FOUND:${product}`);
         if (product.is_active !== 1) throw new Error(`PRODUCT_NOT_AVAILABLE:${p.id}:${p.name}`);
 
         const total = product.price * p.amount;
@@ -65,7 +85,6 @@ export class SalesRepository {
           id: item.id
         });
 
-
         if(stockResult.changes === 0) throw new Error(`INSUFFICIENT_STOCK:${item.id}:${item.name}`);
       }
 
@@ -85,18 +104,12 @@ export class SalesRepository {
     return transaction();
   }
 
-  private selectSaleStatus = db.prepare("SELECT status FROM sales WHERE id = :id");
-  private selectCancelProduct = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
-  private selectStock = db.prepare('SELECT stock FROM products WHERE id = :id_product');
-  private updateStockCancel = db.prepare("UPDATE products SET stock = stock + :amount WHERE id = :id");
-  private updateSaleStatus =db.prepare("UPDATE sales SET status = 'cancelled' WHERE id = :id");
-
   public cancelSaleWithMovement(id_sale: number, id_user: number) {
-    const transaction = db.transaction(() => {
-      const { status } = this.selectSaleStatus.get({ id: id_sale }) as SaleStatus || {};
+    const transaction = this.db.transaction(() => {
+      const sale = this.selectSaleStatus.get({ id: id_sale }) ?? null;
 
-      if(!status) throw new Error(`SALE_NO_EXIST:${id_sale}`);
-      if(status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${id_sale}`);
+      if(!sale) throw new Error(`SALE_NO_EXIST:${id_sale}`);
+      if(sale.status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${id_sale}`);
 
       const products = this.selectCancelProduct.all({id: id_sale}) as {id_product: number, amount: number, stock: number}[];
 
