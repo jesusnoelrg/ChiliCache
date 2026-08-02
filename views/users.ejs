@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= company.name %> | Inicio</title>
   <!--Bootstrap-->
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/vendor/bootstrap-icons/bootstrap-icons.min.css">
   <!--CSS my styles-->
   <link rel="stylesheet" href="/css/general.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -102,7 +102,7 @@
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
               <button type="button" data-bs-toggle="modal" data-bs-target="#modalCreateUser"
-                class="btn-primario px-3 py-2 rounded-10 shadow"><i class="bi bi-person-plus-fill"></i> Nuevo
+                class="btn btn-success px-3 py-2 rounded-10 shadow"><i class="bi bi-person-plus-fill"></i> Nuevo
                 usuario</button>
             </div>
             <div class="d-flex">
@@ -369,14 +369,17 @@
     </div>
   </div>
 
-  <!--JS-->
-  <script src="/js/bootstrap.bundle.min.js"></script>
+  <!--JavaScript-->
+  <script src="/js/vendor/bootstrap.bundle.min.js"></script>
+
+  <script src="/js/global/auth.js"></script>
+  <script src="/js/global/layout.js"></script>
+
   <script src="/js/utils/tooltip.js"></script>
   <script src="/js/utils/showAlerts.js"></script>
   <script src="/js/utils/validationForm.js"></script>
-  <script src="/js/users.js"></script>
-  <script src="/js/utils/auth-global.js"></script>
-  <script src="/js/global-layout.js"></script>
+
+  <script src="/js/pages/users.js"></script>
   </body>
 
 </html>
