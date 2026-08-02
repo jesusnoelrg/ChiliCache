@@ -33,22 +33,6 @@ export const loadPublicData = async (req: Request, res: Response, next: NextFunc
       }
     }
 
-    if (data) {
-      const version = Date.now();
-
-      res.locals.company = {
-        ...data,
-        logo_path: data.logo_path ? `${data.logo_path}?v=${version}` : '/img/logo.png'
-      }
-    } else {
-      res.locals.company = {
-        name: 'ChiliCache',
-        logo_path: '',
-        primary_color: '#bf2121',
-        secondary_color: '#893030'
-      }
-    }
-
     res.locals.company = data || {
       name: 'ChiliCache',
       logo_path: '',
