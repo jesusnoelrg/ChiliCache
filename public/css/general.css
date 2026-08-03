@@ -1,9 +1,5 @@
-body{
-	height: 100vh;
-}
-
-aside{
-	height: auto;
+aside {
+    height: auto;
 }
 
 ::-webkit-scrollbar {
@@ -31,23 +27,36 @@ aside{
     -webkit-border-radius: 3px;
 }
 
-aside > div > nav > ul > li a{
-	transition: background-color, 0.4s;
-	cursor: pointer;
+aside > div > nav > ul > li a {
+    transition: background-color, 0.4s;
+    cursor: pointer;
 }
 
-aside > div > nav > ul > li a:hover{
-	background-color: var(--op-negro-1);
+aside > div > nav > ul > li a:hover {
+    background-color: var(--op-negro-1);
 }
 
-.nav-section-select{
-	background-color: var(--op-negro-1);
-	border-left: 5px solid var(--color-blanco);
+.nav-section-select {
+    background-color: var(--op-negro-1);
+    border-left: 5px solid var(--color-blanco);
 }
 
 .tabla-datos-scroll {
     max-height: 252px;
     overflow-y: auto;
+}
+
+@media only screen and (max-height: 820px) {
+    .tabla-datos-scroll {
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+@media only screen and (min-height: 821px) {
+    .tabla-datos-scroll {
+        max-height: min(400px, calc(100vh - 320px));
+    }
 }
 
 #tablaDatos.table thead th {

@@ -1,29 +1,94 @@
-html, body {
+/* App shell — single scroll in main content, no body scroll */
+html {
     height: 100%;
 }
 
+body.d-flex,
+body:has(> .d-flex.h-100) {
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+}
 
-main {
-    min-height: calc(100vh - 65px);
+body.d-flex {
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+}
+
+body:has(> .d-flex.h-100) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+body:has(> .d-flex.h-100) > .d-flex.h-100 {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+}
+
+body.d-flex > aside,
+body > .d-flex.h-100 > aside {
+    flex-shrink: 0;
+    height: 100%;
+    max-height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
-/*Contenedor del login*/
-.login-card{
-    width: 425px;
+body.d-flex > main,
+body > .d-flex.h-100 > main {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-/*Header principal*/
-header{
+main > header {
+    flex-shrink: 0;
     width: 100%;
     height: 65px;
+    min-height: 65px;
 }
 
+main > section {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
-aside{
+body.d-flex > .modal {
+    flex: none;
+}
+
+/* Login page */
+body:has(.login-background) {
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+}
+
+body:has(.login-background) .login-background {
+    height: 100vh;
+    min-height: 100vh;
+}
+
+/*Contenedor del login*/
+.login-card {
+    width: 425px;
+    max-width: calc(100vw - 2rem);
+}
+
+aside {
     background-color: var(--tono6);
-	width: 345px;
-	transition: width 0.4s ease-in-out, opacity 0.2s ease-in-out;
+    width: 345px;
+    transition: width 0.4s ease-in-out, opacity 0.2s ease-in-out;
 }
 
 /* Aside colapsado */
@@ -50,17 +115,61 @@ aside.aside-collapse .nav-section-li a {
 .aside-category-name,
 .aside-section-name,
 .aside-title-logo {
-    transition: opacity 0.4s ease-in-out; /* Controlar solo la opacidad */
+    transition: opacity 0.4s ease-in-out;
 }
 
-
-@media only screen and (max-width: 1450px){
-    aside{
-        width: 345px;
+/* Laptops y pantallas medianas */
+@media only screen and (max-width: 1400px) {
+    aside {
+        width: 280px;
     }
 
-    .module-icon{
-        font-size: 30px !important;
-        padding: 7px 14px 7px 14px !important;
+    aside.aside-collapse {
+        width: 72px;
+    }
+
+    .module-icon {
+        font-size: 32px !important;
+        padding: 8px 16px !important;
+    }
+
+    main > section .m-4 {
+        margin: 1rem !important;
+    }
+
+    main > section .px-5 {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+@media only screen and (max-height: 820px) {
+    main > section .m-4 {
+        margin: 0.75rem !important;
+    }
+
+    main > section .py-3 {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .module p {
+        font-size: 22px;
+    }
+
+    .module-icon {
+        font-size: 28px !important;
+        padding: 6px 14px !important;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .perfil-card .text-gray {
+        display: none;
+    }
+
+    #btnLogout {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.875rem;
     }
 }
