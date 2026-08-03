@@ -52,7 +52,7 @@ ChiliCache needs **one Web Service**, **one Redis (Key Value)**, and a **Persist
 
 | Service | Settings |
 |---------|----------|
-| **Web Service** | Runtime Node; Build: `npm ci && npm run build`; Start: `npm start` |
+| **Web Service** | Runtime Node; Build: `npm run build`; Start: `npm start` |
 | **Persistent Disk** | Mount path `/var/data`, size ≥ 1 GB |
 | **Redis / Key Value** | Create instance; copy connection string into `REDIS_URL` |
 
