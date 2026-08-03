@@ -7,12 +7,13 @@ primary_region = 'dfw'
   dockerfile = 'Dockerfile'
 
 [env]
+  PORT = '8080'
   MODE = 'production'
   NODE_ENV = 'production'
   DATA_DIR = '/var/data'
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true

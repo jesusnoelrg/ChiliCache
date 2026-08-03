@@ -81,8 +81,8 @@ app.use(handleErrorGlobal);
 
 seedAdmin()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en ${API_URL} (puerto ${PORT}, mode=${process.env.MODE || 'dev'})`);
+    app.listen(Number(PORT), '0.0.0.0', () => {
+      console.log(`Servidor corriendo en ${API_URL} (0.0.0.0:${PORT}, mode=${process.env.MODE || 'dev'})`);
       if (isProduction) {
         console.log(`Datos persistentes en DATA_DIR (uploads + SQLite)`);
       }

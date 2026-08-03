@@ -59,9 +59,12 @@ fly launch --no-deploy
 # 3. Create persistent volume (region must match primary_region in fly.toml, default: dfw)
 fly volumes create chilicache_data --size 1 --region dfw
 
-# 4. Secrets (Upstash URL only — no REDIS_URL= prefix, no quotes)
+# 4. Secrets — obligatorio (Upstash). Solo la URL, sin REDIS_URL= ni comillas extra:
 fly secrets set REDIS_URL="rediss://default:TOKEN@your-db.upstash.io:6379"
 fly secrets set ADMIN_PASSWORD="your-strong-password"
+
+# Verifica que el secret exista:
+fly secrets list
 
 # 5. Deploy
 fly deploy

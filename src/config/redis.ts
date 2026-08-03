@@ -16,6 +16,15 @@ function normalizeRedisUrl(raw: string | undefined): string {
 }
 
 const redisUrl = normalizeRedisUrl(process.env.REDIS_URL);
+
+if (process.env.MODE === 'production' && /localhost|127\.0\.0\.1/.test(redisUrl)) {
+  console.error(
+    '[ERROR] REDIS_URL no está configurada. En Fly.io ejecuta:\n' +
+    '  fly secrets set REDIS_URL="rediss://default:TOKEN@tu-host.upstash.io:6379"'
+  );
+  process.exit(1);
+}
+
 const useTls = redisUrl.startsWith('rediss://');
 
 const redisClient = createClient({
