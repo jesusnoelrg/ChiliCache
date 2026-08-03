@@ -1,4 +1,4 @@
-const API_COMPANY = 'http://localhost:3000/api/company'
+const API_COMPANY = '/api/company'
 
 const previewLogo = document.getElementById('previewLogo');
 
@@ -212,7 +212,7 @@ const applyTheme = (primaryColor, secondaryColor) => {
 };
 
 const cleanStaticUrl = (path) => {
-  if (!path) return '/img/logo.png';
+  if (!path) return '/images/default-logo.svg';
 
   let clean = path.replace(/\\/g, '/');
   

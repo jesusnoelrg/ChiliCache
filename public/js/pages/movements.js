@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api'
+const API = '/api'
 const MOVEMENTS_URL = `${API}/movements`;
 
 const debounce = (func, delay = 300) => {

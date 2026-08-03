@@ -1,4 +1,4 @@
-const PRODUCT_URL = 'http://localhost:3000/api/products';
+const PRODUCT_URL = '/api/products';
 
 /*
   ----------------------------------------------------------------

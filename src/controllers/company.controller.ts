@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import redisClient from '../config/redis';
 import { phoneFormat, emailFormat, hexColorFormat } from '../utils/sql.utils';
-import { DATA_DIR } from '../config/paths';
+import { DATA_DIR, normalizePublicPath } from '../config/paths';
 
 import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyInfo, UpdateCompanyInfo } from '../types/company.types';
@@ -27,7 +27,8 @@ export const CompanyController = {
 
         return res.status(200).json({
           "success": true,
-          ...companyData
+          ...companyData,
+          logo_path: normalizePublicPath(companyData.logo_path),
         });
       }
 
@@ -42,7 +43,7 @@ export const CompanyController = {
 
       const responseData = {
         ...result,
-        logo_path: result.logo_path ? result.logo_path.replace(/\\/g, '/') : null
+        logo_path: normalizePublicPath(result.logo_path),
       };
 
       return res.status(200).json({

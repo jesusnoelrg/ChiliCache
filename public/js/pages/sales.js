@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api'
+const API = '/api'
 const SALES_URL = `${API}/sales`;
 const CLIENTS_URL = `${API}/clients`;
 const PRODUCTS_URL = `${API}/products`;

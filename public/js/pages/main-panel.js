@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api'
+const API = '/api'
 const DASHBOARD_URL = `${API}/dashboard`
 const MOVEMENTS_URL = `${API}/movements`
 

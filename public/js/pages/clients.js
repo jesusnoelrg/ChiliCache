@@ -1,4 +1,4 @@
-const CLIENT_URL = 'http://localhost:3000/api/clients';
+const CLIENT_URL = '/api/clients';
 
 /*
   ----------------------------------------------------------------

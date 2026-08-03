@@ -5,6 +5,7 @@ Inventory control and batch sauce production management system for light manufac
 ### Table of contents
 - [Description of the technology](#description-of-the-technology)
 - [Local setup](#local-setup)
+- [Deploy on Fly.io (recommended)](#deploy-on-flyio-recommended)
 - [Deploy on Render](#deploy-on-render)
 - [Credits](#credits)
 
@@ -34,45 +35,79 @@ development time in creating components. **SQLite** was used as a database since
 
 Default admin (created only if no admin exists): username `jesusnoel`, password from `ADMIN_PASSWORD` or `admin123`.
 
+## Deploy on Fly.io (recommended)
+
+Stack: **Fly.io** (app + persistent volume for SQLite) + **Upstash** (Redis, free tier).
+
+Fly.io free tier includes a volume so your SQLite database and uploads **survive redeploys**. You can stop using Render for the web service.
+
+### Prerequisites
+
+1. [Install flyctl](https://fly.io/docs/hands-on/install-flyctl/)
+2. Fly account + credit card (verification; free allowance may not charge)
+3. Upstash Redis URL (`rediss://...`)
+
+### First deploy
+
+```bash
+# 1. Login
+fly auth login
+
+# 2. Create app (pick a unique name if 'chilicache' is taken; same region as fly.toml)
+fly launch --no-deploy
+
+# 3. Create persistent volume (region must match primary_region in fly.toml, default: dfw)
+fly volumes create chilicache_data --size 1 --region dfw
+
+# 4. Secrets (Upstash URL only — no REDIS_URL= prefix, no quotes)
+fly secrets set REDIS_URL="rediss://default:TOKEN@your-db.upstash.io:6379"
+fly secrets set ADMIN_PASSWORD="your-strong-password"
+
+# 5. Deploy
+fly deploy
+```
+
+App URL: `https://<your-app-name>.fly.dev`
+
+### What persists
+
+| Path on volume | Content |
+|----------------|---------|
+| `/var/data/database.db` | SQLite |
+| `/var/data/uploads/` | Company logos |
+
+Configured via `DATA_DIR=/var/data` in `fly.toml`.
+
+### Useful commands
+
+```bash
+fly status          # app state
+fly logs            # live logs
+fly ssh console     # shell inside machine
+fly secrets list    # env secrets
+```
+
+### After migration from Render
+
+1. Confirm login works on `*.fly.dev`
+2. Delete or suspend the Render Web Service (keep Upstash)
+
+---
+
 ## Deploy on Render
 
-ChiliCache needs **one Web Service**, **one Redis (Key Value)**, and a **Persistent Disk** for SQLite + uploaded logos. Persistent disks require a paid Render plan.
+Requires a **paid Persistent Disk** for SQLite. Render free tier does not keep data between deploys.
 
-### Option A — Blueprint (`render.yaml`)
-
-1. Push this repo to GitHub.
-2. In Render: **New → Blueprint** and select the repo.
-3. Set the prompted env vars:
-   - `API_URL` → your public HTTPS URL, e.g. `https://chilicache-web.onrender.com` (no port)
-   - `ADMIN_PASSWORD` → strong password for the first admin seed
-4. Confirm the disk mount path is `/var/data` and `DATA_DIR=/var/data`.
-5. Deploy. After first login, change the admin password in the app if you used a temporary seed value.
-
-### Option B — Manual dashboard
-
-| Service | Settings |
-|---------|----------|
-| **Web Service** | Runtime Node; Build: `npm run build`; Start: `npm start` |
-| **Persistent Disk** | Mount path `/var/data`, size ≥ 1 GB |
-| **Redis / Key Value** | Create instance; copy connection string into `REDIS_URL` |
-
-**Environment variables (Web Service):**
+See [`render.yaml`](render.yaml) and set `DATA_DIR=/var/data` with a disk mount. Use Upstash for `REDIS_URL`.
 
 | Variable | Value |
 |----------|--------|
-| `NODE_ENV` | `production` |
 | `MODE` | `production` |
-| `API_URL` | `https://YOUR-SERVICE.onrender.com` |
 | `DATA_DIR` | `/var/data` |
-| `REDIS_URL` | Internal Redis URL from Render (`rediss://...` is OK) |
-| `ADMIN_PASSWORD` | Initial admin password (only used when DB has no admin) |
-| `PORT` | Set automatically by Render |
+| `REDIS_URL` | Upstash URL only (no quotes) |
+| `ADMIN_PASSWORD` | Initial admin password |
 
-SQLite file: `$DATA_DIR/database.db`. Uploads: `$DATA_DIR/uploads`.
-
-### Free alternative with a volume
-
-Render’s free tier has **no** persistent disk. For $0 with SQLite + volume, **Fly.io** (`fly volumes create` + same `DATA_DIR`) is the closest option; this app’s `DATA_DIR` env works the same way.
+---
 
 ## Credits
 * **Developed by:** jesusnoelrg

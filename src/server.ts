@@ -27,7 +27,14 @@ ensureDataDirs();
 const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
-const API_URL = process.env.API_URL || 'http://localhost:3000';
+const API_URL = process.env.API_URL
+  || (process.env.FLY_APP_NAME
+    ? `https://${process.env.FLY_APP_NAME}.fly.dev`
+    : undefined)
+  || (process.env.RENDER_EXTERNAL_HOSTNAME
+    ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`
+    : undefined)
+  || `http://localhost:${PORT}`;
 const isProduction = process.env.MODE === 'production';
 
 app.set('trust proxy', 1);

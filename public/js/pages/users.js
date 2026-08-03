@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3000';
+const URL_API = '';
 const ROUTE = '/api/users';
 
 

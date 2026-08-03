@@ -3,7 +3,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+function normalizeRedisUrl(raw: string | undefined): string {
+  let url = (raw || 'redis://localhost:6379').trim();
+  url = url.replace(/^REDIS_URL\s*=\s*/i, '');
+  if (
+    (url.startsWith('"') && url.endsWith('"')) ||
+    (url.startsWith("'") && url.endsWith("'"))
+  ) {
+    url = url.slice(1, -1);
+  }
+  return url.trim();
+}
+
+const redisUrl = normalizeRedisUrl(process.env.REDIS_URL);
 const useTls = redisUrl.startsWith('rediss://');
 
 const redisClient = createClient({

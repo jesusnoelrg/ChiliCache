@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3000/api/users/'
+const URL_API = '/api/users/'
 
 const inputUsername = document.getElementById('changeUsername');
 const inputFullname = document.getElementById('changeFullname');
