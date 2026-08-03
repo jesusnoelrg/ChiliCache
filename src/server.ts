@@ -22,6 +22,7 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
+import cors from 'cors';
 
 dotenv.config();
 const app: Express = express();
@@ -31,6 +32,11 @@ const API_URL = process.env.API_URL || 'http://localhost';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
+}))
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
