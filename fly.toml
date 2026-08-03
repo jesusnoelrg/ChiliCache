@@ -1,4 +1,7 @@
-# fly.toml — https://fly.io/docs/reference/configuration/
+# fly.toml app configuration file generated for chilicache on 2026-08-03T07:59:38Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = 'chilicache'
 primary_region = 'dfw'
@@ -7,12 +10,16 @@ primary_region = 'dfw'
   dockerfile = 'Dockerfile'
 
 [env]
+  DATA_DIR = '/var/data'
   MODE = 'production'
   NODE_ENV = 'production'
-  DATA_DIR = '/var/data'
+
+[[mounts]]
+  source = 'chilicache_data'
+  destination = '/var/data'
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
@@ -23,7 +30,4 @@ primary_region = 'dfw'
   memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1
-
-[mounts]
-  source = 'chilicache_data'
-  destination = '/var/data'
+  memory_mb = 256
