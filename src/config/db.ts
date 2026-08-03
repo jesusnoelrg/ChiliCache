@@ -1,11 +1,11 @@
 import Database from "better-sqlite3"; 
 import type { Database as DatabaseType } from 'better-sqlite3';
-import path from 'path';
+import { DB_PATH, ensureDataDirs } from './paths';
 
-const dbPath = path.join(process.cwd(), 'data/database.db');
+ensureDataDirs();
 
 const db: DatabaseType = new Database(
-  dbPath, 
+  DB_PATH, 
   {verbose: process.env.MODE === 'production' ? undefined : console.log}
 );
 

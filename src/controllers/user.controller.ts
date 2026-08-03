@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import redisClient from '../config/redis.ts';
-import db from '../config/db.ts';
+import redisClient from '../config/redis';
+import db from '../config/db';
 
 import type { 
   LoginUser,
@@ -10,10 +10,10 @@ import type {
   UpdateUserDTO, UpdateUserRepositoryParams,
   UserRoleAndId, 
   SessionUser 
-} from '../types/user.types.ts'
+} from '../types/user.types'
 
-import { UserRepository } from '../repositories/user.repository.ts';
-import { hashPassword, verifyPassword } from '../utils/auth.utils.ts';
+import { UserRepository } from '../repositories/user.repository';
+import { hashPassword, verifyPassword } from '../utils/auth.utils';
 
 const userRepository = new UserRepository(db);
 
@@ -379,7 +379,8 @@ export const UserController = {
 
       res.cookie('sid', uuid, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.MODE === 'production',
+        sameSite: 'lax',
         maxAge: 7200 * 1000
       })
 

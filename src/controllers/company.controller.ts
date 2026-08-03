@@ -1,9 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
 import 'multer';
 import fs from 'fs/promises';
-import ejs from 'ejs';
-import redisClient from '../config/redis.ts';
+import path from 'path';
+import redisClient from '../config/redis';
 import { phoneFormat, emailFormat, hexColorFormat } from '../utils/sql.utils';
+import { DATA_DIR } from '../config/paths';
 
 import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyInfo, UpdateCompanyInfo } from '../types/company.types';
@@ -61,8 +62,9 @@ export const CompanyController = {
         primary_color, secondary_color
       } = req.body;
 
-      const rawPath = req.file?.path;
-      const newLogoPath = rawPath ? rawPath.replace(/\\/g, '/') : null;
+      const newLogoPath = req.file
+        ? path.posix.join('uploads', 'company', req.file.filename)
+        : null;
 
       if(name && (name.length <= 3 || name.length >= 80)) return res.status(400).json({'success': false, 'message': 'El nombre de la empresa debe contener entre 3 y 80 caracteres.'});
 
@@ -106,7 +108,10 @@ export const CompanyController = {
 
       if(newLogoPath && currentCompany?.logo_path && currentCompany.logo_path !== newLogoPath) {
         try {
-            await fs.unlink(currentCompany.logo_path);
+            const previousLogo = path.isAbsolute(currentCompany.logo_path)
+              ? currentCompany.logo_path
+              : path.join(DATA_DIR, currentCompany.logo_path);
+            await fs.unlink(previousLogo);
           } catch (fileErr) {
             console.warn(`[FS] No se pudo eliminar el archivo anterior: ${currentCompany.logo_path}`);
           }

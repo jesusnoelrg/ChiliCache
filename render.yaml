@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: chilicache-web
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MODE
+        value: production
+      - key: API_URL
+        sync: false
+      - key: DATA_DIR
+        value: /var/data
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: chilicache-redis
+          property: connectionString
+    disk:
+      name: chilicache-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: keyvalue
+    name: chilicache-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []

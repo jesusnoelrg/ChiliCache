@@ -1,9 +1,12 @@
 import multer from 'multer';
 import path from 'path';
+import { COMPANY_UPLOADS_DIR, ensureDataDirs } from '../config/paths';
+
+ensureDataDirs();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/company')
+    cb(null, COMPANY_UPLOADS_DIR)
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);

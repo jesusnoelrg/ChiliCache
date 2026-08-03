@@ -8,8 +8,9 @@ export const seedAdmin = async () => {
     .get() as {count: number};
   
   if(isUsersEmpty.count !== 0) return;
-  
-  const encryptedPassword = await hashPassword('admin123');
+
+  const initialPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const encryptedPassword = await hashPassword(initialPassword);
 
   const userData: CreateUserDTO = {
     username: 'jesusnoel',
@@ -27,5 +28,3 @@ export const seedAdmin = async () => {
 
   console.log('EXITO: Se ha implementado la semilla exitosamente.')
 }
-
-seedAdmin();

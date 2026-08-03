@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import redisClient from '../config/redis.ts';
+import redisClient from '../config/redis';
 import { CompanyRepository } from '../repositories/company.repository';
-import db from '../config/db.ts';
+import db from '../config/db';
 
 const repository = new CompanyRepository(db);
 

@@ -1,49 +1,47 @@
 import express, {type Express, type Request, type Response} from 'express';
 import cookieParser from 'cookie-parser';
-
-import db from './config/db.ts';
-import { seedAdmin } from './config/seed.ts';
-
-import CompanyRoutes from './routes/company.routes.ts';
-import UserRoutes from './routes/user.routes.ts';
-import ProductRoutes from "./routes/product.routes.ts";
-import ClientRoutes from "./routes/client.routes.ts";
-import SaleRoutes from "./routes/sale.routes.ts";
-import AuthRoutes from "./routes/auth.routes.ts";
-import ViewRoutes from "./routes/views.routes.ts";
-import DashboardRoutes from './routes/dashboard.routes.ts';
-import MovementsRoutes from "./routes/movements.routes.ts";
-
-import { loadPublicData } from './middlewares/data.middleware';
-import { errorNotFound } from './middlewares/error_404.middleware.ts';
-import { handleErrorGlobal } from './middlewares/error_500.midleware.ts';
-
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
+import path from 'path';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
-import cors from 'cors';
+
+import { seedAdmin } from './config/seed';
+import { UPLOADS_DIR, ensureDataDirs } from './config/paths';
+
+import CompanyRoutes from './routes/company.routes';
+import UserRoutes from './routes/user.routes';
+import ProductRoutes from "./routes/product.routes";
+import ClientRoutes from "./routes/client.routes";
+import SaleRoutes from "./routes/sale.routes";
+import AuthRoutes from "./routes/auth.routes";
+import ViewRoutes from "./routes/views.routes";
+import DashboardRoutes from './routes/dashboard.routes';
+import MovementsRoutes from "./routes/movements.routes";
+
+import { loadPublicData } from './middlewares/data.middleware';
+import { errorNotFound } from './middlewares/error_404.middleware';
+import { handleErrorGlobal } from './middlewares/error_500.midleware';
 
 dotenv.config();
+ensureDataDirs();
+
 const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
-const API_URL = process.env.API_URL || 'http://localhost';
+const API_URL = process.env.API_URL || 'http://localhost:3000';
+const isProduction = process.env.MODE === 'production';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}))
+app.set('trust proxy', 1);
+app.set('view engine', 'ejs');
+app.set('views', path.join(process.cwd(), 'views'));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
-app.set('view engine', 'ejs');
+app.use(cookieParser());
+app.disable('x-powered-by');
+
 app.use(loadPublicData);
-app.use(express.static(path.join(__dirname, '../views')));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+app.use(express.static(path.join(process.cwd(), 'public')));
+app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -51,13 +49,11 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", `${API_URL}:${PORT}`],
+      connectSrc: ["'self'", API_URL],
       fontSrc: ["'self'"]
     },
   },
 }));
-app.use(cookieParser());
-app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {
   res.send('API de ChiliCache');
@@ -71,19 +67,20 @@ app.use('/api/users', UserRoutes);
 app.use('/api/products', ProductRoutes);
 app.use('/api/clients', ClientRoutes);
 app.use('/api/sales', SaleRoutes);
+
 app.use('/', ViewRoutes);
 app.use(errorNotFound);
 app.use(handleErrorGlobal);
 
-
 seedAdmin()
   .then(() => {
     app.listen(PORT, () => {
-    console.log(`Servidor corriendo en ${API_URL}:${PORT}`);
-  });
+      console.log(`Servidor corriendo en ${API_URL} (puerto ${PORT}, mode=${process.env.MODE || 'dev'})`);
+      if (isProduction) {
+        console.log(`Datos persistentes en DATA_DIR (uploads + SQLite)`);
+      }
+    });
   })
   .catch(() => {
     console.error('Hubo un error al intentar inicializar la base de datos')
   });
-
-
