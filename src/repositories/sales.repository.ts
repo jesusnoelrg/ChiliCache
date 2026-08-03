@@ -62,8 +62,6 @@ export class SalesRepository {
         });
       }
 
-      console.log('iiiiiiiinvoice' + data_sale.invoice);
-
       const saleRes = this.insertSale.run({
         total: totalAcum, 
         invoice: data_sale.invoice,

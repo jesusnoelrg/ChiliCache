@@ -13,6 +13,9 @@ document.addEventListener('click', (e) => {
   if(productId) {
     if(button.classList.contains('btn-danger')) {
       showConfirm(`¿Estás seguro de eliminar el producto (ID: ${productId})`, () => deleteProductById(productId, button));
+    } else if (button.classList.contains('btn-secondary')) {
+      formRestock.setAttribute('data-id', productId);
+      modalRestock.show();
     } else {
       setFormEdit(productId);
       openEditModal();
@@ -20,6 +23,73 @@ document.addEventListener('click', (e) => {
   }
 });
 
+/*
+  ----------------------------------------------------------------
+  RESTOCK PRODUCT
+*/
+const modalRestock = new bootstrap.Modal(document.getElementById('modalRestock'));
+const formRestock = document.getElementById('modalRestock');
+
+const titleRestock = document.getElementById('titleRestock');
+
+const inputRestock = document.getElementById('inputRestock');
+
+formRestock.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const productId = formRestock.getAttribute('data-id');
+
+  if(!productId || productId == null) {
+    modalRestock.hide();
+    showAlert("Ha ocurrido un error interno al intentar capturar el ID del producto. Recargue la página si persiste el error.", 'error');
+    return;
+  }
+
+  const stock = Number(inputRestock.value);
+
+  if(isNaN(stock)) {
+    modalRestock.hide();
+    showAlert("Ingresa un número en el campo de 'Cantidad a agregar'.", 'info', () => modalRestock.show());
+    return;
+  }
+
+  if(stock <= 0) {
+    modalRestock.hide();
+    showAlert("Ingresa un número mayor que 0 para sumar al stock actual.", 'info', () => modalRestock.show());
+    return;
+  }
+
+  try {
+    const res = await fetch(`${PRODUCT_URL}/${productId}/restock`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({ stock })
+    });
+
+    if (!res.ok) {
+      let errorMsg = `Error del servidor (${res.status})`;
+
+      try {
+        const errorRes = await res.json();
+        errorMsg = errorRes.message || errorMsg;
+      } catch { }
+
+      console.error(errorMsg);
+      return;
+    }
+
+    const result = await res.json();
+
+    fetchProducts();
+    modalRestock.hide();
+    formRestock.reset;
+    showAlert('¡Re-stock hecho con éxito!', 'success');
+    formRestock.removeAttribute('data-id');
+  } catch (err) {
+    console.error(err);
+  }
+})
 /*
   ----------------------------------------------------------------
   CREATE PRODUCTS
@@ -440,6 +510,9 @@ const renderTableProducts = (products) => {
           ${p.stock || 'N/A'}
         </td>
         <td>
+          <button class="btn btn-secondary" data-product-id="${p.id}">
+            <i class="bi bi-box-arrow-in-up"></i>
+          </button>
           <button class="btn btn-primary" data-product-id="${p.id}">
             <i class="bi bi-gear-fill"></i>
           </button>

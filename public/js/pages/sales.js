@@ -231,6 +231,7 @@ const cancelSale = async (saleId) => {
 
     const result = await res.json();
     modalSalesDetail.hide();
+    fetchSales();
     showAlert(result.message, 'success');
   } catch (err) {
     console.error(err);

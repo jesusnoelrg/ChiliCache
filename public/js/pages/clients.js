@@ -77,7 +77,7 @@ formCreateClient.addEventListener('submit', async (e) => {
 const setFormEdit = async (clientId) => {
 
   try {
-    const response = await fetch(`${CLIENT_URL}/${clientId}`, {
+    const response = await fetch(`${CLIENT_URL}/id/${clientId}`, {
       method: 'GET',
       credentials: 'include'
     });

@@ -48,16 +48,16 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS sales (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total REAL NOT NULL,
-    customer_payment INTEGER DEFAULT 0,
-    status TEXT DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
-    invoice INTEGER NOT NULL CHECK (invoice IN (0, 1)),
-    id_client INTEGER NOT NULL,
-    id_user INTEGER NOT NULL,
-    FOREIGN KEY(id_client) REFERENCES clients(id),
-    FOREIGN KEY(id_user) REFERENCES users(id) 
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      total REAL NOT NULL,
+      customer_payment INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'completed' CHECK (status IN ('completed', 'cancelled')),
+      invoice INTEGER NOT NULL CHECK (invoice IN (0, 1)),
+      id_client INTEGER NOT NULL,
+      id_user INTEGER NOT NULL,
+      FOREIGN KEY(id_client) REFERENCES clients(id),
+      FOREIGN KEY(id_user) REFERENCES users(id) 
   );
 
   CREATE TABLE IF NOT EXISTS sales_detail (
