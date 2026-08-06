@@ -10,7 +10,6 @@ export class ClientRepository {
   private selectLikeName: Statement;
   private selectCheckName: Statement;
   private selectId: Statement<[{id: number}], {id: number}>;
-  private updateClientStmt: Statement;
   private deleteClientStmt: Statement;
 
   constructor(private db: Database) {
@@ -23,16 +22,6 @@ export class ClientRepository {
     this.selectClientById = db.prepare('SELECT * FROM clients WHERE id = :id');
     this.selectLikeName = db.prepare('SELECT id, name FROM clients WHERE name LIKE :name');
     this.selectCheckName = db.prepare('SELECT name FROM clients WHERE name = :name AND id != :id');
-    this.updateClientStmt = this.db.prepare(`
-      UPDATE clients 
-      SET 
-        name = COALESCE(:name, name),
-        rfc = COALESCE(:rfc, rfc),
-        address = COALESCE(:address, address),
-        phone = COALESCE(:phone, phone),
-        email = COALESCE(:email, email)
-      WHERE id = :id
-    `);
     this.deleteClientStmt = db.prepare('DELETE FROM clients WHERE id = :id');
   }
 
@@ -50,8 +39,38 @@ export class ClientRepository {
     return this.insertClientStmt.run(data);
   }
 
-  public update(data: UpdateClientDTO) {
-    return this.updateClientStmt.run(data);
+  public update(id: number, data: UpdateClientDTO) {
+    const assignments: string[] = [];
+    const params: Record<string, unknown> = { id };
+
+    if (data.name !== undefined) {
+      assignments.push('name = :name');
+      params.name = data.name;
+    }
+    if (data.rfc !== undefined) {
+      assignments.push('rfc = :rfc');
+      params.rfc = data.rfc;
+    }
+    if (data.address !== undefined) {
+      assignments.push('address = :address');
+      params.address = data.address;
+    }
+    if (data.phone !== undefined) {
+      assignments.push('phone = :phone');
+      params.phone = data.phone;
+    }
+    if (data.email !== undefined) {
+      assignments.push('email = :email'); 
+      params.email = data.email;
+    }
+
+    if (assignments.length === 0) {
+      return { changes: 0 };
+    }
+
+    const query = `UPDATE clients SET ${assignments.join(', ')} WHERE id = :id`;
+
+    return this.db.prepare(query).run(params);
   }
 
   public delete(id: number) {

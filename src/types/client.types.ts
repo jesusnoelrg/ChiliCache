@@ -7,12 +7,11 @@ export interface CreateClientDTO {
 }
 
 export interface UpdateClientDTO {
-  id: number;
-  name: string | null;
-  rfc: string | null;
-  address: string | null;
-  phone: string | null;
-  email: string | null;
+  name?: string;
+  rfc?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface GetClientsDTO {
