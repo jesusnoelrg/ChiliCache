@@ -262,11 +262,18 @@ export const UserController = {
         role: currentUser?.role === 'admin' ? role : undefined
       }
 
-      let result = userRepository.update(data);
+      const result = userRepository.update(idNumber, data);
+
+      if(result.changes === 0 || !result){
+        return res.status(400).json({
+          success: false,
+          message: "No se han realizado cambios en el usuario."
+        });
+      }
       
       const successMsg = (password && old_password)
       ? "¡Has cambiado tu contraseña exitosamente!"
-      : `Actualización exitosa${result.changes === 0 ? ' (No se realizaron cambios)' : ''}.`;
+      : `Actualización exitosa.`;
 
       return res.status(200).json({
         success: true,

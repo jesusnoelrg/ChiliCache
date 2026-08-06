@@ -16,8 +16,6 @@ export class UserRepository {
   private selectId: Statement<[{id: number}], {id: number}>;
 
   private insertUser: Statement;
-  
-  private updateUser: Statement;
 
   private deleteUser: Statement;
 
@@ -44,14 +42,6 @@ export class UserRepository {
         password, role
       FROM users WHERE username = :username
       `)
-    this.updateUser = db.prepare(`
-      UPDATE users SET
-        username = COALESCE(:username, username),
-        full_name = COALESCE(:full_name, full_name),
-        password = COALESCE(:password, password),
-        role = COALESCE(:role, role)
-      WHERE id = :id
-      `);
     this.deleteUser = db.prepare('DELETE FROM users WHERE id = :id');
   }
 
@@ -84,14 +74,41 @@ export class UserRepository {
     return this.selectSessionUser.get({ username }) as SessionUser | undefined;
   }
 
-  public update (data: UpdateUserRepositoryParams) {
-    return this.updateUser.run({
-      id: data.id,
-      username: data.username ?? null,
-      full_name: data.full_name ?? null,
-      password: data.password ?? null,
-      role: data.role ?? null
-    });
+  public update(id: number, dto: UpdateUserRepositoryParams) {
+    const assignments: string[] = [];
+    const params: Record<string, unknown> = { id };
+
+    if (dto.username !== undefined) {
+      assignments.push('username = :username');
+      params.username = dto.username;
+    }
+
+    if (dto.full_name !== undefined) {
+      assignments.push('full_name = :full_name');
+      params.full_name = dto.full_name;
+    }
+
+    if (dto.password !== undefined) {
+      assignments.push('password = :password');
+      params.password = dto.password;
+    }
+
+    if (dto.role !== undefined) {
+      assignments.push('role = :role');
+      params.role = dto.role;
+    }
+
+    if (assignments.length === 0) {
+      return { changes: 0 };
+    }
+
+    const query = `
+      UPDATE users 
+      SET ${assignments.join(', ')} 
+      WHERE id = :id
+    `;
+
+    return this.db.prepare(query).run(params);
   }
 
   public delete (id: number) {
