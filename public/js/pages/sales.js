@@ -52,39 +52,48 @@ const openSalesDetail = async (saleId) => {
 
 const fillSaleDetail = (data) => {
   document.getElementById('btnCancelSale').setAttribute('cancel-sale-id', data.id_venta);
-  document.getElementById('detailClientName').innerHTML = data.client_name;
-  document.getElementById('detailOpName').innerHTML = data.op_name;
-  document.getElementById('detailDate').innerHTML = data.date;
-  document.getElementById('detailInvoice').innerHTML = (data.invoice === 1) ? 'Sí' : 'No';
-  document.getElementById('detailStatus').innerHTML = `
-    ${data.status === 'completed' ? 
-      `
-      <b class='text-success'>Completado</b>
-      ` 
-    : 
-      `
-      <b class='text-danger'>Cancelado</b>
-      `
-    }`
-  document.getElementById('detailTotal').innerHTML = data.total;
+  document.getElementById('detailClientName').textContent = data.client_name;
+  document.getElementById('detailOpName').textContent = data.op_name;
+  document.getElementById('detailDate').textContent = data.date;
+  document.getElementById('detailInvoice').textContent = (data.invoice === 1) ? 'Sí' : 'No';
+
+  const bStatus = document.createElement('b');
+  if(data.status === 'completed') {
+    bStatus.className = 'text-success';
+    bStatus.textContent = 'Completado';
+  } else {
+    bStatus.className = 'text-danger';
+    bStatus.textContent = 'Cancelado';
+  }
+  document.getElementById('detailStatus').innerHTML = '';
+  document.getElementById('detailStatus').appendChild(bStatus);
+  document.getElementById('detailTotal').textContent = data.total;
 
   const table = document.getElementById('detailProductList');
-  let fillTable = '';
+  table.innerHTML = '';
+  const fragment = document.createDocumentFragment();
 
   data.products.forEach(p => {
     const subtotal = Number(p.price) * Number(p.amount);
 
-    fillTable += `
-    <tr>
-      <th class='scope'>${p.product_name}</th>
-      <td>$${p.price}</td>
-      <td>${p.amount}</td>
-      <td>$${subtotal}</td>
-    </tr>
-    `
+    const tr = document.createElement('tr');
+    const tdName = document.createElement('td');
+    tdName.textContent = p.product_name;
+    tr.appendChild(tdName);
+    const tdPrice = document.createElement('td');
+    tdPrice.textContent = `$${p.price}`;
+    tr.appendChild(tdPrice);
+    const tdAmount = document.createElement('td');
+    tdAmount.textContent = p.amount;
+    tr.appendChild(tdAmount);
+    const tdSubtotal = document.createElement('td');
+    tdSubtotal.textContent = `$${subtotal}`;
+    tr.appendChild(tdSubtotal);
+    table.appendChild(tr);
+    fragment.appendChild(tr);
   });
 
-  table.innerHTML = fillTable;
+  table.appendChild(fragment);
 }
 
 /*
@@ -502,12 +511,21 @@ const deleteProduct = (productId) => {
 const tableProduct = document.getElementById('tableProduct');
 
 const renderTableProduct = () => {
+  tableProduct.innerHTML = '';
+  
+
   if(!productsAdded || productsAdded.length === 0) {
-     tableProduct.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
-     return;
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.className = 'text-center';
+    td.textContent = 'No hay productos añadidos.';
+    tr.appendChild(td);
+    tableProduct.appendChild(tr);
+    return;
   }
 
-  let data = '';
+  const fragment = document.createDocumentFragment();
 
   productsAdded.forEach(p => {
     if(p.amount <= 0) {
@@ -515,29 +533,36 @@ const renderTableProduct = () => {
       return;
     }
 
-    data += `
-      <tr>
-        <th scope='row'>${p.name}</th>
-        <td>${p.price || 'N/A'}</td>
-        <td data-product-id="${p.id}">
-          <input 
-            type='number' 
-            class="form-control input-amount"
-            min=1
-            max=${p.stock} 
-            value=${p.amount}
-          >
-        </td>
-        <td>
-          <button class="btn btn-danger" data-product-id="${p.id}">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+
+    // NAME
+    const tdName = document.createElement('td');
+    tdName.textContent = p.name;
+    tr.appendChild(tdName);
+
+    // PRICE
+    const tdPrice = document.createElement('td');
+    tdPrice.textContent = `$${p.price || 'N/A'}`;
+    tr.appendChild(tdPrice);
+
+    // AMOUNT
+    const tdAmount = document.createElement('td');
+    tdAmount.textContent = p.amount;
+    tr.appendChild(tdAmount);
+
+    // ACTIONS
+    const tdActions = document.createElement('td');
+    // DELETE
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-danger';
+    btnDelete.dataset.productId = p.id;
+    btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+    tdActions.appendChild(btnDelete);
+    tr.appendChild(tdActions);
+    fragment.appendChild(tr);
   });
 
-  tableProduct.innerHTML = data;
+  tableProduct.appendChild(fragment);
 }
 
 tableProduct.addEventListener('input', (e) => {
@@ -571,11 +596,20 @@ tableProduct.addEventListener('input', (e) => {
 
 const cleanCreateSale = () => {
   inputSearchClient.value = '';
-  lblChange.innerHTML = 0.00;
-  lblTotal.innerHTML = 0.00;
-  tableProduct.innerHTML = `<tr><td colspan="12" class="text-center">No hay productos añadidos.</td></tr>`;
+  lblChange.textContent = 0.00;
+  lblTotal.textContent = 0.00;
+
+  tableProduct.innerHTML = '';
+  const tr = document.createElement('tr');
+  const td = document.createElement('td');
+  td.colSpan = 12;
+  td.className = 'text-center';
+  td.textContent = 'No hay productos añadidos.';
+  tr.appendChild(td);
+  tableProduct.appendChild(tr);
+
   productsAdded = [];
-  clientValue.innerHTML = 'N/A';
+  clientValue.textContent = 'N/A';
   inputAmount.value = '';
   selectProducts.value = 'none';
   inputPay.value = '';
@@ -952,50 +986,92 @@ const buttonsSales = (event) => {
 
 const renderTableSales = (sales) => {
   const table = document.getElementById('saleList');
+  table.innerHTML = '';
 
   if(!sales || !Array.isArray(sales) || sales.length === 0) {
-    table.innerHTML = `<tr><td colspan="12" class="text-center">No se han encontrado ventas.</td></tr>`;
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.className = 'text-center';
+    td.textContent = 'No se han encontrado ventas.';
+    tr.appendChild(td);
+    table.appendChild(tr);
     return;
   }
 
-  let data = '';
+  const fragment = document.createDocumentFragment();
 
   sales.forEach(s => {
-    data += `
-      <tr>
-        <th scope='row'>${s.id}</th>
-        <td>${s.client_name || 'N/A'}</td>
-        <td>${s.seller_name || 'N/A'}</td>
-        <td>${s.date}</td>
-        <td>
-          ${s.status === 'completed' ? 
-            `
-              <span class='text-success'>Completado</span>
-            ` 
-          : 
-            `
-              <span class='text-danger'>Cancelado</span>
-            `
-          }
-        </td>
-        <td >
-          ${s.invoice === 1 ? 'Sí' : 'No' || 'N/A'}
-        </td>
-        <td>$${s.customer_payment}</td>
-        <td>$${s.total}</td>
-        <td>
-          <button class="btn btn-view text-white" sale-action='view' data-sale-id="${s.id}">
-            <i class="bi bi-eye-fill"></i>
-          </button>
-          <button class="btn btn-danger" sale-action='cancel'  data-sale-id="${s.id}">
-            <i class="bi bi-x-circle-fill"></i>
-          </button>
-        </td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+
+    // ID
+    const thId = document.createElement('th');
+    thId.scope = 'row';
+    thId.textContent = s.id;
+    tr.appendChild(thId);
+
+    // CLIENT NAME
+    const tdClientName = document.createElement('td');
+    tdClientName.textContent = s.client_name || 'N/A';
+    tr.appendChild(tdClientName);
+
+    // SELLER NAME
+    const tdSellerName = document.createElement('td');
+    tdSellerName.textContent = s.seller_name || 'N/A';
+    tr.appendChild(tdSellerName);
+
+    // DATE
+    const tdDate = document.createElement('td');
+    tdDate.textContent = s.date;
+    tr.appendChild(tdDate);
+
+    // STATUS
+    const tdStatus = document.createElement('td');
+    if(s.status === 'completed') {
+      tdStatus.className = 'text-success';
+      tdStatus.textContent = 'Completado';
+    } else {
+      tdStatus.className = 'text-danger';
+      tdStatus.textContent = 'Cancelado';
+    }
+    tr.appendChild(tdStatus);
+
+    // INVOICE
+    const tdInvoice = document.createElement('td');
+    tdInvoice.textContent = s.invoice === 1 ? 'Sí' : 'No' || 'N/A';
+    tr.appendChild(tdInvoice);
+
+    // CUSTOMER PAYMENT
+    const tdCustomerPayment = document.createElement('td');
+    tdCustomerPayment.textContent = `$${s.customer_payment}`;
+    tr.appendChild(tdCustomerPayment);
+
+    // TOTAL
+    const tdTotal = document.createElement('td');
+    tdTotal.textContent = `$${s.total}`;
+    tr.appendChild(tdTotal);
+
+    // ACTIONS
+    const tdActions = document.createElement('td');
+    // VIEW
+    const btnView = document.createElement('button');
+    btnView.className = 'btn btn-view text-white me-2';
+    btnView.setAttribute('sale-action', 'view');
+    btnView.setAttribute('data-sale-id', s.id);
+    btnView.innerHTML = '<i class="bi bi-eye-fill"></i>';
+    tdActions.appendChild(btnView);
+    // CANCEL
+    const btnCancel = document.createElement('button');
+    btnCancel.className = 'btn btn-danger';
+    btnCancel.setAttribute('sale-action', 'cancel');
+    btnCancel.setAttribute('data-sale-id', s.id);
+    btnCancel.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+    tdActions.appendChild(btnCancel);
+    tr.appendChild(tdActions);
+    fragment.appendChild(tr);
   });
 
-  table.innerHTML = data;
+  table.appendChild(fragment);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
