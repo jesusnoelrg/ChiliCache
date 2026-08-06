@@ -23,7 +23,8 @@ development time in creating components. **SQLite** was used as a database since
 
 
 ### Schema SQL (https://dbdiagram.io/d/6a4de9074ac62e474c541e6e)
-<img width="752" height="691" alt="schema_sql" src="https://github.com/user-attachments/assets/760bd713-09eb-4ea0-8bd3-230a386ee266" />
+<img width="1079" height="710" alt="image" src="https://github.com/user-attachments/assets/b1892ce3-10a3-4a81-8cf5-70f2bf5925d9" />
+
 
 ## Local setup
 
