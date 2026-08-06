@@ -488,6 +488,7 @@ const fetchProducts = async () => {
 
 const renderTableProducts = (products) => {
   const table= document.getElementById('productList');
+  table.innerHTML = '';
 
   if(!products || !Array.isArray(products) || products.length === 0) {
     const tr = document.createElement('tr');
