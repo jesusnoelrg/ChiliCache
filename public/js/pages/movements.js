@@ -123,7 +123,6 @@ const fillMovements = (movements) => {
     return;
   }
 
-  let data = '';
   const fragment = document.createDocumentFragment();
 
   movements.forEach(m => {

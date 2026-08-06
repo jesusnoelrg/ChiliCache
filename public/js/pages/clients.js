@@ -226,11 +226,11 @@ const updateFilter = () => {
   const radioChecked = document.querySelector("input[name='clientFilters']:checked");
 
   if(radioChecked) {
-    lblSearch.innerHTML = filtersName[radioChecked.value]
+    lblSearch.textContent = filtersName[radioChecked.value]
     return radioChecked.value;
   }
   
-  lblSearch.innerHTML = 'Buscar';
+  lblSearch.textContent = 'Buscar';
   return 'name'
 };
 
@@ -250,7 +250,8 @@ inputSearch.addEventListener('keypress', (e) => {
     e.preventDefault();
     fetchClients();
   }
-})
+});
+
 /*
   ----------------------------------------------------------------
   FETCH CLIENTS
@@ -307,37 +308,56 @@ const renderTableClients = (clients) => {
   let table = document.getElementById('clientsTableBody');
   table.innerHTML = '';
 
-  console.log(clients.length);
-
   if(!clients || !Array.isArray(clients) || clients.length === 0){
-    table.innerHTML = `<tr><td colspan="12" class="text-center">No se han encontrado clientes.</td></tr>`;
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.className = 'text-center';
+    td.textContent = 'No se han encontrado clientes.';
+    tr.appendChild(td);
+    table.appendChild(tr);
     return;
   }
 
-  let data = '';
+  let fragment = document.createDocumentFragment();
 
   clients.forEach(client => {
-    data += `
-      <tr>
-        <th scope='row'>${client.id}</th>
-        <td>${client.name || 'N/A'}</td>
-        <td>${client.rfc || 'N/A'}</td>
-        <td>${client.address || 'N/A'}</td>
-        <td>${client.email || 'N/A'}</td>
-        <td>${client.phone || 'N/A'}</td>
-        <td>
-          <button class="btn btn-primary" data-client-id="${client.id}">
-            <i class="bi bi-gear-fill"></i>
-          </button>
-          <button class="btn btn-danger" data-client-id="${client.id}">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+    const thId = document.createElement('th');
+
+    thId.textContent = client.id;
+    tr.appendChild(thId);
+    const tdName = document.createElement('td');
+    tdName.textContent = client.name || 'N/A';
+    tr.appendChild(tdName);
+    const tdRfc = document.createElement('td');
+    tdRfc.textContent = client.rfc || 'N/A';
+    tr.appendChild(tdRfc);
+    const tdAddress = document.createElement('td');
+    tdAddress.textContent = client.address || 'N/A';
+    tr.appendChild(tdAddress);
+    const tdEmail = document.createElement('td');
+    tdEmail.textContent = client.email || 'N/A';
+    tr.appendChild(tdEmail);
+    const tdPhone = document.createElement('td');
+    tdPhone.textContent = client.phone || 'N/A';
+    tr.appendChild(tdPhone);
+    const tdActions = document.createElement('td');
+    const btnEdit = document.createElement('button');
+    btnEdit.className = 'btn btn-primary me-2';
+    btnEdit.dataset.clientId = client.id;
+    btnEdit.innerHTML = '<i class="bi bi-gear-fill"></i>';
+    tdActions.appendChild(btnEdit);
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-danger';
+    btnDelete.dataset.clientId = client.id;
+    btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+    tdActions.appendChild(btnDelete);
+    tr.appendChild(tdActions);
+    fragment.appendChild(tr);
   });
 
-  table.innerHTML = data;
+  table.appendChild(fragment);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
