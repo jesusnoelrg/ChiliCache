@@ -490,44 +490,80 @@ const renderTableProducts = (products) => {
   const table= document.getElementById('productList');
 
   if(!products || !Array.isArray(products) || products.length === 0) {
-    table.innerHTML = `<tr><td colspan="12" class="text-center">No se han encontrado productos.</td></tr>`;
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.className = 'text-center';
+    td.textContent = 'No se han encontrado productos.';
+    tr.appendChild(td);
+    table.appendChild(tr);
     return;
   }
 
-  let data = '';
+  const fragment = document.createDocumentFragment();
 
   products.forEach(p => {
-    data += `
-      <tr>
-        <th scope='row'>${p.id}</th>
-        <td>${p.name || 'N/A'}</td>
-        <td>$${p.price || 'N/A'}</td>
-        <td>${p.net_content}${p.unit}</td>
-        <td 
-          style='${stockColor(p.stock)}'
-          class='fw-bold'
-        >
-          ${p.stock || 'N/A'}
-        </td>
-        <td>
-          <button class="btn btn-secondary" data-product-id="${p.id}">
-            <i class="bi bi-box-arrow-in-up"></i>
-          </button>
-          <button class="btn btn-primary" data-product-id="${p.id}">
-            <i class="bi bi-gear-fill"></i>
-          </button>
-          <button class="btn btn-danger" data-product-id="${p.id}">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+
+    const tdId = document.createElement('td');
+    tdId.scope = 'row';
+    tdId.textContent = p.id;
+    tr.appendChild(tdId);
+
+    const tdName = document.createElement('td');
+    tdName.textContent = p.name || 'N/A';
+    tr.appendChild(tdName);
+
+    const tdPrice = document.createElement('td');
+    tdPrice.textContent = `$${p.price || 'N/A'}`;
+    tr.appendChild(tdPrice);
+
+    const tdNetContent = document.createElement('td');
+    tdNetContent.textContent = `${p.net_content}${p.unit}`;
+    tr.appendChild(tdNetContent);
+
+    const tdStock = document.createElement('td');
+    tdStock.style = stockColor(p.stock);
+    tdStock.className = 'fw-bold';
+    tdStock.textContent = p.stock || 'N/A';
+    tr.appendChild(tdStock);
+
+    const tdActions = document.createElement('td');
+
+    // RESTOCK
+    const btnRestock = document.createElement('button');
+    btnRestock.className = 'btn btn-secondary';
+    btnRestock.dataset.productId = p.id;
+    btnRestock.innerHTML = '<i class="bi bi-box-arrow-in-up"></i>';
+    tdActions.appendChild(btnRestock);
+
+    // EDIT
+    const btnEdit = document.createElement('button');
+    btnEdit.className = 'btn btn-primary mx-2';
+    btnEdit.dataset.productId = p.id;
+    btnEdit.innerHTML = '<i class="bi bi-gear-fill"></i>';
+    tdActions.appendChild(btnEdit);
+
+    // DELETE
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-danger';
+    btnDelete.dataset.productId = p.id;
+    btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+    tdActions.appendChild(btnDelete);
+    tr.appendChild(tdActions);
+    fragment.appendChild(tr);
   });
 
-  table.innerHTML = data;
+  table.appendChild(fragment);
 }
 
 const stockColor = (stock) => `color: var(--${stock < 10 ? 'stock-red' : stock < 50 ? 'stock-yellow': 'stock-green'})`;
+
+/*
+  ----------------------------------------------------------------
+  CAPITALIZE
+*/
+
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 document.addEventListener('DOMContentLoaded', () => {

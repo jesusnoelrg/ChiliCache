@@ -17,6 +17,11 @@ const secondaryColorText = document.getElementById('secondaryColorText');
 const asideLogo = document.getElementById('asideLogo');
 const asideTitle = document.getElementById('asideTitle');
 
+/*
+  ----------------------------------------------------------------
+  EDIT COMPANY DATA
+*/
+
 companyLogo.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -151,6 +156,11 @@ document.getElementById('formCompanySettings').addEventListener('submit', async 
 
 document.getElementById('btnResetForm').addEventListener('click', () => fetchAllData());
 
+/*
+  ----------------------------------------------------------------
+  FETCH COMPANY DATA
+*/
+
 const fetchAllData = async () => {
   try {
     const res = await fetch(`${API_COMPANY}/`, {
@@ -176,6 +186,11 @@ const fetchAllData = async () => {
   }
 }
 
+/*
+  ----------------------------------------------------------------
+  FILL FORM
+*/
+
 const fillForm = (data) => {
   if(!data) return;
 
@@ -195,6 +210,11 @@ const fillForm = (data) => {
   companyPhone.value = data.phone ?? '';
 }
 
+/*
+  ----------------------------------------------------------------
+  UPDATE FAVICON
+*/
+
 const updateFavicon = (logoPath) => {
   let favicon = document.querySelector("link[rel*='icon']");
   if (!favicon) {
@@ -205,11 +225,21 @@ const updateFavicon = (logoPath) => {
   favicon.href = `${cleanStaticUrl(logoPath)}?t=${Date.now()}`;
 };
 
+/*
+  ----------------------------------------------------------------
+  APPLY THEME
+*/
+
 const applyTheme = (primaryColor, secondaryColor) => {
   const root = document.documentElement;
   if (primaryColor) root.style.setProperty('--color-primario', primaryColor);
   if (secondaryColor) root.style.setProperty('--color-secundario', secondaryColor);
 };
+
+/*
+  ----------------------------------------------------------------
+  CLEAN STATIC URL
+*/
 
 const cleanStaticUrl = (path) => {
   if (!path) return '/images/default-logo.svg';
@@ -222,6 +252,11 @@ const cleanStaticUrl = (path) => {
   
   return clean;
 };
+
+/*
+  ----------------------------------------------------------------
+  DOM CONTENT LOADED
+*/
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchAllData();

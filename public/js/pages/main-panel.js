@@ -16,12 +16,13 @@ const fillCounts = async () => {
 
     if(!res.ok) {
       throw new Error(`Error en el servidor (${res.status})`);
-      return;
     }
 
     const result = await res.json();
     const stats = result.stats;
-    
+
+    if(!stats) return;
+
     countClients.textContent = stats.clients;
     countProducts.textContent = stats.products;
     countSales.textContent = stats.sales;
@@ -52,8 +53,7 @@ const getFiveMovements = async () => {
         errorMsg = errorRes.message || errorMsg;
       } catch { }
 
-      console.error(errorMsg);
-      return;
+      throw new Error(errorMsg);
     }
 
     const result = await res.json();
@@ -69,59 +69,98 @@ const fillMovements = (movements) => {
   movTable.innerHTML = '';
    
   if(!movements || !Array.isArray(movements) || movements.length === 0){
-    movTable.innerHTML = `<tr><td colspan="12" class="text-center">No se han hecho movimientos recientemente.</td></tr>`;
+
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.className = 'text-center';
+    td.textContent = 'No se han hecho movimientos recientemente.';
+    tr.appendChild(td);
+    movTable.appendChild(tr);
     return;
   }
 
-  let data = '';
+  let fragment = document.createDocumentFragment();
 
   movements.forEach(m => {
-    data += `
-
-      <tr>
-        <td>${m.seller_name || 'N/A'}</td>
-        <td>${typeMov(m.type)}</td>
-        <td>${m.product_name}</td>
-        <td>${m.old_stock}</td>
-        <td>${stockMov(m.old_stock, m.new_stock)}</td>
-        <td>${m.created_at || 'N/A'}</td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+    const tdSeller = document.createElement('td');
+    tdSeller.textContent = m.seller_name || 'N/A';
+    tr.appendChild(tdSeller);
+    const tdType = document.createElement('td');
+    tdType.appendChild(typeMov(m.type));
+    tr.appendChild(tdType);
+    const tdProduct = document.createElement('td');
+    tdProduct.textContent = m.product_name || 'N/A';
+    tr.appendChild(tdProduct);
+    const tdOld = document.createElement('td');
+    tdOld.textContent = m.old_stock || '0';
+    tr.appendChild(tdOld);
+    const tdNew = document.createElement('td');
+    tdNew.appendChild(stockMov(m.old_stock, m.new_stock));
+    tr.appendChild(tdNew);
+    const tdDate = document.createElement('td');
+    tdDate.textContent = m.created_at || 'N/A';
+    tr.appendChild(tdDate);
+    fragment.appendChild(tr);
   })
 
-  movTable.innerHTML = data;
+  movTable.appendChild(fragment);
 }
 
+/*
+  ----------------------------------------------------------------
+  STOCK MOVEMENT
+*/
+
 const stockMov = (old, rec) => {
-  let comp = rec - old;
-  let res = `<b class='text-success'><i class="bi bi-arrow-up"></i> ${rec} (+${comp})</b>`;
+  const b = document.createElement('b');
+  const i = document.createElement('i');
+  const comp = rec - old;
 
   if(old > rec) {
-    res = `<b class='text-danger'><i class="bi bi-arrow-down"></i> ${rec} (${comp})</b>`
+    b.className = 'text-danger';
+    i.className = 'bi bi-arrow-down';
+    b.textContent = `${rec} (${comp})`;
+  } else {
+    b.className = 'text-success';
+    i.className = 'bi bi-arrow-up';
+    b.textContent = `${rec} (+${comp})`;
   }
 
-  return res;
+  b.appendChild(i);
+  return b;
 }
 
 const typeMov = (type) => {
-  let res = 'N/A';
+  const b = document.createElement('b');
+  const i = document.createElement('i');
 
   switch(type){
     case 'cancel':
-      res = `<b class='text-danger'><i class="bi bi-x-circle-fill"></i> Cancelado</b>`
+      b.className = 'text-danger';
+      i.className = 'bi bi-x-circle-fill';
+      b.textContent = 'Cancelado';
       break;
     case 'sale':
-      res= `<b class='text-warning'><i class="bi bi-bag-check-fill"></i> Venta</b>`
+      b.className = 'text-warning';
+      i.className = 'bi bi-bag-check-fill';
+      b.textContent = 'Venta';
       break;
     case 'restock':
-      res= `<b class='text-info'><i class="bi bi-box-fill"></i> Re-stock</b>`
+      b.className = 'text-info';
+      i.className = 'bi bi-box-fill';
+      b.textContent = 'Re-stock';
       break;
     case 'created':
-      res= `<b class='text-success'><i class="bi bi-file-plus-fill"></i> Creación</b>`
+      b.className = 'text-success';
+      i.className = 'bi bi-file-plus-fill';
+      b.textContent = 'Creación';
       break;
   }
 
-  return res;
+  b.appendChild(i);
+  return b;
 }
 document.addEventListener('DOMContentLoaded', () => {
   fillCounts();
