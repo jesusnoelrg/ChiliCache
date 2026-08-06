@@ -2,22 +2,22 @@ import { Database, Statement } from 'better-sqlite3';
 import { 
   CreateUserDTO, GetUsersDTO, 
   UpdateUserRepositoryParams, Role,
-  SessionUser 
+  SessionUser, UserLoggedWithPassword
 } from '../types/user.types';
 
 export class UserRepository {
 
-  private selectName: Statement;
-  private selectPassword: Statement;
-  private selectFullnames: Statement;
-  private selectById: Statement;
-  private selectRole: Statement;
-  private selectSessionUser: Statement;
+  private selectName: Statement<[{username: string, id: number}], {id: number, username: string}>;
+  private selectPassword: Statement<[{id: number}], {password: string}>;
+  private selectFullnames: Statement<[], {full_name: string}>;
+  private selectById: Statement<[{id: number}], {id: number}>;
+  private selectRole: Statement<[{id: number}], {id: number, role: Role}>;
+  private selectSessionUser: Statement<[{username: string}], UserLoggedWithPassword>;
   private selectId: Statement<[{id: number}], {id: number}>;
 
-  private insertUser: Statement;
+  private insertUser: Statement<[CreateUserDTO], {lastInsertRowid: number} | undefined>;
 
-  private deleteUser: Statement;
+  private deleteUser: Statement<[{id: number}], {changes: number} | undefined>;
 
   constructor(private db: Database) {
     this.selectName = db.prepare('SELECT id, username FROM users WHERE username = :username AND id != :id');
@@ -50,7 +50,7 @@ export class UserRepository {
       username: user.username,
       full_name: user.full_name,
       password: user.password,
-      role: user.role
+      role: user.role ?? 'seller'
     });
   }
 

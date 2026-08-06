@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { updateHelper, isUnit } from "../utils/sql.utils";
-import { isRecordFieldPresent } from "../utils/db.utils";
+import { isUnit } from "../utils/sql.utils";
 
 import { ProductRepository } from '../repositories/product.repository';
 

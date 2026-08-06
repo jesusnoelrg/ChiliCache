@@ -4,16 +4,16 @@ import { ProductRow, SaleDetailItem, DataCreateSale, SaleStatus } from "../types
 export class SalesRepository {
   private selectProduct: Statement<[{id: number}], ProductRow>;
   private selectSaleStatus: Statement<[{id: number}], { status: SaleStatus } | undefined>;
-  private selectCancelProduct: Statement;
-  private selectStock: Statement;
+  private selectCancelProduct: Statement<[{id: number}], {id_product: number, amount: number}>;
+  private selectStock: Statement<[{id_product: number}], {stock: number} | undefined>;
 
-  private insertSale: Statement;
-  private insertDetails: Statement;
-  private insertMovementSale: Statement;
+  private insertSale: Statement<[{total: number, invoice: number, customer_payment: number, id_client: number, id_user: number}], {lastInsertRowid: number} | undefined>;
+  private insertDetails: Statement<[{price: number, amount: number, id_sale: number, id_product: number}], {changes: number} | undefined>;
+  private insertMovementSale: Statement<[{type: 'sale' | 'cancel', old_stock: number, new_stock: number, id_product: number, id_user: number}], {changes: number} | undefined>;
 
-  private updateStock: Statement;
-  private updateStockCancel: Statement;
-  private updateSaleStatus: Statement;
+  private updateStock: Statement<[{amount: number, id: number}], {changes: number} | undefined>;
+  private updateStockCancel: Statement<[{amount: number, id: number}], {changes: number} | undefined>;
+  private updateSaleStatus: Statement<[{id: number}], {changes: number} | undefined>;
 
   constructor(private db: Database) {
     this.selectProduct = db.prepare("SELECT id, name, price, stock, is_active FROM products WHERE id = :id");
@@ -111,7 +111,7 @@ export class SalesRepository {
       if(!sale) throw new Error(`SALE_NO_EXIST:${id_sale}`);
       if(sale.status === 'cancelled') throw new Error(`SALE_ALREADY_CANCELLED:${id_sale}`);
 
-      const products = this.selectCancelProduct.all({id: id_sale}) as {id_product: number, amount: number, stock: number}[];
+      const products = this.selectCancelProduct.all({id: id_sale}) as {id_product: number, amount: number}[];
 
       if(products.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${id_sale}`);
 

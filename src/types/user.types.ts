@@ -56,3 +56,7 @@ export interface UserLogged {
   full_name: string;
   role: Role;
 }
+
+export interface UserLoggedWithPassword extends UserLogged {
+  password: string;
+}
