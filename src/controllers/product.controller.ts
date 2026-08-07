@@ -118,97 +118,190 @@ export const ProductController = {
       if(isNaN(limitNumber) || limitNumber < 1) return res.status(400).json({"success": false, "message": "El límite debe ser un número mayor que 0."});
       if(isNaN(offsetNumber)) return res.status(400).json({"success": false, "message": "El offset debe ser un número."});
 
-      const minStockNumber = Number(minStock || 0);
-      const maxStockNumber = Number(maxStock || 2147483646);
-
-      if (isNaN(minStockNumber) || isNaN(maxStockNumber)){
-        return res.status(400).json({
-          "success": false,
-          "message": 'Debes ingresar un número en los campos de stock.'
-        });
-      }
-
-      if(minStockNumber > maxStockNumber) {
-        return res.status(400).json({
-          "success": false,
-           "message": 'El stock minimo no puede superar al stock máximo.'
-        });
-      }
-
-      if(maxStockNumber > 2147483647) {
-        return res.status(400).json({
-          "success": false,
-          "message": 'El stock máximo excede el límite permitido por el sistema.'
-        });
-      }
-        
-
-      const minContentNumber = Number(minContent || 1);
-      const maxContentNumber = Number(maxContent || 2147483646);
-
-      if (isNaN(minContentNumber) || isNaN(maxContentNumber)){
-        return res.status(400).json({
-          "success": false,
-          "message": 'Debes ingresar un número en los campos de contenido neto.'
-        });
-      }
-
-      if(minContentNumber > maxContentNumber) {
-        return res.status(400).json({
-          "success": false,
-          "message": 'El contenido neto minimo no puede superar al contenido máximo.'
-        });
-      }
-
-      if(maxContentNumber > 2147483647) {
-        return res.status(400).json({
-          "success": false,
-          "message": 'El contenido máximo excede el límite permitido por el sistema.'
-        });
-      }
-
-      const minPriceNumber = Number(minPrice || 0);
-      const maxPriceNumber = Number(maxPrice || 999999999);
-
-      if (isNaN(minPriceNumber) || isNaN(maxPriceNumber)){
-        return res.status(400).json({
-          "success": false,
-          "message": 'Debes ingresar un número en los campos de precio.'
-        });
-      }
-
-      if(minPriceNumber > maxPriceNumber) {
-        return res.status(400).json({
-          "success": false,
-          "message": 'El precio minimo no puede superar al precio máximo.'
-        });
-      }
-
-      if(maxPriceNumber > 2147483647) {
-        return res.status(400).json({
-          "success": false,
-          "message": 'El precio máximo excede el límite permitido por el sistema.'
-        });
-      }
-
-      if(unit && !isUnit(unit)) {
-        return res.status(400).json({
-          "success": true,
-          "message": "Has ingresado un tipo de unidad no valido. Por favor usa ('g', 'kg', 'ml' o 'L')."
-        });
-      }
 
       const filters: ProductFilterDTO = {
-        name,
-        unit,
-        minStock: minStockNumber,
-        maxStock: maxStockNumber,
-        minContent: minContentNumber,
-        maxContent: maxContentNumber,
-        minPrice: minPriceNumber,
-        maxPrice: maxPriceNumber,
         limit: limitNumber,
         offset: offsetNumber,
+      }
+
+      const minStockNumber = Number(minStock);
+      const maxStockNumber = Number(maxStock);
+
+      if(minStock) {
+        if (isNaN(minStockNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el stock minimo.'
+          });
+        }
+
+        if(minStockNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock minimo no puede ser menor a 0.'
+          });
+        }
+
+        filters.minStock = minStockNumber;
+      }
+
+      if(maxStock) {
+        if (isNaN(maxStockNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el stock maximo.'
+          });
+        }
+
+        if(maxStockNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock maximo no puede ser menor a 0.'
+          });
+        }
+
+        if(maxStockNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock máximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        filters.maxStock = maxStockNumber;
+      }
+
+      if(minStock && maxStock) {
+        if(minStockNumber > maxStockNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El stock minimo no puede superar al stock máximo.'
+          });
+        }
+      }
+
+      const minContentNumber = Number(minContent);
+      const maxContentNumber = Number(maxContent);
+
+      if(minContent) {
+        if (isNaN(minContentNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el contenido neto minimo.'
+          });
+        }
+
+        if(minContentNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto minimo no puede ser menor o igual a 0.'
+          });
+        }
+
+        filters.minContent = minContentNumber;
+      }
+
+      if(maxContent) {
+        if (isNaN(maxContentNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el contenido neto maximo.'
+          });
+        }
+
+        if(maxContentNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto maximo no puede ser menor o igual a 0.'
+          });
+        }
+
+        if(maxContentNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto maximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        filters.maxContent = maxContentNumber;
+      }
+
+      if(minContent && maxContent) {
+        if(minContentNumber > maxContentNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El contenido neto minimo no puede superar al contenido neto máximo.'
+          });
+        }
+      }
+
+      const minPriceNumber = Number(minPrice);
+      const maxPriceNumber = Number(maxPrice);
+
+      if(minPrice) {
+        if (isNaN(minPriceNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el precio minimo.'
+          });
+        }
+
+        if(minPriceNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio minimo no puede ser menor o igual a 0.'
+          });
+        }
+
+        filters.minPrice = minPriceNumber;
+      }
+
+      if(maxPrice) {
+        if (isNaN(maxPriceNumber)){
+          return res.status(400).json({
+            "success": false,
+            "message": 'Debes ingresar un número valido para el precio maximo.'
+          });
+        }
+
+        if(maxPriceNumber < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio maximo no puede ser menor a 0.'
+          });
+        }
+
+        if(maxPriceNumber > 2147483647) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio maximo excede el límite permitido por el sistema.'
+          });
+        }
+
+        filters.maxPrice = maxPriceNumber;
+      }
+
+      if(minPrice && maxPrice) {
+        if(minPriceNumber > maxPriceNumber) {
+          return res.status(400).json({
+            "success": false,
+            "message": 'El precio minimo no puede superar al precio máximo.'
+          });
+        }
+      }
+
+      if (unit) {
+        if(!isUnit(unit)) {
+          return res.status(400).json({
+            "success": false,
+            "message": "Has ingresado un tipo de unidad no valido. Por favor usa ('g', 'kg', 'ml' o 'L')."
+          });
+        }
+
+        filters.unit = unit;
+      }
+
+      if (name) {
+        filters.name = name;
       }
 
       const result = repository.findAll(filters);

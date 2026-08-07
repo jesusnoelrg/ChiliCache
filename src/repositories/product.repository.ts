@@ -123,9 +123,9 @@ export class ProductRepository {
     }
 
     const whereClause = conditions.length > 0 
-    ? `WHERE ${conditions.join(' AND ')}` : '';
+    ? ` WHERE ${conditions.join(' AND ')}` : '';
 
-    const query = `SELECT * FROM products ${whereClause} LIMIT :limit OFFSET :offset`;
+    const query = `SELECT * FROM products${whereClause} LIMIT :limit OFFSET :offset`;
 
     return db.prepare(query).all(params);
   }
