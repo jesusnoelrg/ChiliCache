@@ -235,35 +235,65 @@ const fetchUsers = async () => {
 
 const renderUsersTable = (users) => {
   const tableBody = document.getElementById('usersTableBody');
-  tableBody.innerHTML = '';
+  if(tableBody.firstChild){
+    tableBody.removeChild(tableBody.firstChild);
+  }
 
   if(!users || !Array.isArray(users) || users.length === 0){
-    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No se han encontrado usuarios.</td></tr>`;
+    // NO USERS FOUND
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.className = 'text-center';
+    td.textContent = 'No se han encontrado usuarios.';
+    tr.appendChild(td);
+    tableBody.appendChild(tr);
     return;
   }
 
-  let data = '';
+  const fragment = document.createDocumentFragment();
 
   users.forEach(user => {
-    data += `
-      <tr>
-        <th scope='row'>${user.id}</th>
-        <td>${user.username}</td>
-        <td>${user.full_name}</td>
-        <td>${user.role === 'seller' ? 'Vendedor' : 'Admin'}</td>
-        <td>
-          <button class="btn btn-primary" data-user-id="${user.id}">
-            <i class="bi bi-gear-fill"></i>
-          </button>
-          <button class="btn btn-danger" data-user-id="${user.id}">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `
+    const tr = document.createElement('tr');
+
+    // ID
+    const tdId = document.createElement('td');
+    tdId.scope = 'row';
+    tdId.textContent = user.id;
+    tr.appendChild(tdId);
+
+    // USERNAME
+    const tdUsername = document.createElement('td');
+    tdUsername.textContent = user.username;
+    tr.appendChild(tdUsername);
+
+    // FULL NAME
+    const tdFullName = document.createElement('td');
+    tdFullName.textContent = user.full_name;
+    tr.appendChild(tdFullName);
+
+    // ROLE
+    const tdRole = document.createElement('td');
+    tdRole.textContent = user.role === 'seller' ? 'Vendedor' : 'Admin';
+    tr.appendChild(tdRole);
+
+    // ACTIONS
+    const tdActions = document.createElement('td');
+    const btnEdit = document.createElement('button');
+    btnEdit.className = 'btn btn-primary me-2';
+    btnEdit.setAttribute('data-user-id', user.id);
+    btnEdit.innerHTML = '<i class="bi bi-gear-fill"></i>';
+    tdActions.appendChild(btnEdit);
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-danger';
+    btnDelete.setAttribute('data-user-id', user.id);
+    btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+    tdActions.appendChild(btnDelete);
+    tr.appendChild(tdActions);
+    fragment.appendChild(tr);
   });
 
-  tableBody.innerHTML = data;
+  tableBody.appendChild(fragment);
 }
 
 const deleteUserById = async (id, element) => {
