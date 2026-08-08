@@ -1,7 +1,16 @@
 import type { Database, Statement } from 'better-sqlite3';
-import { ProductRow, SaleDetailItem, DataCreateSale, SaleStatus, GetSalesDTO } from "../types/sale.types";
+import { 
+  ProductRow, 
+  SaleDetailItem, 
+  DataCreateSale, 
+  SaleStatus, 
+  GetSalesDTO, 
+  Sale 
+} from "../types/sale.types";
 
 export class SalesRepository {
+  private selectSaleById: Statement<[{id: number}], Sale | undefined>;
+  private selectSaleDetailsById: Statement<[{id: number}], SaleDetailItem[]>;
   private selectProduct: Statement<[{id: number}], ProductRow>;
   private selectSaleStatus: Statement<[{id: number}], { status: SaleStatus } | undefined>;
   private selectCancelProduct: Statement<[{id: number}], {id_product: number, amount: number}>;
@@ -16,6 +25,33 @@ export class SalesRepository {
   private updateSaleStatus: Statement<[{id: number}], {changes: number} | undefined>;
 
   constructor(private db: Database) {
+    this.selectSaleById = db.prepare(`
+      SELECT
+        s.id,
+        s.id_user,
+        id_client,
+        u.full_name AS seller_name,
+        c.name AS client_name,
+        s.status,
+        s.total,
+        s.customer_payment,
+        s.invoice,
+        s.date
+      FROM sales AS s
+        INNER JOIN clients AS c ON c.id = s.id_client
+        INNER JOIN users AS u ON u.id = s.id_user
+      WHERE s.id = :id
+    `);
+    this.selectSaleDetailsById = db.prepare(`
+      SELECT
+        sd.id_product AS id_product,
+        p.name AS product_name,
+        sd.price AS price,
+        sd.amount AS amount
+      FROM sales_detail AS sd
+        INNER JOIN products AS p ON p.id = sd.id_product
+      WHERE sd.id_sale = :id
+    `);
     this.selectProduct = db.prepare("SELECT id, name, price, stock, is_active FROM products WHERE id = :id");
     this.selectSaleStatus = db.prepare("SELECT status FROM sales WHERE id = :id");
     this.selectCancelProduct = db.prepare("SELECT id_product, amount FROM sales_detail WHERE id_sale = :id");
@@ -141,6 +177,22 @@ export class SalesRepository {
     });
 
     return transaction();
+  }
+
+  public get(id: number) {
+    const sale = this.selectSaleById.get({id: id}) ?? null;
+
+    if(!sale) throw new Error(`SALE_NOT_FOUND:${id}`);
+
+    const details = this.selectSaleDetailsById.all({id: id}) as SaleDetailItem[][];
+
+    if(details.length === 0) throw new Error(`EMPTY_PRODUCT_LIST:${id}`);
+
+    return {
+      "success": true,
+      "sale": sale,
+      "products": details
+    };
   }
 
   public findAll(filters: GetSalesDTO) {

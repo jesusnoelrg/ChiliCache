@@ -243,49 +243,20 @@ export const SaleController = {
       const idNumber = Number(id);
       if(isNaN(idNumber)) return res.status(400).json({"success": false, "message": "ID inválido."});
 
-      const sale = db.prepare(`
-        SELECT
-          s.id AS id_venta,
-          s.id_user,
-          id_client,
-          u.full_name AS op_name,
-          c.name AS client_name,
-          s.status,
-          s.total,
-          s.customer_payment,
-          s.invoice,
-          s.date
-        FROM sales AS s
-          INNER JOIN clients AS c ON c.id = s.id_client
-          INNER JOIN users AS u ON u.id = s.id_user
-        WHERE s.id = :id
-        `).get({id: idNumber});
+      const { success, sale, products } = salesRepository.get(idNumber);
 
-      if(!sale) return res.status(404).json({"success": false, "message": `La venta con el (ID: ${idNumber}) no existe.`});
-
-      const productResults = db.prepare(`
-        SELECT
-          sd.id_product AS id_product,
-          p.name AS product_name,
-          sd.price AS price,
-          sd.amount AS amount
-        FROM sales_detail AS sd
-          INNER JOIN products AS p ON p.id = sd.id_product
-        WHERE sd.id_sale = :id
-      `).all({id: idNumber});
-
-      if(!productResults || productResults.length === 0){
-        return res.status(404).json({
+      if(!success){
+        return res.status(400).json({
           "success": false,
-          "message": "¡No hay productos por mostrar!"
+          "message": "Ha ocurrido un error al obtener la venta."
         });
       }
 
       return res.status(200).json({
         "success": true,
         "data": {
-          ...(sale as any),
-          "products": productResults
+          ...sale,
+          "products": products
         }
       })
     }catch(err: any){
