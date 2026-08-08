@@ -20,6 +20,7 @@ export interface GetClientsDTO {
   address?: string;
   phone?: string;
   email?: string;
+  orderBy?: 'asc' | 'desc';
   limit?: number;
   offset?: number;
 }

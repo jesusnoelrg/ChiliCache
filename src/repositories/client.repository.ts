@@ -97,7 +97,8 @@ export class ClientRepository {
     const conditions: string[] = [];
     const params: Record<string, any> = {
       limit: Number(limit),
-      offset: Number(offset)
+      offset: Number(offset),
+      orderBy: filters.orderBy?.toString().toLowerCase() || 'asc'
     };
 
     if (name) {
@@ -122,7 +123,7 @@ export class ClientRepository {
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    const query = `SELECT * FROM clients ${whereClause} LIMIT :limit OFFSET :offset`;
+    const query = `SELECT * FROM clients ${whereClause} ORDER BY id :orderBy LIMIT :limit OFFSET :offset`;
 
     return { query, params };
   }
