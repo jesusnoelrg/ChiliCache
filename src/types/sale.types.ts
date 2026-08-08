@@ -29,10 +29,11 @@ export interface GetSalesDTO {
   end_timestamp?: string;
   min_total?: number;
   max_total?: number;
-  invoice: number;
+  invoice?: number;
   status?: SaleStatus;
   limit?: number;
   offset?: number;
+  orderBy?: 'asc' | 'desc';
 }
 
 export interface FiltersSaleReport {

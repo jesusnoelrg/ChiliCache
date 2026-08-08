@@ -1,5 +1,5 @@
 import type { Database, Statement } from 'better-sqlite3';
-import { ProductRow, SaleDetailItem, DataCreateSale, SaleStatus } from "../types/sale.types";
+import { ProductRow, SaleDetailItem, DataCreateSale, SaleStatus, GetSalesDTO } from "../types/sale.types";
 
 export class SalesRepository {
   private selectProduct: Statement<[{id: number}], ProductRow>;
@@ -141,5 +141,72 @@ export class SalesRepository {
     });
 
     return transaction();
+  }
+
+  public findAll(filters: GetSalesDTO) {
+    const params: Record<string, any> = {};
+    const conditions: string[] = [];
+
+    if (filters.seller_name) {
+      conditions.push('u.username LIKE :seller_name');
+      params.seller_name = filters.seller_name;
+    }
+
+    if (filters.client_name) {
+      conditions.push('c.name LIKE :client_name');
+      params.client_name = filters.client_name;
+    }
+
+    if (filters.start_timestamp) { 
+      conditions.push('s.date >= :start_timestamp')
+      params.start_timestamp = filters.start_timestamp;
+    }
+
+    if (filters.end_timestamp) {
+      conditions.push('s.date <= :end_timestamp')
+      params.end_timestamp = filters.end_timestamp;
+    }
+
+    if (filters.invoice) {
+      conditions.push('s.invoice = :invoice')
+      params.invoice = filters.invoice;
+    }
+
+    if (filters.status) {
+      conditions.push('s.status = :status')
+      params.status = filters.status;
+    }
+
+    if (filters.min_total) {
+      conditions.push('s.total >= :min_total')
+      params.min_total = filters.min_total;
+    }
+
+    if (filters.max_total) {
+      conditions.push('s.total <= :max_total')
+      params.max_total = filters.max_total;
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const query = `
+    SELECT
+      s.id,
+      u.full_name AS seller_name,
+      c.name AS client_name,
+      s.status,
+      s.total,
+      s.customer_payment,
+      s.invoice,
+      s.date
+    FROM sales AS s
+      INNER JOIN users AS u ON u.id = s.id_user
+      INNER JOIN clients AS c ON c.id = s.id_client
+    ${whereClause}
+    ORDER BY s.date ${filters.orderBy ?? 'ASC'}
+    LIMIT :limit OFFSET :offset
+    `;
+
+    return this.db.prepare(query).all(params);
   }
 }

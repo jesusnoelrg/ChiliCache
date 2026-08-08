@@ -7,7 +7,8 @@ import {
   FiltersSaleReport,
   DataSaleReport,
   DataCreateSale,
-  SaleReportItem } from "../types/sale.types";
+  SaleReportItem,
+  SaleStatus } from "../types/sale.types";
 
 import { generatePdfReportHandler } from '../utils/pdf.utils';
 import { SalesRepository } from "../repositories/sales.repository";
@@ -117,50 +118,31 @@ export const SaleController = {
         invoice,
         status,
         limit,
-        offset 
-      } = req.query as unknown as GetSalesDTO;
+        offset,
+        orderBy
+      } = req.query;
 
       const limitNumber = Number(limit || 10);
       const offsetNumber = Number(offset || 0);
 
-      let query = `
-        SELECT
-          s.id,
-          u.full_name AS seller_name,
-          c.name AS client_name,
-          s.status,
-          s.total,
-          s.customer_payment,
-          s.invoice,
-          s.date
-        FROM sales AS s
-          INNER JOIN users AS u ON u.id = s.id_user
-          INNER JOIN clients AS c ON c.id = s.id_client
-        WHERE 1 = 1
-      `;
+      if(isNaN(limitNumber) || limitNumber < 1) return res.status(400).json({"success": false, "message": "El límite debe ser un número mayor que 0."});
+      if(isNaN(offsetNumber)) return res.status(400).json({"success": false, "message": "El offset debe ser un número."});
+      if(orderBy && !['asc', 'desc'].includes(orderBy.toString().toLowerCase())) return res.status(400).json({"success": false, "message": "El orden debe ser 'asc' o 'desc'."});
 
-      const queryData: any = {
+      const filters: GetSalesDTO = {
         limit: limitNumber,
-        offset: offsetNumber
+        offset: offsetNumber,
+        orderBy: orderBy ? (orderBy.toString().toLowerCase() as 'asc' | 'desc') : 'asc'
       };
 
-      if(seller_name){
-        queryData.seller_name = `%${seller_name}%`;
-        query += " AND u.username LIKE :seller_name"
+      if (seller_name) {
+        filters.seller_name = `%${(seller_name as string).trim()}%`;
       }
-      if(client_name){
-        queryData.client_name = `%${client_name}%`;
-        query += " AND c.name LIKE :client_name"
+      if (client_name) {
+        filters.client_name = `%${(client_name as string).trim()}%`;
       }
-      if(start_timestamp){
-        queryData.start_timestamp = `${start_timestamp} 00:00:00`;
-        query += " AND s.date >= :start_timestamp";
-      }
-      if(end_timestamp){
-        queryData.end_timestamp = `${end_timestamp} 23:59:59`;
-        query += " AND s.date <= :end_timestamp";
-      }
-      if(invoice){
+
+      if (invoice != null) {
         const invoiceNumber = Number(invoice);
         if(invoiceNumber !== 0 && invoiceNumber !== 1) {
           return res.status(400).json({
@@ -169,57 +151,82 @@ export const SaleController = {
           });
         }
 
-        queryData.invoice = invoiceNumber;
-        query += ' AND invoice = :invoice';
-      }
-      if(status){
-        queryData.status = status;
-        query += " AND s.status = :status";
+        filters.invoice = invoiceNumber;
       }
 
-      if(min_total || max_total) {
-        let min = Number(min_total || 0);
-        const max = Number(max_total || 2147483646);
-        
-        if (isNaN(min) || isNaN(max)){
+      if (status != null) {
+        if (!['completed', 'cancelled'].includes(status.toString().toLowerCase())) {
           return res.status(400).json({
             "success": false,
-            "message": 'Debes ingresar un número en los campos de total.'
+            "message": "El estado debe ser 'completed' o 'cancelled'."
+          });
+        }
+        filters.status = status as SaleStatus;
+      }
+
+      if (start_timestamp != null) {
+        filters.start_timestamp = `${start_timestamp} 00:00:00`;
+      }
+      if (end_timestamp != null) {
+        filters.end_timestamp = `${end_timestamp} 23:59:59`;
+      }
+
+      if (min_total != null && min_total !== '') {
+        const min = Number(min_total);
+        if (isNaN(min)) {
+          return res.status(400).json({
+            "success": false,
+            "message": "Debes ingresar un número en los campos de total."
           });
         }
 
-        if(min < 0) min = 0;
-
-        if(max > 2147483647) {
+        if (min < 0) {
           return res.status(400).json({
             "success": false,
-            "message": 'El total máximo excede el límite permitido por el sistema.'
+            "message": "El total mínimo no puede ser menor que 0."
           });
         }
 
-        if(min > max) {
-          return res.status(400).json({
-            "success": false,
-            "message": 'El total minimo no puede superar al total máximo.'
-          });
-        }
-
-        queryData.min_total = min;
-        queryData.max_total = max;
-        query += 'AND (total >= :min_total AND total <= :max_total)'
+        filters.min_total = min;
       }
-      
-      query += " LIMIT :limit OFFSET :offset";
 
-      const result = db.prepare(query).all(queryData);
+      if (max_total != null && max_total !== '') {
+        const max = Number(max_total);
+        if (isNaN(max)) {
+          return res.status(400).json({
+            "success": false,
+            "message": "Debes ingresar un número en los campos de total."
+          });
+        }
+
+        if (max < 0) {
+          return res.status(400).json({
+            "success": false,
+            "message": "El total máximo no puede ser menor que 0."
+          });
+        }
+
+        filters.max_total = max;
+      }
+
+      if (filters.min_total !== undefined && filters.max_total !== undefined) {
+        if (filters.min_total > filters.max_total) {
+          return res.status(400).json({
+            "success": false,
+            "message": "El total mínimo no puede ser mayor que el total máximo."
+          });
+        }
+      }
+
+      const result = salesRepository.findAll(filters);
 
       if(result.length === 0) return res.status(200).json({"success": true, "message": "No se han encontrado ventas."});
 
       return res.status(200).json({
         "success": true,
         "metadata": {
-          "limit:": queryData.limit,
-          "offset": queryData.offset,
+          "limit": filters.limit,
+          "offset": filters.offset,
           "count": result.length
         },
         "data": result
