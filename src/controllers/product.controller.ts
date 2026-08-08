@@ -109,7 +109,8 @@ export const ProductController = {
         minContent, maxContent,
         minPrice, maxPrice,
         limit, 
-        offset 
+        offset,
+        orderBy
       } = req.query;
 
       const limitNumber = Number(limit || 10);
@@ -118,10 +119,12 @@ export const ProductController = {
       if(isNaN(limitNumber) || limitNumber < 1) return res.status(400).json({"success": false, "message": "El límite debe ser un número mayor que 0."});
       if(isNaN(offsetNumber)) return res.status(400).json({"success": false, "message": "El offset debe ser un número."});
 
+      if(orderBy && !['asc', 'desc'].includes(orderBy.toString().toLowerCase())) return res.status(400).json({"success": false, "message": "El orden debe ser 'asc' o 'desc'."});
 
       const filters: ProductFilterDTO = {
         limit: limitNumber,
         offset: offsetNumber,
+        orderBy: orderBy ? (orderBy.toString().toLowerCase() as 'asc' | 'desc') : 'asc'
       }
 
       const minStockNumber = Number(minStock);

@@ -89,7 +89,8 @@ export class ProductRepository {
     const conditions: string[] = [];
     const params: Record<string, any> = {
       limit: filters.limit,
-      offset: filters.offset
+      offset: filters.offset,
+      orderBy: filters.orderBy || 'asc'
     };
 
     if(filters.name) {
@@ -125,7 +126,7 @@ export class ProductRepository {
     const whereClause = conditions.length > 0 
     ? ` WHERE ${conditions.join(' AND ')}` : '';
 
-    const query = `SELECT * FROM products${whereClause} LIMIT :limit OFFSET :offset`;
+    const query = `SELECT * FROM products${whereClause} ORDER BY id :orderBy LIMIT :limit OFFSET :offset`;
 
     return db.prepare(query).all(params);
   }

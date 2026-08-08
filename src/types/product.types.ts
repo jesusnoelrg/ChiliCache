@@ -37,6 +37,7 @@ export interface ProductFilterDTO {
   maxPrice?: number;
   limit?: number;
   offset?: number;
+  orderBy?: 'asc' | 'desc';
 }
 
 export interface SelectStockById {
