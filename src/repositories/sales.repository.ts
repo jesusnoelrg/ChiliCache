@@ -5,7 +5,9 @@ import {
   DataCreateSale, 
   SaleStatus, 
   GetSalesDTO, 
-  Sale 
+  Sale,
+  FiltersSaleReport,
+  DataSaleReport
 } from "../types/sale.types";
 
 export class SalesRepository {
@@ -15,7 +17,7 @@ export class SalesRepository {
   private selectSaleStatus: Statement<[{id: number}], { status: SaleStatus } | undefined>;
   private selectCancelProduct: Statement<[{id: number}], {id_product: number, amount: number}>;
   private selectStock: Statement<[{id_product: number}], {stock: number} | undefined>;
-
+  
   private insertSale: Statement<[{total: number, invoice: number, customer_payment: number, id_client: number, id_user: number}], {lastInsertRowid: number} | undefined>;
   private insertDetails: Statement<[{price: number, amount: number, id_sale: number, id_product: number}], {changes: number} | undefined>;
   private insertMovementSale: Statement<[{type: 'sale' | 'cancel', old_stock: number, new_stock: number, id_product: number, id_user: number}], {changes: number} | undefined>;
@@ -257,6 +259,48 @@ export class SalesRepository {
     ${whereClause}
     ORDER BY s.date ${filters.orderBy ?? 'ASC'}
     LIMIT :limit OFFSET :offset
+    `;
+
+    return this.db.prepare(query).all(params);
+  }
+
+  public reportSale(filters: FiltersSaleReport) {
+    const params: Record<string, any> = {};
+    const conditions: string[] = [];
+
+    if (filters.client_name) {
+      conditions.push('c.name LIKE :client_name');
+      params.client_name = filters.client_name;
+    }
+
+    if (filters.seller_name) {
+      conditions.push('u.full_name LIKE :seller_name');
+      params.seller_name = filters.seller_name;
+    }
+
+    if (filters.invoice != null && filters.invoice !== Number.NaN) {
+      conditions.push('s.invoice = :invoice');
+      params.invoice = filters.invoice;
+    }
+
+    const query = `
+      SELECT
+        s.id,
+        c.name AS client_name,
+        u.full_name AS seller_name,
+        s.total,
+        s.customer_payment,
+        CASE
+          WHEN s.invoice = 1 THEN 'Sí'
+          ELSE 'No'
+        END AS invoice,
+        s.date
+      FROM sales AS s
+        INNER JOIN clients AS c ON c.id = s.id_client
+        INNER JOIN users AS u ON u.id = s.id_user
+      WHERE (s.date >= :start_date AND s.date <= :end_date) AND (s.status = 'completed')
+      ${conditions.length > 0 ? ` AND (${conditions.join(' AND ')})` : ''}
+      ORDER BY s.date ASC
     `;
 
     return this.db.prepare(query).all(params);
